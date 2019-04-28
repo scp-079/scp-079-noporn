@@ -32,7 +32,8 @@ all_commands: List[str] = ["noporn_config"]
 
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
-    "checker": False
+    "checker": False,
+    "porn-ios": True
 }
 
 version: str = "0.0.1"
@@ -72,6 +73,12 @@ bad_ids: Dict[str, Set[int]] = {}
 #     "users": {12345678}
 # }
 
+except_ids: Dict[str, Set[int]] = {}
+# except_ids = {
+#     "channels": {-10012345678},
+#     "users": {12345678}
+# }
+
 user_ids: Dict[int, Dict[str, Union[float, Dict[int, int], Set[int]]]] = {}
 # user_ids = {
 #     12345678: {
@@ -92,11 +99,12 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 # configs = {
 #     -10012345678: {
 #         "default": True,
-#         "checker": False
+#         "checker": False,
+#         "porn-ios": True
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "configs", "user_ids"]
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "configs", "user_ids"]
 for file in file_list:
     try:
         try:
