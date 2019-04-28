@@ -79,7 +79,7 @@ except_ids: Dict[str, Set[int]] = {}
 #     "users": {12345678}
 # }
 
-user_ids: Dict[int, Dict[str, Union[float, Dict[int, int], Set[int]]]] = {}
+user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
 # user_ids = {
 #     12345678: {
 #         "nsfw": {
@@ -87,8 +87,8 @@ user_ids: Dict[int, Dict[str, Union[float, Dict[int, int], Set[int]]]] = {}
 #         },
 #         "score": {
 #             "noporn": 0.6,
-#             "warn": 0.6,
-#             "total": 1.2
+#             "warn": 0.4,
+#             "total": 1.0
 #         }
 #     }
 # }

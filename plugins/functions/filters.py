@@ -17,9 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Union
 
-from pyrogram import CallbackQuery, Filters, Message
+from pyrogram import Filters, Message
 
 from .. import glovar
 from .ids import init_group_id
@@ -29,21 +28,45 @@ from .ids import init_group_id
 logger = logging.getLogger(__name__)
 
 
-def is_class_c(_, update: Union[CallbackQuery, Message]) -> bool:
+def is_class_c(_, message: Message) -> bool:
     try:
-        if isinstance(update, CallbackQuery):
-            message = update.message
-            uid = update.from_user.id
-        else:
-            message = update
-            uid = message.from_user.id
-
+        uid = message.from_user.id
         gid = message.chat.id
         init_group_id(gid)
         if uid in glovar.admin_ids.get(gid, set()) or uid in glovar.bot_ids or message.from_user.is_self:
             return True
     except Exception as e:
-        logger.warning(f"Is class c error: {e}")
+        logger.warning(f"Is class c error: {e}", exc_info=True)
+
+    return False
+
+
+def is_class_d(_, message: Message) -> bool:
+    try:
+        uid = message.from_user.id
+        if uid in glovar.bad_ids["users"]:
+            return True
+
+        if message.forward_from_chat:
+            cid = message.forward_from_chat.id
+            if cid in glovar.bad_ids["channels"]:
+                return True
+    except Exception as e:
+        logger.warning(f"Is class d error: {e}", exc_info=True)
+
+
+def is_class_e(_, message: Message) -> bool:
+    try:
+        uid = message.from_user.id
+        if uid in glovar.except_ids["users"]:
+            return True
+
+        if message.forward_from_chat:
+            cid = message.forward_from_chat.id
+            if cid in glovar.except_ids["channels"]:
+                return True
+    except Exception as e:
+        logger.warning(f"Is class e error: {e}", exc_info=True)
 
     return False
 
@@ -76,6 +99,16 @@ def is_test_group(_, message: Message) -> bool:
 class_c = Filters.create(
     name="Class C",
     func=is_class_c
+)
+
+class_d = Filters.create(
+    name="Class D",
+    func=is_class_d
+)
+
+class_e = Filters.create(
+    name="Class E",
+    func=is_class_e
 )
 
 exchange_channel = Filters.create(
