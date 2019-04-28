@@ -52,7 +52,7 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
     }
 }
 
-version: str = "0.0.1"
+version: str = "0.0.2"
 
 watch_ids: Dict[str, Dict[int, int]] = {}
 # watch_ids = {
