@@ -32,8 +32,8 @@ logger = logging.getLogger(__name__)
 def ask_for_help(client: Client, level: str, gid: int, uid: int) -> bool:
     try:
         data = send_data(
-            sender="WARN",
-            receivers=["NOPORN"],
+            sender="NOPORN",
+            receivers=["USER"],
             action="help",
             action_type=level,
             data={

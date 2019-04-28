@@ -112,7 +112,7 @@ def update_admins(client: Client) -> bool:
 def update_status(client: Client) -> bool:
     try:
         exchange_text = send_data(
-            sender="WARN",
+            sender="NOPORN",
             receivers=["MANAGE"],
             action="update",
             action_type="status",
