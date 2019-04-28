@@ -1,0 +1,38 @@
+[pyrogram]
+api_id = [DATA EXPUNGED]
+api_hash = [DATA EXPUNGED]
+
+[plugins]
+root = plugins
+include =
+    handlers.callback
+    handlers.command
+    handlers.message
+
+[proxy]
+enabled = False
+hostname = 127.0.0.1
+port = 1080
+
+[basic]
+bot_token = [DATA EXPUNGED]
+prefix = /!
+
+[bots]
+user_id = [DATA EXPUNGED]
+
+[channels]
+debug_channel_id = [DATA EXPUNGED]
+exchange_channel_id = [DATA EXPUNGED]
+test_group_id = 0
+
+[custom]
+config_channel_username = [DATA EXPUNGED]
+default_group_link = [DATA EXPUNGED]
+project_link = [DATA EXPUNGED]
+project_name = [DATA EXPUNGED]
+reset_day = [DATA EXPUNGED]
+user_name = [DATA EXPUNGED]
+
+[encrypt]
+password = [DATA EXPUNGED]
