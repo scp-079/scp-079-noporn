@@ -45,14 +45,7 @@ def init_group_id(gid: int) -> bool:
 def init_user_id(uid: int) -> bool:
     try:
         if glovar.user_ids.get(uid) is None:
-            glovar.user_ids[uid] = {
-                "nsfw": {},
-                "score": {
-                    "noporn": 0,
-                    "warn": 0,
-                    "total": 0
-                }
-            }
+            glovar.user_ids[uid] = glovar.default_user_status
             save("user_ids")
 
         return True

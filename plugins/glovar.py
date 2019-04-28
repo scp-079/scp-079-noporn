@@ -28,7 +28,14 @@ from typing import Dict, List, Set, Union
 logger = logging.getLogger(__name__)
 
 # Init
+
 all_commands: List[str] = ["noporn_config"]
+
+bad_ids: Dict[str, Set[int]] = {}
+# bad_ids = {
+#     "channels": {-10012345678},
+#     "users": {12345678}
+# }
 
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
@@ -36,11 +43,20 @@ default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "porn-ios": True
 }
 
+default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
+    "nsfw": {},
+    "score": {
+        "noporn": 0,
+        "warn": 0,
+        "total": 0
+    }
+}
+
 version: str = "0.0.1"
 
 watch_ids: Dict[str, Dict[int, int]] = {}
 # watch_ids = {
-#     "bad": {
+#     "ban": {
 #         12345678: 0
 #     },
 #     "delete": {
@@ -65,12 +81,6 @@ for path in ["data", "tmp"]:
 admin_ids: Dict[int, Set[int]] = {}
 # admin_ids = {
 #     -10012345678: {12345678}
-# }
-
-bad_ids: Dict[str, Set[int]] = {}
-# bad_ids = {
-#     "channels": {-10012345678},
-#     "users": {12345678}
 # }
 
 except_ids: Dict[str, Set[int]] = {}
@@ -104,7 +114,7 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "configs", "user_ids"]
+file_list: List[str] = ["admin_ids", "except_ids", "configs", "user_ids"]
 for file in file_list:
     try:
         try:
