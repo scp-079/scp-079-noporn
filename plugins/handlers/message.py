@@ -117,6 +117,8 @@ def process_data(client, message):
                         elif the_type == "user":
                             glovar.bad_ids["users"].add(the_id)
 
+                        save("bad_ids")
+
             elif sender == "MANAGE":
 
                 if action == "add":
@@ -148,6 +150,8 @@ def process_data(client, message):
                             glovar.bad_ids["channels"].discard(the_id)
                         elif the_type == "user":
                             glovar.bad_ids["users"].discard(the_id)
+
+                        save("bad_ids")
                     elif action_type == "except":
                         if the_type == "channel":
                             glovar.except_ids["channels"].discard(the_id)
@@ -170,6 +174,8 @@ def process_data(client, message):
                             glovar.bad_ids["channels"].add(the_id)
                         elif the_type == "user":
                             glovar.bad_ids["users"].add(the_id)
+
+                        save("bad_ids")
 
             elif sender == "WATCH":
 

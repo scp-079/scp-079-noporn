@@ -114,7 +114,7 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "except_ids", "configs", "user_ids"]
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "configs", "user_ids"]
 for file in file_list:
     try:
         try:
