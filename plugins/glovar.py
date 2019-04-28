@@ -31,12 +31,6 @@ logger = logging.getLogger(__name__)
 
 all_commands: List[str] = ["noporn_config"]
 
-bad_ids: Dict[str, Set[int]] = {}
-# bad_ids = {
-#     "channels": {-10012345678},
-#     "users": {12345678}
-# }
-
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
     "checker": False,
@@ -81,6 +75,12 @@ for path in ["data", "tmp"]:
 admin_ids: Dict[int, Set[int]] = {}
 # admin_ids = {
 #     -10012345678: {12345678}
+# }
+
+bad_ids: Dict[str, Set[int]] = {}
+# bad_ids = {
+#     "channels": {-10012345678},
+#     "users": {12345678}
 # }
 
 except_ids: Dict[str, Set[int]] = {}
