@@ -101,9 +101,9 @@ def noporn_config(client, message):
                     command_type = list(filter(None, command_list))[1]
                     if command_type == "show":
                         text += (f"操作：{code('查看设置')}\n"
-                                 f"设置：{code((lambda x: '默认' if x else '自定义')(new_config['default']))}\n"
-                                 f"过滤频道：{code((lambda x: '启用' if x else '禁用')(new_config['channel']))}\n"
-                                 f"媒体复查：{code((lambda x: '启用' if x else '禁用')(new_config['recheck']))}")
+                                 f"设置：{code((lambda x: '默认' if x else '自定义')(new_config.get('default')))}\n"
+                                 f"过滤频道：{code((lambda x: '启用' if x else '禁用')(new_config.get('channel')))}\n"
+                                 f"媒体复查：{code((lambda x: '启用' if x else '禁用')(new_config.get('recheck')))}")
                         thread(send_report_message, (15, client, gid, text))
                         mids = [mid]
                         thread(delete_messages, (client, gid, mids))
