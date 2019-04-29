@@ -71,39 +71,73 @@ def is_class_e(_, message: Message) -> bool:
     return False
 
 
-def is_declared_message():
-    pass
+def is_declared_message(_, message: Message) -> bool:
+    try:
+        gid = message.chat.id
+        mid = message.message_id
+        if (mid == glovar.declared_message_ids["ban"].get(gid)
+                or mid == glovar.declared_message_ids["delete"].get(gid)):
+            return True
+    except Exception as e:
+        logger.warning(f"Is declared message error: {e}", exc_info=True)
+
+    return False
 
 
-def is_declared_ban_message():
-    pass
+def is_declared_ban_message(_, message: Message) -> bool:
+    try:
+        gid = message.chat.id
+        mid = message.message_id
+        if mid == glovar.declared_message_ids["ban"].get(gid):
+            return True
+    except Exception as e:
+        logger.warning(f"Is declared ban message error: {e}", exc_info=True)
+
+    return False
 
 
-def is_declared_delete_message():
-    pass
+def is_declared_delete_message(_, message: Message) -> bool:
+    try:
+        gid = message.chat.id
+        mid = message.message_id
+        if mid == glovar.declared_message_ids["delete"].get(gid):
+            return True
+    except Exception as e:
+        logger.warning(f"Is declared delete message error: {e}", exc_info=True)
+
+    return False
 
 
 def is_exchange_channel(_, message: Message) -> bool:
-    cid = message.chat.id
-    if cid == glovar.exchange_channel_id:
-        return True
+    try:
+        cid = message.chat.id
+        if cid == glovar.exchange_channel_id:
+            return True
+    except Exception as e:
+        logger.warning(f"Is exchange channel error: {e}", exc_info=True)
 
     return False
 
 
 def is_new_group(_, message: Message) -> bool:
-    new_users = message.new_chat_members
-    for user in new_users:
-        if user.is_self:
-            return True
+    try:
+        new_users = message.new_chat_members
+        for user in new_users:
+            if user.is_self:
+                return True
+    except Exception as e:
+        logger.warning(f"Is new group error: {e}", exc_info=True)
 
     return False
 
 
 def is_test_group(_, message: Message) -> bool:
-    cid = message.chat.id
-    if cid == glovar.test_group_id:
-        return True
+    try:
+        cid = message.chat.id
+        if cid == glovar.test_group_id:
+            return True
+    except Exception as e:
+        logger.warning(f"Is test group error: {e}", exc_info=True)
 
     return False
 
@@ -121,6 +155,21 @@ class_d = Filters.create(
 class_e = Filters.create(
     name="Class E",
     func=is_class_e
+)
+
+declared_message = Filters.create(
+    name="Declared message",
+    func=is_declared_message
+)
+
+declared_ban_message = Filters.create(
+    name="Declared ban message",
+    func=is_declared_ban_message
+)
+
+declared_delete_message = Filters.create(
+    name="Declared delete message",
+    func=is_declared_delete_message
 )
 
 exchange_channel = Filters.create(
