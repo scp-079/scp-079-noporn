@@ -121,6 +121,20 @@ def is_exchange_channel(_, message: Message) -> bool:
     return False
 
 
+def is_high_score_user(_, message: Message) -> bool:
+    try:
+        uid = message.from_user.id
+        user = glovar.user_ids.get(uid, {})
+        if user:
+            score = user["score"]["lang"] + user["score"]["noflood"] + user["score"]["noporn"] + user["score"]["warn"]
+            if score >= 3:
+                return True
+    except Exception as e:
+        logger.warning(f"Is high score user error: {e}", exc_info=True)
+
+    return False
+
+
 def is_new_group(_, message: Message) -> bool:
     try:
         new_users = message.new_chat_members
@@ -183,7 +197,7 @@ def is_nsfw_user(_, message: Message) -> bool:
         uid = message.from_user.id
         user = glovar.user_ids.get(uid, {})
         if user:
-            status = glovar.user_ids[uid]["nsfw"].get(gid, 0)
+            status = user["nsfw"].get(gid, 0)
             now = int(time())
             if now - status < 300:
                 return True
@@ -265,6 +279,11 @@ exchange_channel = Filters.create(
     func=is_exchange_channel
 )
 
+high_score_user = Filters.create(
+    name="High score user",
+    func=is_high_score_user
+)
+
 new_group = Filters.create(
     name="New Group",
     func=is_new_group
@@ -273,6 +292,11 @@ new_group = Filters.create(
 nsfw_media = Filters.create(
     name="NSFW Media",
     func=is_nsfw_media
+)
+
+nsfw_user = Filters.create(
+    name="NSFW User",
+    func=is_nsfw_user
 )
 
 test_group = Filters.create(

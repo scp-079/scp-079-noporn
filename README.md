@@ -10,13 +10,14 @@ See [this article](https://scp-079.org/noporn/).
 
 - [x] Auto delete NSFW media messages
 - [x] Update user's score
-- [x] Watch ban or ban by checking user's score
+- [x] Watch ban or ban by checking user's score and status
 - [x] Managed by SCP-079-CONFIG
 
 ## Requirements
 
 - Python 3.6 or higher.
-- `requirements.txt` ： APScheduler Pillow pyAesCrypt pyrogram[fast] nsfw
+- `requirements.txt` : APScheduler Pillow pyAesCrypt pyrogram[fast] nsfw
+- Ubuntu: `sudo apt update && sudo apt install caffe-cpu`
 
 ## Files
 
