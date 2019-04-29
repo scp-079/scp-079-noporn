@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 
 # Init
 
-all_commands: List[str] = ["noporn_config"]
+all_commands: List[str] = ["config", "noporn_config"]
 
 declared_message_ids: Dict[str, Dict[int, int]] = {}
 # declared_message_ids = {
@@ -43,8 +43,9 @@ declared_message_ids: Dict[str, Dict[int, int]] = {}
 
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
-    "checker": False,
-    "porn-ios": True
+    "channel": True,
+    "locked": 0,
+    "recheck": False
 }
 
 default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
@@ -119,8 +120,9 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 # configs = {
 #     -10012345678: {
 #         "default": True,
-#         "checker": False,
-#         "porn-ios": True
+#         "channel": True,
+#         "locked": 0,
+#         "recheck": False
 # }
 
 # Load data
