@@ -83,6 +83,23 @@ def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[b
     return result
 
 
+def download_media(client: Client, file_id: str, file_path: str):
+    result = None
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.download_media(message=file_id, file_name=file_path)
+            except FloodWait as e:
+                flood_wait = True
+                sleep(e.x + 1)
+    except Exception as e:
+        logger.warning(f"Download media {file_id} to {file_path} error: {e}", exc_info=True)
+
+    return result
+
+
 def get_admins(client: Client, cid: int) -> Optional[List[ChatMember]]:
     result = None
     try:

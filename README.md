@@ -16,7 +16,7 @@ See [this article](https://scp-079.org/noporn/).
 ## Requirements
 
 - Python 3.6 or higher.
-- `requirements.txt` ： APScheduler pyAesCrypt pyrogram[fast]
+- `requirements.txt` ： APScheduler Pillow pyAesCrypt pyrogram[fast] nsfw
 
 ## Files
 
