@@ -60,7 +60,10 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
 
 version: str = "0.0.4"
 
-watch_ids: Dict[str, Dict[int, int]] = {}
+watch_ids: Dict[str, Dict[int, int]] = {
+    "ban": {},
+    "delete": {}
+}
 # watch_ids = {
 #     "ban": {
 #         12345678: 0
@@ -89,13 +92,19 @@ admin_ids: Dict[int, Set[int]] = {}
 #     -10012345678: {12345678}
 # }
 
-bad_ids: Dict[str, Set[int]] = {}
+bad_ids: Dict[str, Set[int]] = {
+    "channels": set(),
+    "users": set()
+}
 # bad_ids = {
 #     "channels": {-10012345678},
 #     "users": {12345678}
 # }
 
-except_ids: Dict[str, Set[int]] = {}
+except_ids: Dict[str, Set[int]] = {
+    "channels": set(),
+    "users": set()
+}
 # except_ids = {
 #     "channels": {-10012345678},
 #     "users": {12345678}
