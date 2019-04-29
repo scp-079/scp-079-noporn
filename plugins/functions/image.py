@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from os import remove
 from os.path import exists
 from typing import Optional
 
@@ -52,6 +53,8 @@ def get_porn(path):
         image = Image.open(path)
         sfw, nsfw = classify(image)
         porn = nsfw
+        if exists(path):
+            remove(path)
     except Exception as e:
         logger.warning(f"Get porn error: {e}", exc_info=True)
 
