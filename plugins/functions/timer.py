@@ -22,7 +22,8 @@ from time import sleep
 from pyrogram import Client
 
 from .. import glovar
-from .etc import code, general_link, send_data, thread
+from .etc import code, format_data, general_link, thread
+from .channel import share_data
 from .file import crypt_file, save
 from .telegram import get_admins, get_group_info, send_document, send_message
 
@@ -34,7 +35,7 @@ def backup_files(client: Client) -> bool:
     try:
         for file in glovar.file_list:
             try:
-                exchange_text = send_data(
+                exchange_text = format_data(
                     sender="WARN",
                     receivers=["BACKUP"],
                     action="backup",
@@ -80,7 +81,8 @@ def update_admins(client: Client) -> bool:
 
                 if should_leave:
                     group_name, group_link = get_group_info(client, gid)
-                    exchange_text = send_data(
+                    share_data(
+                        client=client,
                         sender="NOPORN",
                         receivers=["MANAGE"],
                         action="request",
@@ -92,7 +94,6 @@ def update_admins(client: Client) -> bool:
                             "reason": reason_text
                         }
                     )
-                    thread(send_message, (client, glovar.exchange_channel_id, exchange_text))
                     if reason_text == "user":
                         reason_text = f"缺失 {glovar.user_name}"
                     elif reason_text == "permissions":
@@ -111,14 +112,14 @@ def update_admins(client: Client) -> bool:
 
 def update_status(client: Client) -> bool:
     try:
-        exchange_text = send_data(
+        share_data(
+            client=client,
             sender="NOPORN",
             receivers=["MANAGE"],
             action="update",
             action_type="status",
             data="awake"
         )
-        thread(send_message, (client, glovar.exchange_channel_id, exchange_text))
         return True
     except Exception as e:
         logger.warning(f"Update status error: {e}")

@@ -22,15 +22,38 @@ from time import time
 from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
 
 from .. import glovar
+from ..functions.channel import ask_for_help, declare_message, forward_evidence, send_debug
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import exchange_channel, new_group
+from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, new_group
+from ..functions.filters import nsfw_media, is_watch_ban
 from ..functions.group import get_debug_text, leave_group
+from ..functions.user import add_bad_user, ban_user, delete_message
 from ..functions.ids import init_group_id
-from ..functions.telegram import get_admins, leave_chat, send_message, send_report_message
+from ..functions.telegram import get_admins, send_message, send_report_message
 
 # Enable logging
 logger = logging.getLogger(__name__)
+
+
+@Client.on_message(Filters.incoming & Filters.group & Filters.media
+                   & ~class_c & ~class_d & ~class_e & ~declared_ban_message & nsfw_media)
+def check(client, message):
+    try:
+        gid = message.chat.id
+        uid = message.from_user.id
+        mid = message.message_id
+        if is_watch_ban(None, message):
+            result = forward_evidence(client, message, "ban", "敏感追踪")
+            if result:
+                ban_user(client, gid, uid)
+                delete_message(client, gid, mid)
+                declare_message(client, "ban", gid, mid)
+                ask_for_help(client, "ban", gid, uid)
+                add_bad_user(client, uid)
+                send_debug(client, message.chat, "追踪封禁", uid, mid, result)
+    except Exception as e:
+        logger.warning(f"Check error: {e}", exc_info=True)
 
 
 @Client.on_message(Filters.incoming & Filters.group & Filters.new_chat_members & new_group)
@@ -51,14 +74,14 @@ def init_group(client, message):
                 text += (f"状态：{code('已退出群组')}\n"
                          f"原因：{code('获取管理员列表失败')}")
         else:
-            thread(leave_chat, (client, gid))
+            leave_group(client, gid)
             text += (f"状态：{code('已退出群组')}\n"
                      f"原因：{code('未授权使用')}\n"
                      f"邀请人：{user_mention(invited_by)}")
 
         thread(send_message, (client, glovar.debug_channel_id, text))
     except Exception as e:
-        logger.warning(f"Auto report error: {e}", exc_info=True)
+        logger.warning(f"Init group error: {e}", exc_info=True)
 
 
 @Client.on_message(Filters.incoming & Filters.channel & exchange_channel

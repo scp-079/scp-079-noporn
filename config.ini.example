@@ -23,10 +23,12 @@ user_id = [DATA EXPUNGED]
 [channels]
 debug_channel_id = [DATA EXPUNGED]
 exchange_channel_id = [DATA EXPUNGED]
+logging_channel_id = [DATA EXPUNGED]
 test_group_id = 0
+config_channel_username = [DATA EXPUNGED]
+logging_channel_username = [DATA EXPUNGED]
 
 [custom]
-config_channel_username = [DATA EXPUNGED]
 default_group_link = [DATA EXPUNGED]
 project_link = [DATA EXPUNGED]
 project_name = [DATA EXPUNGED]

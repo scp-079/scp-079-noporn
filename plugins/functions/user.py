@@ -21,30 +21,44 @@ import logging
 from pyrogram import Client
 
 from .. import glovar
-from .etc import send_data, thread
+from .etc import thread
+from .channel import share_bad_user, share_data
 from .file import save
-from .telegram import send_message
+from .telegram import delete_messages, kick_chat_member
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
 
-def ask_for_help(client: Client, level: str, gid: int, uid: int) -> bool:
+def add_bad_user(client: Client, uid: int) -> bool:
     try:
-        data = send_data(
-            sender="NOPORN",
-            receivers=["USER"],
-            action="help",
-            action_type=level,
-            data={
-                "group_id": gid,
-                "user_id": uid
-            }
-        )
-        thread(send_message, (client, glovar.exchange_channel_id, data))
+        glovar.bad_ids["users"].add(uid)
+        save("bad_ids")
+        share_bad_user(client, uid)
         return True
     except Exception as e:
-        logger.warning(f"Ask for help error: {e}", exc_info=True)
+        logger.warning(f"Add bad user error: {e}", exc_info=True)
+
+    return False
+
+
+def ban_user(client: Client, gid: int, uid: int) -> bool:
+    try:
+        thread(kick_chat_member, (client, gid, uid))
+        return True
+    except Exception as e:
+        logger.warning(f"Ban user error: {e}", exc_info=True)
+
+    return False
+
+
+def delete_message(client: Client, gid: int, mid: int) -> bool:
+    try:
+        mids = [mid]
+        thread(delete_messages, (client, gid, mids))
+        return True
+    except Exception as e:
+        logger.warning(f"Delete message error: {e}", exc_info=True)
 
     return False
 
@@ -56,7 +70,8 @@ def update_score(client: Client, uid: int) -> bool:
         warn_score = glovar.user_ids[uid]["score"]["warn"]
         glovar.user_ids[uid]["score"]["total"] = nsfw_score + warn_score
         save("user_ids")
-        exchange_text = send_data(
+        share_data(
+            client=client,
             sender="NOPORN",
             receivers=["NOSPAM"],
             action="update",
@@ -66,7 +81,6 @@ def update_score(client: Client, uid: int) -> bool:
                 "score": nsfw_score
             }
         )
-        thread(send_message, (client, glovar.exchange_channel_id, exchange_text))
         return True
     except Exception as e:
         logger.warning(f"Update score error: {e}", exc_info=True)

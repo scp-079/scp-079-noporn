@@ -24,13 +24,12 @@ from copy import deepcopy
 from pyrogram import Client, Filters
 
 from .. import glovar
-from ..functions.etc import bold, code, get_command_context, send_data, thread, user_mention
+from ..functions.etc import bold, code, get_command_context, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import is_class_c, test_group
 from ..functions.group import get_debug_text
-
 from ..functions.telegram import delete_messages, get_group_info, send_message, send_report_message
-
+from ..functions.user import share_data
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -49,7 +48,8 @@ def config(client, message):
                 if now - glovar.configs[gid]["locked"] > 360:
                     glovar.configs[gid]["locked"] = now
                     group_name, group_link = get_group_info(client, message.chat)
-                    exchange_text = send_data(
+                    share_data(
+                        client=client,
                         sender="NOPORN",
                         receivers=["CONFIG"],
                         action="config",
@@ -62,7 +62,6 @@ def config(client, message):
                             "config": glovar.configs[gid]
                         }
                     )
-                    thread(send_message, (client, glovar.exchange_channel_id, exchange_text))
                     text = get_debug_text(client, message.chat)
                     text += (f"群管理：{user_mention(message.from_user.id)}\n"
                              f"操作：{'创建设置会话'}")

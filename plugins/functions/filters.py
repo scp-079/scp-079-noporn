@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from time import time
 
 from pyrogram import Filters, Message
 
@@ -131,6 +132,15 @@ def is_new_group(_, message: Message) -> bool:
     return False
 
 
+def is_nsfw_media(_, message: Message) -> bool:
+    try:
+        pass
+    except Exception as e:
+        logger.warning(f"Is NSFW media error: {e}", exc_info=True)
+
+    return False
+
+
 def is_test_group(_, message: Message) -> bool:
     try:
         cid = message.chat.id
@@ -138,6 +148,32 @@ def is_test_group(_, message: Message) -> bool:
             return True
     except Exception as e:
         logger.warning(f"Is test group error: {e}", exc_info=True)
+
+    return False
+
+
+def is_watch_ban(_, message: Message) -> bool:
+    try:
+        uid = message.from_user.id
+        status = glovar.watch_ids["ban"].get(uid, 0)
+        now = int(time())
+        if now - status < 14400:
+            return True
+    except Exception as e:
+        logger.warning(f"Is watch ban error: {e}", exc_info=True)
+
+    return False
+
+
+def is_watch_delete(_, message: Message) -> bool:
+    try:
+        uid = message.from_user.id
+        status = glovar.watch_ids["delete"].get(uid, 0)
+        now = int(time())
+        if now - status < 10800:
+            return True
+    except Exception as e:
+        logger.warning(f"Is watch delete error: {e}", exc_info=True)
 
     return False
 
@@ -182,7 +218,22 @@ new_group = Filters.create(
     func=is_new_group
 )
 
+nsfw_media = Filters.create(
+    name="NSFW Media",
+    func=is_nsfw_media
+)
+
 test_group = Filters.create(
     name="Test Group",
     func=is_test_group
+)
+
+watch_ban = Filters.create(
+    name="Watch Ban",
+    func=is_watch_ban
+)
+
+watch_delete = Filters.create(
+    name="Watch Delete",
+    func=is_watch_delete
 )
