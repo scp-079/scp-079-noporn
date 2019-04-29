@@ -54,7 +54,9 @@ def init_group(client, message):
         gid = message.chat.id
         invited_by = message.from_user.id
         text = get_debug_text(client, message.chat)
+        # Check permission
         if invited_by == glovar.user_id:
+            # Update group's admin list
             init_group_id(gid)
             admin_members = get_admins(client, gid)
             if admin_members:
@@ -217,16 +219,18 @@ def process_data(client, message):
 
                 if action == "update":
                     if action_type == "preview":
+                        # Get the preview data
                         gid = data["group_id"]
                         uid = data["user_id"]
                         mid = data["message_id"]
                         file_id = data["image"]
-                        if not is_declared_ban_message_id(gid, mid):
-                            if not is_nsfw_user_id(gid, uid):
-                                if is_nsfw_media(client, file_id):
-                                    the_message = get_message(client, gid, mid)
-                                    if the_message:
-                                        terminate_nsfw_user(client, the_message)
+                        if file_id:
+                            if not is_declared_ban_message_id(gid, mid):
+                                if not is_nsfw_user_id(gid, uid):
+                                    if is_nsfw_media(client, file_id):
+                                        the_message = get_message(client, gid, mid)
+                                        if the_message:
+                                            terminate_nsfw_user(client, the_message)
 
             elif sender == "WARN":
 

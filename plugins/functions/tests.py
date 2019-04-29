@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def porn_test(client: Client, message: Message) -> bool:
+    # Test image porn score in the test group
     try:
         file_id = get_file_id(message)
         image_path = get_image_path(client, file_id)

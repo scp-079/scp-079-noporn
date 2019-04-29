@@ -32,11 +32,12 @@ logger = logging.getLogger(__name__)
 
 
 def backup_files(client: Client) -> bool:
+    # Backup data files to BACKUP
     try:
         for file in glovar.file_list:
             try:
                 exchange_text = format_data(
-                    sender="WARN",
+                    sender="NOPORN",
                     receivers=["BACKUP"],
                     action="backup",
                     action_type="pickle",
@@ -56,6 +57,7 @@ def backup_files(client: Client) -> bool:
 
 
 def reset_data() -> bool:
+    # Reset user data every month
     glovar.user_ids = {}
     save("user_ids")
 
@@ -63,6 +65,7 @@ def reset_data() -> bool:
 
 
 def update_admins(client: Client) -> bool:
+    # Update admin list every day
     group_list = list(glovar.configs)
     for gid in group_list:
         try:
@@ -111,11 +114,12 @@ def update_admins(client: Client) -> bool:
 
 
 def update_status(client: Client) -> bool:
+    # Update running status to BACKUP
     try:
         share_data(
             client=client,
             sender="NOPORN",
-            receivers=["MANAGE"],
+            receivers=["BACKUP"],
             action="update",
             action_type="status",
             data="awake"

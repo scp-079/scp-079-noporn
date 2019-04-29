@@ -110,6 +110,7 @@ def get_score(uid: int) -> float:
 
 
 def terminate_nsfw_user(client, message):
+    # Delete NSFW user's message, or ban the user
     gid = message.chat.id
     uid = message.from_user.id
     mid = message.message_id

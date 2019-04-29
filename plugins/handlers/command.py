@@ -41,12 +41,17 @@ def config(client, message):
     try:
         gid = message.chat.id
         mid = message.message_id
+        # Check permission
         if is_class_c(None, message):
             command_list = list(filter(None, message.command))
+            # Check command format
             if len(command_list) == 2 and re.search("^noporn$", command_list[1], re.I):
                 now = int(time())
+                # Check the config lock
                 if now - glovar.configs[gid]["locked"] > 360:
+                    # Set lock
                     glovar.configs[gid]["locked"] = now
+                    # Ask CONFIG generate a config session
                     group_name, group_link = get_group_info(client, message.chat)
                     share_data(
                         client=client,
@@ -62,9 +67,11 @@ def config(client, message):
                             "config": glovar.configs[gid]
                         }
                     )
+                    # Send a report message to debug channel
                     text = get_debug_text(client, message.chat)
                     text += (f"群管理：{user_mention(message.from_user.id)}\n"
                              f"操作：{'创建设置会话'}")
+                    thread(send_message, (client, glovar.debug_channel_id, text))
 
         mids = [mid]
         thread(delete_messages, (client, gid, mids))
@@ -78,6 +85,7 @@ def noporn_config(client, message):
     try:
         gid = message.chat.id
         mid = message.message_id
+        # Check permission
         if is_class_c(None, message):
             aid = message.from_user.id
             command_list = message.command
@@ -85,8 +93,10 @@ def noporn_config(client, message):
             reason = "已更新"
             new_config = deepcopy(glovar.configs[gid])
             text = f"管理员：{user_mention(aid)}\n"
+            # Check command format
             if len(command_list) > 1:
                 now = int(time())
+                # Check the config lock
                 if now - new_config["locked"] > 360:
                     command_type = list(filter(None, command_list))[1]
                     if command_type == "show":
