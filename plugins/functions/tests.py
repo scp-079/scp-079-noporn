@@ -37,7 +37,7 @@ def porn_test(client: Client, message: Message) -> bool:
         if image_path:
             porn = get_porn(image_path)
             text = f"NSFW 得分：{code(porn)}"
-            thread(send_message, (client, glovar.test_group_id, text))
+            thread(send_message, (client, glovar.test_group_id, text, message.message_id))
             return True
     except Exception as e:
         logger.warning(f"Porn test error: {e}", exc_info=True)
