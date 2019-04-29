@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from time import time
 
 from pyrogram import Client
 
@@ -24,6 +25,7 @@ from .. import glovar
 from .etc import thread
 from .channel import share_bad_user, share_data
 from .file import save
+from .ids import init_user_id
 from .telegram import delete_messages, kick_chat_member
 
 # Enable logging
@@ -38,6 +40,30 @@ def add_bad_user(client: Client, uid: int) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Add bad user error: {e}", exc_info=True)
+
+    return False
+
+
+def add_nsfw_user(gid: int, uid: int) -> bool:
+    try:
+        init_user_id(uid)
+        now = int(time())
+        glovar.user_ids[uid]["nsfw"][gid] = now
+        return True
+    except Exception as e:
+        logger.warning(f"Add NSFW user error: {e}", exc_info=True)
+
+    return False
+
+
+def add_watch_ban_user(client: Client, uid: int) -> bool:
+    try:
+        now = int(time())
+        glovar.watch_ids["ban"][uid] = now
+        share_watch_ban_user(client, uid)
+        return True
+    except Exception as e:
+        logger.warning(f"Add watch ban user error: {e}", exc_info=True)
 
     return False
 

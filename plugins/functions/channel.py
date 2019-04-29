@@ -147,3 +147,21 @@ def share_data(client: Client, sender: str, receivers: List[str], action: str, a
         logger.warning(f"Share data error: {e}", exc_info=True)
 
     return False
+
+
+def share_watch_ban_user(client: Client, uid: int) -> bool:
+    try:
+        share_data(
+            client=client,
+            sender="NOPORN",
+            receivers=["LANG", "NOFLOOD", "NOSPAM"],
+            action="add",
+            action_type="watch",
+            data={
+                "id": uid,
+                "type": "ban"
+            }
+        )
+        return True
+    except Exception as e:
+        logger.warning(f"Share watch ban user error: {e}", exc_info=True)

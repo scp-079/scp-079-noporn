@@ -25,10 +25,10 @@ from .. import glovar
 from ..functions.channel import ask_for_help, declare_message, forward_evidence, send_debug
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, new_group
-from ..functions.filters import nsfw_media, is_watch_ban
+from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, is_nsfw_user
+from ..functions.filters import new_group, nsfw_media, test_group, is_watch_ban, is_watch_delete
 from ..functions.group import get_debug_text, leave_group
-from ..functions.user import add_bad_user, ban_user, delete_message
+from ..functions.user import add_bad_user, add_nsfw_user, add_watch_ban_user, ban_user, delete_message
 from ..functions.ids import init_group_id
 from ..functions.telegram import get_admins, send_message, send_report_message
 
@@ -36,7 +36,7 @@ from ..functions.telegram import get_admins, send_message, send_report_message
 logger = logging.getLogger(__name__)
 
 
-@Client.on_message(Filters.incoming & Filters.group & Filters.media
+@Client.on_message(Filters.incoming & Filters.group & ~test_group & Filters.media
                    & ~class_c & ~class_d & ~class_e & ~declared_ban_message & nsfw_media)
 def check(client, message):
     try:
@@ -52,6 +52,25 @@ def check(client, message):
                 ask_for_help(client, "ban", gid, uid)
                 add_bad_user(client, uid)
                 send_debug(client, message.chat, "追踪封禁", uid, mid, result)
+        elif is_watch_delete(None, message):
+            result = forward_evidence(client, message, "delete", "全局规则 + 敏感追踪")
+            if result:
+                delete_message(client, gid, mid)
+                declare_message(client, "delete", gid, mid)
+                ask_for_help(client, "delete", gid, uid)
+                add_watch_ban_user(client, uid)
+                send_debug(client, message.chat, "追踪删除", uid, mid, result)
+        elif is_nsfw_user(None, message):
+            delete_message(client, gid, mid)
+            add_nsfw_user(gid, uid)
+            declare_message(client, "delete", gid, mid)
+        else:
+            result = forward_evidence(client, message, "delete", "全局规则")
+            if result:
+                delete_message(client, gid, mid)
+                add_nsfw_user(gid, uid)
+                declare_message(client, "delete", gid, mid)
+                send_debug(client, message.chat, "delete", uid, mid, result)
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
 

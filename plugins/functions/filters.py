@@ -141,6 +141,22 @@ def is_nsfw_media(_, message: Message) -> bool:
     return False
 
 
+def is_nsfw_user(_, message: Message) -> bool:
+    try:
+        gid = message.chat.id
+        uid = message.from_user.id
+        user = glovar.user_ids.get(uid, {})
+        if user:
+            status = glovar.user_ids[uid]["nsfw"].get(gid, 0)
+            now = int(time())
+            if now - status < 300:
+                return True
+    except Exception as e:
+        logger.warning(f"Is NSFW user error: {e}", exc_info=True)
+
+    return False
+
+
 def is_test_group(_, message: Message) -> bool:
     try:
         cid = message.chat.id
