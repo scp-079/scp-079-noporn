@@ -163,14 +163,15 @@ def process_data(client, message):
                         save("except_ids")
 
                 elif action == "leave":
-                    the_id = data["id"]
-                    reason = data["reason"]
-                    if action_type == "group":
-                        leave_group(client, the_id)
-                        text = get_debug_text(client, the_id)
-                        text += (f"状态：{code('已退出该群组')}\n"
-                                 f"原因：{code(reason)}")
-                        thread(send_message, (client, glovar.debug_channel_id, text))
+                    if action_type == "approve":
+                        the_id = data["group_id"]
+                        reason = data["reason"]
+                        if action_type == "group":
+                            text = get_debug_text(client, the_id)
+                            text += (f"状态：{code('已退出该群组')}\n"
+                                     f"原因：{code(reason)}")
+                            leave_group(client, the_id)
+                            thread(send_message, (client, glovar.debug_channel_id, text))
 
                 elif action == "remove":
                     the_id = data["id"]

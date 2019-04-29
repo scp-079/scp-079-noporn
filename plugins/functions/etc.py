@@ -239,7 +239,10 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
 
                 Leave:
                     approve:
-                        -10012345678
+                        {
+                            "group_id": -10012345678,
+                            "reason": "reason here"
+                        }
 
                     info:
                         -10012345678
