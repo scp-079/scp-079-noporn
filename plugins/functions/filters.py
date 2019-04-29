@@ -71,6 +71,18 @@ def is_class_e(_, message: Message) -> bool:
     return False
 
 
+def is_declared_message():
+    pass
+
+
+def is_declared_ban_message():
+    pass
+
+
+def is_declared_delete_message():
+    pass
+
+
 def is_exchange_channel(_, message: Message) -> bool:
     cid = message.chat.id
     if cid == glovar.exchange_channel_id:
