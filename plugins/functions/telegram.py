@@ -20,7 +20,7 @@ import logging
 from time import sleep
 from typing import Iterable, List, Optional, Union
 
-from pyrogram import Chat, ChatMember, Client, InlineKeyboardMarkup, Message, Messages, ParseMode, User
+from pyrogram import Chat, ChatMember, Client, InlineKeyboardMarkup, Message, Messages, ParseMode
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 
 from .. import glovar
@@ -78,10 +78,13 @@ def edit_message_text(client: Client, cid: int, mid: int, text: str,
 def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[bool]:
     result = None
     try:
-        while not result:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
             try:
                 result = client.delete_messages(chat_id=cid, message_ids=mids)
             except FloodWait as e:
+                flood_wait = True
                 sleep(e.x + 1)
     except Exception as e:
         logger.warning(f"Delete messages in {cid} error: {e}", exc_info=True)
@@ -109,10 +112,13 @@ def download_media(client: Client, file_id: str, file_path: str):
 def get_admins(client: Client, cid: int) -> Optional[List[ChatMember]]:
     result = None
     try:
-        while not result:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
             try:
                 result = client.get_chat_members(chat_id=cid, filter="administrators")
             except FloodWait as e:
+                flood_wait = True
                 sleep(e.x + 1)
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return None
@@ -130,10 +136,13 @@ def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
     try:
         if isinstance(chat, int):
             result = None
-            while not result:
+            flood_wait = True
+            while flood_wait:
+                flood_wait = False
                 try:
                     result = client.get_chat(chat_id=chat)
                 except FloodWait as e:
+                    flood_wait = True
                     sleep(e.x + 1)
                 except Exception as e:
                     logger.warning(f"Get chat {chat} error: {e}")
@@ -168,27 +177,16 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[Mess
     return result
 
 
-def get_users(client: Client, uids: Iterable[int]) -> Optional[List[User]]:
-    result = None
-    try:
-        while not result:
-            try:
-                result = client.get_users(user_ids=uids)
-            except FloodWait as e:
-                sleep(e.x + 1)
-    except Exception as e:
-        logger.warning(f"Get users {uids} error: {e}", exc_info=True)
-
-    return result
-
-
 def kick_chat_member(client: Client, cid: int, uid: int) -> Optional[Union[bool, Message]]:
     result = None
     try:
-        while not result:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
             try:
                 result = client.kick_chat_member(chat_id=cid, user_id=uid)
             except FloodWait as e:
+                flood_wait = True
                 sleep(e.x + 1)
     except Exception as e:
         logger.warning(f"Kick chat member {uid} in {cid} error: {e}", exc_info=True)
@@ -197,12 +195,14 @@ def kick_chat_member(client: Client, cid: int, uid: int) -> Optional[Union[bool,
 
 
 def leave_chat(client: Client, cid: int) -> bool:
-    result = None
     try:
-        while not result:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
             try:
-                result = client.leave_chat(chat_id=cid)
+                client.leave_chat(chat_id=cid)
             except FloodWait as e:
+                flood_wait = True
                 sleep(e.x + 1)
 
         return True
@@ -216,7 +216,9 @@ def send_document(client: Client, cid: int, file: str, text: str = None, mid: in
                   markup: InlineKeyboardMarkup = None) -> Optional[Message]:
     result = None
     try:
-        while not result:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
             try:
                 result = client.send_document(
                     chat_id=cid,
@@ -227,6 +229,7 @@ def send_document(client: Client, cid: int, file: str, text: str = None, mid: in
                     reply_markup=markup
                 )
             except FloodWait as e:
+                flood_wait = True
                 sleep(e.x + 1)
     except Exception as e:
         logger.warning(f"Send document to {cid} error: {e}", exec_info=True)
@@ -265,7 +268,9 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
     result = None
     try:
         if text.strip():
-            while not result:
+            flood_wait = True
+            while flood_wait:
+                flood_wait = False
                 try:
                     result = client.send_message(
                         chat_id=cid,
@@ -276,6 +281,7 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
                         reply_markup=markup
                     )
                 except FloodWait as e:
+                    flood_wait = True
                     sleep(e.x + 1)
 
             mid = result.message_id
@@ -290,10 +296,13 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
 def unban_chat_member(client: Client, cid: int, uid: int) -> Optional[bool]:
     result = None
     try:
-        while not result:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
             try:
                 result = client.unban_chat_member(chat_id=cid, user_id=uid)
             except FloodWait as e:
+                flood_wait = True
                 sleep(e.x + 1)
     except Exception as e:
         logger.warning(f"Unban chat member {uid} in {cid} error: {e}")
