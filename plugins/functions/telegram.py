@@ -109,7 +109,7 @@ def download_media(client: Client, file_id: str, file_path: str):
     return result
 
 
-def get_admins(client: Client, cid: int) -> Optional[List[ChatMember]]:
+def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember]]]:
     result = None
     try:
         flood_wait = True
@@ -121,7 +121,7 @@ def get_admins(client: Client, cid: int) -> Optional[List[ChatMember]]:
                 flood_wait = True
                 sleep(e.x + 1)
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
-                return None
+                return False
 
         result = result.chat_members
     except Exception as e:

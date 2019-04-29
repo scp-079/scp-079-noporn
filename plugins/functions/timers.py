@@ -25,6 +25,7 @@ from .. import glovar
 from .etc import code, format_data, general_link, thread
 from .channel import share_data
 from .file import crypt_file, save
+from .group import leave_group
 from .telegram import get_admins, get_group_info, send_document, send_message
 
 # Enable logging
@@ -107,6 +108,17 @@ def update_admins(client: Client) -> bool:
                                   f"群组 ID：{code(gid)}\n"
                                   f"状态：{code(reason_text)}")
                     thread(send_message, (client, glovar.debug_channel_id, debug_text))
+            elif admin_members is False:
+                # Bot is not in the chat, leave automatically without approve
+                leave_group(client, gid)
+                share_data(
+                    client=client,
+                    sender="NOPORN",
+                    receivers=["MANAGE"],
+                    action="leave",
+                    action_type="info",
+                    data=gid
+                )
         except Exception as e:
             logger.warning(f"Update admin in {gid} error: {e}")
 
