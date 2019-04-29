@@ -51,9 +51,10 @@ default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
 default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
     "nsfw": {},
     "score": {
+        "lang": 0,
+        "noflood": 0,
         "noporn": 0,
-        "warn": 0,
-        "total": 0
+        "warn": 0
     }
 }
 

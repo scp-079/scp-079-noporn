@@ -23,7 +23,7 @@ from pyrogram import Client
 
 from .. import glovar
 from .etc import thread
-from .channel import share_bad_user, share_data
+from .channel import share_bad_user, share_data, share_watch_ban_user
 from .file import save
 from .ids import init_user_id
 from .telegram import delete_messages, kick_chat_member
@@ -92,19 +92,18 @@ def delete_message(client: Client, gid: int, mid: int) -> bool:
 def update_score(client: Client, uid: int) -> bool:
     try:
         nsfw_count = len(glovar.user_ids[uid]["nsfw"])
-        nsfw_score = nsfw_count * 0.6
-        warn_score = glovar.user_ids[uid]["score"]["warn"]
-        glovar.user_ids[uid]["score"]["total"] = nsfw_score + warn_score
+        noporn_score = nsfw_count * 0.6
+        glovar.user_ids[uid]["score"]["noporn"] = noporn_score
         save("user_ids")
         share_data(
             client=client,
             sender="NOPORN",
-            receivers=["NOSPAM"],
+            receivers=["LANG", "NOSPAM", "NOFLOOD"],
             action="update",
             action_type="score",
             data={
                 "id": uid,
-                "score": nsfw_score
+                "score": noporn_score
             }
         )
         return True

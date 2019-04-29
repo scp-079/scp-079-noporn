@@ -28,8 +28,8 @@ from ..functions.file import save
 from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, is_nsfw_user
 from ..functions.filters import new_group, nsfw_media, test_group, is_watch_ban, is_watch_delete
 from ..functions.group import get_debug_text, leave_group
-from ..functions.user import add_bad_user, add_nsfw_user, add_watch_ban_user, ban_user, delete_message
-from ..functions.ids import init_group_id
+from ..functions.user import add_bad_user, add_nsfw_user, add_watch_ban_user, ban_user, delete_message, update_score
+from ..functions.ids import init_group_id, init_user_id
 from ..functions.telegram import get_admins, send_message, send_report_message
 
 # Enable logging
@@ -70,6 +70,7 @@ def check(client, message):
                 delete_message(client, gid, mid)
                 add_nsfw_user(gid, uid)
                 declare_message(client, "delete", gid, mid)
+                update_score(client, uid)
                 send_debug(client, message.chat, "delete", uid, mid, result)
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
@@ -166,6 +167,14 @@ def process_data(client, message):
                     elif action_type == "delete":
                         glovar.declared_message_ids["delete"][group_id] = message_id
 
+                elif action == "update":
+                    if action_type == "score":
+                        uid = data["id"]
+                        init_user_id(uid)
+                        score = data["score"]
+                        glovar.user_ids[uid]["score"]["lang"] = score
+                        save("user_ids")
+
             elif sender == "MANAGE":
 
                 if action == "add":
@@ -231,6 +240,16 @@ def process_data(client, message):
                         glovar.declared_message_ids["ban"][group_id] = message_id
                     elif action_type == "delete":
                         glovar.declared_message_ids["delete"][group_id] = message_id
+
+            elif sender == "WARN":
+
+                if action == "update":
+                    if action_type == "score":
+                        uid = data["id"]
+                        init_user_id(uid)
+                        score = data["score"]
+                        glovar.user_ids[uid]["score"]["warn"] = score
+                        save("user_ids")
 
             elif sender == "WATCH":
 
