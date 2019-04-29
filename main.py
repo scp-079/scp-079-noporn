@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# SCP-079-REGEX - Manage the regex patterns
+# SCP-079-NOPORN - Auto delete NSFW media messages
 # Copyright (C) 2019 SCP-079 <https://scp-079.org>
 #
-# This file is part of SCP-079-REGEX.
+# This file is part of SCP-079-NOPORN.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published
