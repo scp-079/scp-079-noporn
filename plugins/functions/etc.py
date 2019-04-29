@@ -136,7 +136,6 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
                 help - Let others bot do something
                 leave - Let bots leave some group or channel
                 remove - Remove id in some list
-                request - Send a request to manage bot
                 update - Update some data
 
         action_type (str):
@@ -165,12 +164,10 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
                     report - Let WARN alert admins
 
                 When action is leave:
-                    group - Leave the group
-                    channel - Leave the channel
+                    approve - Let bot leave a group
+                    info - Send auto left group info to MANAGE
+                    request - Send a leave request to MANAGE
 
-                When action is request:
-                    leave - Leave the group
-                    join - Join the group
 
                 When action is update:
                     download - Download the data, then update
@@ -242,24 +239,18 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
                         }
 
                 Leave:
-                    {
-                        "id": -10012345678,
-                        "reason": "reason here"
-                    }
+                    approve:
+                        -10012345678
 
-                Request:
-                    leave:
+                    info:
+                        -10012345678
+
+                    request:
                         {
                             "group_id": -10012345678,
                             "group_name": "Group Name",
                             "group_link": "link to group",
                             "reason": "user / permissions"
-                        }
-
-                    join:
-                        {
-                            "group_id": -10012345678,
-                            "bots": List[str]
                         }
 
                 Score:
