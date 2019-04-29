@@ -168,7 +168,6 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
                     info - Send auto left group info to MANAGE
                     request - Send a leave request to MANAGE
 
-
                 When action is update:
                     download - Download the data, then update
                     preview - Update a message's preview
