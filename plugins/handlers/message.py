@@ -25,62 +25,64 @@ from .. import glovar
 from ..functions.channel import ask_for_help, declare_message, forward_evidence, send_debug
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, is_nsfw_user
-from ..functions.filters import new_group, nsfw_media, test_group, is_watch_ban, is_watch_delete, is_high_score_user
+from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, is_high_score_user
+from ..functions.filters import is_nsfw_user, is_nsfw_media, is_watch_ban, is_watch_delete, new_group, test_group
 from ..functions.group import get_debug_text, leave_group
 from ..functions.user import add_bad_user, add_nsfw_user, add_watch_ban_user, ban_user, delete_message, update_score
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.telegram import get_admins, send_message, send_report_message
+from ..functions.tests import porn_test
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group & Filters.media
-                   & ~class_c & ~class_d & ~class_e & ~declared_ban_message & nsfw_media)
+                   & ~class_c & ~class_d & ~class_e & ~declared_ban_message)
 def check(client, message):
     try:
-        gid = message.chat.id
-        uid = message.from_user.id
-        mid = message.message_id
-        if is_watch_ban(None, message):
-            result = forward_evidence(client, message, "ban", "敏感追踪")
-            if result:
-                ban_user(client, gid, uid)
-                delete_message(client, gid, mid)
-                declare_message(client, "ban", gid, mid)
-                ask_for_help(client, "ban", gid, uid)
-                add_bad_user(client, uid)
-                send_debug(client, message.chat, "追踪封禁", uid, mid, result)
-        elif is_high_score_user(None, message):
-            result = forward_evidence(client, message, "ban", "全局规则 + 用户评分")
-            if result:
-                ban_user(client, gid, uid)
-                delete_message(client, gid, mid)
-                declare_message(client, "ban", gid, mid)
-                ask_for_help(client, "ban", gid, uid)
-                add_bad_user(client, uid)
-                send_debug(client, message.chat, "评分封禁", uid, mid, result)
-        elif is_watch_delete(None, message):
-            result = forward_evidence(client, message, "delete", "全局规则 + 敏感追踪")
-            if result:
-                delete_message(client, gid, mid)
-                declare_message(client, "delete", gid, mid)
-                ask_for_help(client, "delete", gid, uid)
-                add_watch_ban_user(client, uid)
-                send_debug(client, message.chat, "追踪删除", uid, mid, result)
-        elif is_nsfw_user(None, message):
-            delete_message(client, gid, mid)
-            add_nsfw_user(gid, uid)
-            declare_message(client, "delete", gid, mid)
-        else:
-            result = forward_evidence(client, message, "delete", "全局规则")
-            if result:
+        if is_nsfw_media(client, message):
+            gid = message.chat.id
+            uid = message.from_user.id
+            mid = message.message_id
+            if is_watch_ban(None, message):
+                result = forward_evidence(client, message, "ban", "敏感追踪")
+                if result:
+                    ban_user(client, gid, uid)
+                    delete_message(client, gid, mid)
+                    declare_message(client, "ban", gid, mid)
+                    ask_for_help(client, "ban", gid, uid)
+                    add_bad_user(client, uid)
+                    send_debug(client, message.chat, "追踪封禁", uid, mid, result)
+            elif is_high_score_user(None, message):
+                result = forward_evidence(client, message, "ban", "全局规则 + 用户评分")
+                if result:
+                    ban_user(client, gid, uid)
+                    delete_message(client, gid, mid)
+                    declare_message(client, "ban", gid, mid)
+                    ask_for_help(client, "ban", gid, uid)
+                    add_bad_user(client, uid)
+                    send_debug(client, message.chat, "评分封禁", uid, mid, result)
+            elif is_watch_delete(None, message):
+                result = forward_evidence(client, message, "delete", "全局规则 + 敏感追踪")
+                if result:
+                    delete_message(client, gid, mid)
+                    declare_message(client, "delete", gid, mid)
+                    ask_for_help(client, "delete", gid, uid)
+                    add_watch_ban_user(client, uid)
+                    send_debug(client, message.chat, "追踪删除", uid, mid, result)
+            elif is_nsfw_user(None, message):
                 delete_message(client, gid, mid)
                 add_nsfw_user(gid, uid)
                 declare_message(client, "delete", gid, mid)
-                update_score(client, uid)
-                send_debug(client, message.chat, "delete", uid, mid, result)
+            else:
+                result = forward_evidence(client, message, "delete", "全局规则")
+                if result:
+                    delete_message(client, gid, mid)
+                    add_nsfw_user(gid, uid)
+                    declare_message(client, "delete", gid, mid)
+                    update_score(client, uid)
+                    send_debug(client, message.chat, "delete", uid, mid, result)
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
 
@@ -274,3 +276,12 @@ def process_data(client, message):
 
     except Exception as e:
         logger.warning(f"Process data error: {e}", exc_info=True)
+
+
+@Client.on_message(Filters.incoming & Filters.group & test_group & Filters.media
+                   & ~Filters.command(glovar.all_commands, glovar.prefix))
+def test(client, message):
+    try:
+        porn_test(client, message)
+    except Exception as e:
+        logger.warning(f"Test error: {e}", exc_info=True)

@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from os.path import exists
 from pickle import dump
 from shutil import copyfile
 from threading import Thread
@@ -24,6 +25,7 @@ from threading import Thread
 from pyAesCrypt import decryptFile, encryptFile
 
 from .. import glovar
+from .etc import random_str
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -42,6 +44,14 @@ def crypt_file(operation: str, file_in: str, file_out: str) -> bool:
         logger.warning(f"Crypt file error: {e}", exc_info=True)
 
     return False
+
+
+def get_new_path() -> str:
+    file_path = random_str(8)
+    while exists(f"tmp/{file_path}"):
+        file_path = random_str(8)
+
+    return file_path
 
 
 def save(file: str) -> bool:

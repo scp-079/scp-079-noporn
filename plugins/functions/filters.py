@@ -19,11 +19,11 @@
 import logging
 from time import time
 
-from pyrogram import Filters, Message
+from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from .ids import init_group_id
-from .image import get_image_path, get_porn
+from .image import get_file_id, get_image_path, get_porn
 
 
 # Enable logging
@@ -147,50 +147,6 @@ def is_new_group(_, message: Message) -> bool:
     return False
 
 
-def is_nsfw_media(_, message: Message) -> bool:
-    try:
-        target_user = is_nsfw_user(_, message)
-        if (message.photo or message.sticker or (message.animation and message.animation.thumb)
-                or (message.video and message.video.thumb)
-                or (message.video_note and message.video_note.thumb)
-                or (message.document and (message.document.thumb or target_user))
-                or (message.audio and message.audio.thumb)):
-            if target_user:
-                return True
-
-            if message.photo:
-                file_id = message.photo.sizes[-1].file_id
-            elif message.sticker:
-                file_id = message.sticker.file_id
-            elif message.animation:
-                file_id = message.animation.thumb.file_id
-            elif message.video:
-                file_id = message.video.thumb.file_id
-            elif message.video_note:
-                file_id = message.video_note.thumb.file_id
-            elif message.document:
-                if (message.document.mime_type
-                        and "image" in message.document.mime_type
-                        and "gif" not in message.document.mime_type
-                        and message.document.file_size
-                        and message.document.file_size < 1048576):
-                    file_id = message.document.file_id
-                else:
-                    file_id = message.document.thumb.file_id
-            else:
-                file_id = message.audio.thumb.file_id
-
-            image_path = get_image_path(_, file_id)
-            if image_path:
-                porn = get_porn(image_path)
-                if porn > 0.8:
-                    return True
-    except Exception as e:
-        logger.warning(f"Is NSFW media error: {e}", exc_info=True)
-
-    return False
-
-
 def is_nsfw_user(_, message: Message) -> bool:
     try:
         gid = message.chat.id
@@ -289,11 +245,6 @@ new_group = Filters.create(
     func=is_new_group
 )
 
-nsfw_media = Filters.create(
-    name="NSFW Media",
-    func=is_nsfw_media
-)
-
 nsfw_user = Filters.create(
     name="NSFW User",
     func=is_nsfw_user
@@ -313,3 +264,21 @@ watch_delete = Filters.create(
     name="Watch Delete",
     func=is_watch_delete
 )
+
+
+def is_nsfw_media(client: Client, message: Message) -> bool:
+    try:
+        target_user = is_nsfw_user(None, message)
+        if target_user and message.media:
+            return True
+
+        file_id = get_file_id(message)
+        image_path = get_image_path(client, file_id)
+        if image_path:
+            porn = get_porn(image_path)
+            if porn > 0.8:
+                return True
+    except Exception as e:
+        logger.warning(f"Is NSFW media error: {e}", exc_info=True)
+
+    return False
