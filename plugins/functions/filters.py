@@ -286,6 +286,7 @@ watch_delete = Filters.create(
 
 
 def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
+    # Check if it is NSFW media, accept Message or file id
     try:
         if isinstance(message, Message):
             target_user = is_nsfw_user(None, message)

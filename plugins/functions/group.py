@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 
 def leave_group(client: Client, gid: int) -> bool:
+    # Leave a group, clear it's data
     thread(leave_chat, (client, gid))
     glovar.admin_ids.pop(gid, None)
     glovar.configs.pop(gid, None)
@@ -38,6 +39,7 @@ def leave_group(client: Client, gid: int) -> bool:
 
 
 def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
+    # Get a debug message text prefix, accept int or Chat
     if isinstance(context, int):
         info_para = context
         id_para = context

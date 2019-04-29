@@ -33,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_image_path(client: Client, file_id: str) -> Optional[str]:
+    # Download a image, get it's path on local machine
     final_path = None
     if file_id:
         try:
@@ -48,7 +49,8 @@ def get_image_path(client: Client, file_id: str) -> Optional[str]:
     return final_path
 
 
-def get_porn(path):
+def get_porn(path: str) -> float:
+    # Get porn score
     porn = 0
     try:
         image = Image.open(path)
@@ -63,6 +65,7 @@ def get_porn(path):
 
 
 def get_file_id(message: Message) -> str:
+    # Get media message's file id
     if (message.photo or message.sticker or (message.animation and message.animation.thumb)
             or (message.video and message.video.thumb)
             or (message.video_note and message.video_note.thumb)
