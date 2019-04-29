@@ -31,6 +31,16 @@ logger = logging.getLogger(__name__)
 
 all_commands: List[str] = ["noporn_config"]
 
+declared_message_ids: Dict[str, Dict[int, int]] = {}
+# declared_message_ids = {
+#     "ban": {
+#         -10012345678: 123
+#     },
+#     "delete": {
+#         -10012345678: 124
+#     }
+# }
+
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
     "checker": False,

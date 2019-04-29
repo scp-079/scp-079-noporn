@@ -119,6 +119,14 @@ def process_data(client, message):
 
                         save("bad_ids")
 
+                elif action == "declare":
+                    group_id = data["group_id"]
+                    message_id = data["message_id"]
+                    if action_type == "ban":
+                        glovar.declared_message_ids["ban"][group_id] = message_id
+                    elif action_type == "delete":
+                        glovar.declared_message_ids["delete"][group_id] = message_id
+
             elif sender == "MANAGE":
 
                 if action == "add":
@@ -176,6 +184,14 @@ def process_data(client, message):
                             glovar.bad_ids["users"].add(the_id)
 
                         save("bad_ids")
+
+                elif action == "declare":
+                    group_id = data["group_id"]
+                    message_id = data["message_id"]
+                    if action_type == "ban":
+                        glovar.declared_message_ids["ban"][group_id] = message_id
+                    elif action_type == "delete":
+                        glovar.declared_message_ids["delete"][group_id] = message_id
 
             elif sender == "WATCH":
 
