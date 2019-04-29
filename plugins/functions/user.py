@@ -23,8 +23,10 @@ from pyrogram import Client
 
 from .. import glovar
 from .etc import thread
-from .channel import share_bad_user, share_data, share_watch_ban_user
+from .channel import ask_for_help, declare_message, forward_evidence, send_debug, share_bad_user
+from .channel import share_data, share_watch_ban_user
 from .file import save
+from ..functions.filters import is_high_score_user, is_nsfw_user, is_watch_ban, is_watch_delete
 from .ids import init_user_id
 from .telegram import delete_messages, kick_chat_member
 
@@ -33,6 +35,7 @@ logger = logging.getLogger(__name__)
 
 
 def add_bad_user(client: Client, uid: int) -> bool:
+    # Add a bad user, share it
     try:
         glovar.bad_ids["users"].add(uid)
         save("bad_ids")
@@ -45,6 +48,7 @@ def add_bad_user(client: Client, uid: int) -> bool:
 
 
 def add_nsfw_user(gid: int, uid: int) -> bool:
+    # Add or update a NSFW user status
     try:
         init_user_id(uid)
         now = int(time())
@@ -57,6 +61,7 @@ def add_nsfw_user(gid: int, uid: int) -> bool:
 
 
 def add_watch_ban_user(client: Client, uid: int) -> bool:
+    # Add a watch ban user, share it
     try:
         now = int(time())
         glovar.watch_ids["ban"][uid] = now
@@ -69,6 +74,7 @@ def add_watch_ban_user(client: Client, uid: int) -> bool:
 
 
 def ban_user(client: Client, gid: int, uid: int) -> bool:
+    # Ban a user
     try:
         thread(kick_chat_member, (client, gid, uid))
         return True
@@ -79,6 +85,7 @@ def ban_user(client: Client, gid: int, uid: int) -> bool:
 
 
 def delete_message(client: Client, gid: int, mid: int) -> bool:
+    # Delete a single message
     try:
         mids = [mid]
         thread(delete_messages, (client, gid, mids))
@@ -89,7 +96,65 @@ def delete_message(client: Client, gid: int, mid: int) -> bool:
     return False
 
 
+def get_score(uid: int) -> float:
+    # Get a user's total score
+    score = 0
+    try:
+        user = glovar.user_ids.get(uid, {})
+        if user:
+            score = user["score"]["lang"] + user["score"]["noflood"] + user["score"]["noporn"] + user["score"]["warn"]
+    except Exception as e:
+        logger.warning(f"Get score error: {e}", exc_info=True)
+
+    return score
+
+
+def terminate_nsfw_user(client, message):
+    gid = message.chat.id
+    uid = message.from_user.id
+    mid = message.message_id
+    if is_watch_ban(None, message):
+        result = forward_evidence(client, message, "ban", "敏感追踪")
+        if result:
+            ban_user(client, gid, uid)
+            delete_message(client, gid, mid)
+            declare_message(client, "ban", gid, mid)
+            ask_for_help(client, "ban", gid, uid)
+            add_bad_user(client, uid)
+            send_debug(client, message.chat, "追踪封禁", uid, mid, result)
+    elif is_high_score_user(None, message):
+        result = forward_evidence(client, message, "ban", "全局规则 + 用户评分")
+        if result:
+            ban_user(client, gid, uid)
+            delete_message(client, gid, mid)
+            declare_message(client, "ban", gid, mid)
+            ask_for_help(client, "ban", gid, uid)
+            add_bad_user(client, uid)
+            send_debug(client, message.chat, "评分封禁", uid, mid, result)
+    elif is_watch_delete(None, message):
+        result = forward_evidence(client, message, "delete", "全局规则 + 敏感追踪")
+        if result:
+            delete_message(client, gid, mid)
+            declare_message(client, "delete", gid, mid)
+            ask_for_help(client, "delete", gid, uid)
+            add_watch_ban_user(client, uid)
+            send_debug(client, message.chat, "追踪删除", uid, mid, result)
+    elif is_nsfw_user(None, message):
+        delete_message(client, gid, mid)
+        add_nsfw_user(gid, uid)
+        declare_message(client, "delete", gid, mid)
+    else:
+        result = forward_evidence(client, message, "delete", "全局规则")
+        if result:
+            delete_message(client, gid, mid)
+            add_nsfw_user(gid, uid)
+            declare_message(client, "delete", gid, mid)
+            update_score(client, uid)
+            send_debug(client, message.chat, "delete", uid, mid, result)
+
+
 def update_score(client: Client, uid: int) -> bool:
+    # Update a user's score, share it
     try:
         nsfw_count = len(glovar.user_ids[uid]["nsfw"])
         noporn_score = nsfw_count * 0.6

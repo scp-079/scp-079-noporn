@@ -20,7 +20,7 @@ import logging
 from time import sleep
 from typing import Iterable, List, Optional, Union
 
-from pyrogram import Chat, ChatMember, Client, InlineKeyboardMarkup, Message, ParseMode, User
+from pyrogram import Chat, ChatMember, Client, InlineKeyboardMarkup, Message, Messages, ParseMode, User
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 
 from .. import glovar
@@ -149,6 +149,23 @@ def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
         logger.info('Get group info error: %s', e)
 
     return group_name, group_link
+
+
+def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[Messages]:
+    result = None
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.get_messages(chat_id=cid, message_ids=mids)
+            except FloodWait as e:
+                flood_wait = True
+                sleep(e.x + 1)
+    except Exception as e:
+        logger.warning(f"Get messages error: {e}", exc_info=True)
+
+    return result
 
 
 def get_users(client: Client, uids: Iterable[int]) -> Optional[List[User]]:

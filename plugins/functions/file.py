@@ -32,6 +32,7 @@ logger = logging.getLogger(__name__)
 
 
 def crypt_file(operation: str, file_in: str, file_out: str) -> bool:
+    # Encrypt or decrypt a file
     try:
         buffer = 64 * 1024
         if operation == "decrypt":
@@ -47,6 +48,7 @@ def crypt_file(operation: str, file_in: str, file_out: str) -> bool:
 
 
 def get_new_path() -> str:
+    # Get a new path in tmp directory
     file_path = random_str(8)
     while exists(f"tmp/{file_path}"):
         file_path = random_str(8)
@@ -55,6 +57,7 @@ def get_new_path() -> str:
 
 
 def save(file: str) -> bool:
+    # Save a global variable to a file
     t = Thread(target=save_thread, args=(file,))
     t.start()
 

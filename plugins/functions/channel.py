@@ -34,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def ask_for_help(client: Client, level: str, gid: int, uid: int) -> bool:
+    # Let USER help to delete all message from user, or ban user globally
     try:
         share_data(
             client=client,
@@ -54,6 +55,7 @@ def ask_for_help(client: Client, level: str, gid: int, uid: int) -> bool:
 
 
 def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
+    # Declare a message
     try:
         share_data(
             client=client,
@@ -74,6 +76,7 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
 
 
 def forward_evidence(client: Client, message: Message, level: str, reason: str) -> Optional[Union[bool, int]]:
+    # Forward the message to logging channel as evidence
     result = None
     try:
         uid = message.from_user.id
@@ -102,6 +105,7 @@ def forward_evidence(client: Client, message: Message, level: str, reason: str) 
 
 
 def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, eid: int) -> bool:
+    # Send a message to debug channel
     text = get_debug_text(client, chat)
     text += (f"用户 ID：{user_mention(uid)}\n"
              f"执行操作：{code(action)}\n"
@@ -113,6 +117,7 @@ def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, eid:
 
 
 def share_bad_user(client: Client, uid: int) -> bool:
+    # Share a bad user with other bots
     try:
         share_data(
             client=client,
@@ -133,6 +138,7 @@ def share_bad_user(client: Client, uid: int) -> bool:
 
 
 def share_data(client: Client, sender: str, receivers: List[str], action: str, action_type: str, data=None) -> bool:
+    # Use this function to share data in exchange channel
     try:
         text = format_data(
             sender=sender,
@@ -150,6 +156,7 @@ def share_data(client: Client, sender: str, receivers: List[str], action: str, a
 
 
 def share_watch_ban_user(client: Client, uid: int) -> bool:
+    # Share a watch ban user with other bots
     try:
         share_data(
             client=client,

@@ -22,13 +22,14 @@ from time import time
 from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
 
 from .. import glovar
-from ..functions.channel import ask_for_help, declare_message, forward_evidence, send_debug
+
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, is_high_score_user
-from ..functions.filters import is_nsfw_user, is_nsfw_media, is_watch_ban, is_watch_delete, new_group, test_group
-from ..functions.group import get_debug_text, leave_group
-from ..functions.user import add_bad_user, add_nsfw_user, add_watch_ban_user, ban_user, delete_message, update_score
+from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message
+from ..functions.filters import is_declared_ban_message_id, is_nsfw_user_id
+from ..functions.filters import is_nsfw_media, new_group, test_group
+from ..functions.group import get_debug_text, get_message, leave_group
+from ..functions.user import terminate_nsfw_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.telegram import get_admins, send_message, send_report_message
 from ..functions.tests import porn_test
@@ -42,47 +43,7 @@ logger = logging.getLogger(__name__)
 def check(client, message):
     try:
         if is_nsfw_media(client, message):
-            gid = message.chat.id
-            uid = message.from_user.id
-            mid = message.message_id
-            if is_watch_ban(None, message):
-                result = forward_evidence(client, message, "ban", "敏感追踪")
-                if result:
-                    ban_user(client, gid, uid)
-                    delete_message(client, gid, mid)
-                    declare_message(client, "ban", gid, mid)
-                    ask_for_help(client, "ban", gid, uid)
-                    add_bad_user(client, uid)
-                    send_debug(client, message.chat, "追踪封禁", uid, mid, result)
-            elif is_high_score_user(None, message):
-                result = forward_evidence(client, message, "ban", "全局规则 + 用户评分")
-                if result:
-                    ban_user(client, gid, uid)
-                    delete_message(client, gid, mid)
-                    declare_message(client, "ban", gid, mid)
-                    ask_for_help(client, "ban", gid, uid)
-                    add_bad_user(client, uid)
-                    send_debug(client, message.chat, "评分封禁", uid, mid, result)
-            elif is_watch_delete(None, message):
-                result = forward_evidence(client, message, "delete", "全局规则 + 敏感追踪")
-                if result:
-                    delete_message(client, gid, mid)
-                    declare_message(client, "delete", gid, mid)
-                    ask_for_help(client, "delete", gid, uid)
-                    add_watch_ban_user(client, uid)
-                    send_debug(client, message.chat, "追踪删除", uid, mid, result)
-            elif is_nsfw_user(None, message):
-                delete_message(client, gid, mid)
-                add_nsfw_user(gid, uid)
-                declare_message(client, "delete", gid, mid)
-            else:
-                result = forward_evidence(client, message, "delete", "全局规则")
-                if result:
-                    delete_message(client, gid, mid)
-                    add_nsfw_user(gid, uid)
-                    declare_message(client, "delete", gid, mid)
-                    update_score(client, uid)
-                    send_debug(client, message.chat, "delete", uid, mid, result)
+            terminate_nsfw_user(client, message)
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
 
@@ -251,6 +212,21 @@ def process_data(client, message):
                         glovar.declared_message_ids["ban"][group_id] = message_id
                     elif action_type == "delete":
                         glovar.declared_message_ids["delete"][group_id] = message_id
+
+            elif sender == "USER":
+
+                if action == "update":
+                    if action_type == "preview":
+                        gid = data["group_id"]
+                        uid = data["user_id"]
+                        mid = data["message_id"]
+                        file_id = data["image"]
+                        if not is_declared_ban_message_id(gid, mid):
+                            if not is_nsfw_user_id(gid, uid):
+                                if is_nsfw_media(client, file_id):
+                                    the_message = get_message(client, gid, mid)
+                                    if the_message:
+                                        terminate_nsfw_user(client, the_message)
 
             elif sender == "WARN":
 

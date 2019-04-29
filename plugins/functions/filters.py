@@ -18,6 +18,7 @@
 
 import logging
 from time import time
+from typing import Union
 
 from pyrogram import Client, Filters, Message
 
@@ -90,10 +91,19 @@ def is_declared_ban_message(_, message: Message) -> bool:
     try:
         gid = message.chat.id
         mid = message.message_id
+        return is_declared_ban_message_id(gid, mid)
+    except Exception as e:
+        logger.warning(f"Is declared ban message error: {e}", exc_info=True)
+
+    return False
+
+
+def is_declared_ban_message_id(gid: int, mid: int) -> bool:
+    try:
         if mid == glovar.declared_message_ids["ban"].get(gid):
             return True
     except Exception as e:
-        logger.warning(f"Is declared ban message error: {e}", exc_info=True)
+        logger.warning(f"Is declared ban message id error: {e}", exc_info=True)
 
     return False
 
@@ -151,6 +161,15 @@ def is_nsfw_user(_, message: Message) -> bool:
     try:
         gid = message.chat.id
         uid = message.from_user.id
+        return is_nsfw_user_id(gid, uid)
+    except Exception as e:
+        logger.warning(f"Is NSFW user error: {e}", exc_info=True)
+
+    return False
+
+
+def is_nsfw_user_id(gid: int, uid: int) -> bool:
+    try:
         user = glovar.user_ids.get(uid, {})
         if user:
             status = user["nsfw"].get(gid, 0)
@@ -158,7 +177,7 @@ def is_nsfw_user(_, message: Message) -> bool:
             if now - status < 300:
                 return True
     except Exception as e:
-        logger.warning(f"Is NSFW user error: {e}", exc_info=True)
+        logger.warning(f"Is NSFW user id error: {e}", exc_info=True)
 
     return False
 
@@ -266,13 +285,17 @@ watch_delete = Filters.create(
 )
 
 
-def is_nsfw_media(client: Client, message: Message) -> bool:
+def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
     try:
-        target_user = is_nsfw_user(None, message)
-        if target_user and message.media:
-            return True
+        if isinstance(message, Message):
+            target_user = is_nsfw_user(None, message)
+            if target_user and (message.media or message.entities):
+                return True
 
-        file_id = get_file_id(message)
+            file_id = get_file_id(message)
+        else:
+            file_id = message
+
         image_path = get_image_path(client, file_id)
         if image_path:
             porn = get_porn(image_path)

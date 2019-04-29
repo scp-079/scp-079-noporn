@@ -17,13 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Union
+from typing import Optional, Union
 
-from pyrogram import Chat, Client
+from pyrogram import Chat, Client, Message
 
 from .. import glovar
 from .etc import code, general_link, thread
-from .telegram import get_group_info, leave_chat
+from .telegram import get_group_info, get_messages, leave_chat
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -51,3 +51,17 @@ def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
             f"群组 ID：{code(id_para)}\n")
 
     return text
+
+
+def get_message(client: Client, gid: int, mid: int) -> Optional[Message]:
+    # Get a single message
+    result = None
+    try:
+        mids = [mid]
+        result = get_messages(client, gid, mids)
+        if result:
+            result = result.messages[0]
+    except Exception as e:
+        logger.warning(f"Get message error: {e}", exc_info=True)
+
+    return result
