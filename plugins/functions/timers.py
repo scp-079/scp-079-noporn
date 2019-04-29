@@ -88,8 +88,8 @@ def update_admins(client: Client) -> bool:
                         client=client,
                         sender="NOPORN",
                         receivers=["MANAGE"],
-                        action="request",
-                        action_type="leave",
+                        action="leave",
+                        action_type="request",
                         data={
                             "group_id": gid,
                             "group_name": group_name,
