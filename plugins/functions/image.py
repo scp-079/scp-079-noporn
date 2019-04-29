@@ -40,6 +40,7 @@ def get_image_path(client: Client, file_id: str) -> Optional[str]:
             while exists(f"tmp/{file_path}"):
                 file_path = random_str(8)
 
+            file_path = f"tmp/{file_path}"
             final_path = download_media(client, file_id, file_path)
         except Exception as e:
             logger.warning(f"Get image path error: {e}", exc_info=True)
