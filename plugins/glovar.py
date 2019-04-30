@@ -52,6 +52,7 @@ default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
 default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
     "nsfw": {},
     "score": {
+        "captcha": 0,
         "lang": 0,
         "noflood": 0,
         "noporn": 0,
@@ -165,6 +166,7 @@ prefix: List[str] = []
 prefix_str: str = "/!"
 
 # [bots]
+captcha_id: int = 0
 clean_id: int = 0
 lang_id: int = 0
 noflood_id: int = 0
@@ -198,6 +200,7 @@ try:
     bot_token = config["basic"].get("bot_token", bot_token)
     prefix = list(config["basic"].get("prefix", prefix_str))
     # [bots]
+    captcha_id = int(config["bots"].get("captcha_id", captcha_id))
     clean_id = int(config["bots"].get("clean_id", clean_id))
     lang_id = int(config["bots"].get("lang_id", lang_id))
     noflood_id = int(config["bots"].get("noflood_id", noflood_id))
@@ -226,6 +229,7 @@ except Exception as e:
 # Check
 if (bot_token in {"", "[DATA EXPUNGED]"}
         or prefix == []
+        or captcha_id == 0
         or clean_id == 0
         or lang_id == 0
         or noflood_id == 0
@@ -248,7 +252,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
     logger.critical("No proper settings")
     raise SystemExit('No proper settings')
 
-bot_ids: Set[int] = {clean_id, lang_id, noflood_id, noporn_id, nospam_id, user_id, warn_id}
+bot_ids: Set[int] = {captcha_id, clean_id, lang_id, noflood_id, noporn_id, nospam_id, user_id, warn_id}
 
 # Start program
 copyright_text = (f"SCP-079-NOPORN v{version}, Copyright (C) 2019 SCP-079 <https://scp-079.org>\n"

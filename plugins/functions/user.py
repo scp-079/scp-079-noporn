@@ -102,7 +102,11 @@ def get_score(uid: int) -> float:
     try:
         user = glovar.user_ids.get(uid, {})
         if user:
-            score = user["score"]["lang"] + user["score"]["noflood"] + user["score"]["noporn"] + user["score"]["warn"]
+            score = (user["score"].get("captcha", 0)
+                     + user["score"].get("lang", 0)
+                     + user["score"].get("noflood", 0)
+                     + user["score"].get("noporn", 0)
+                     + user["score"].get("warn", 0))
     except Exception as e:
         logger.warning(f"Get score error: {e}", exc_info=True)
 

@@ -122,7 +122,7 @@ def share_bad_user(client: Client, uid: int) -> bool:
         share_data(
             client=client,
             sender="NOPORN",
-            receivers=["LANG", "NOFLOOD", "NOSPAM", "USER", "WATCH"],
+            receivers=["CAPTCHA", "CLEAN", "LANG", "NOFLOOD", "NOSPAM", "USER", "WATCH"],
             action="add",
             action_type="bad",
             data={
