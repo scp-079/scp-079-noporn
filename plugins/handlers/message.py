@@ -126,6 +126,15 @@ def process_data(client, message):
                         )
                         thread(send_report_message, (180, client, gid, text, None, markup))
 
+            elif sender == "CAPTCHA":
+                if action == "update":
+                    if action_type == "score":
+                        uid = data["id"]
+                        init_user_id(uid)
+                        score = data["score"]
+                        glovar.user_ids[uid]["score"]["captcha"] = score
+                        save("user_ids")
+
             elif sender == "LANG":
 
                 if action == "add":
@@ -138,6 +147,12 @@ def process_data(client, message):
                             glovar.bad_ids["users"].add(the_id)
 
                         save("bad_ids")
+                    elif action_type == "watch":
+                        now = int(time())
+                        if the_type == "ban":
+                            glovar.watch_ids["ban"][the_id] = now
+                        elif the_type == "delete":
+                            glovar.watch_ids["delete"][the_id] = now
 
                 elif action == "declare":
                     group_id = data["group_id"]
@@ -206,6 +221,41 @@ def process_data(client, message):
                         if the_type == "all":
                             glovar.watch_ids["ban"].pop(the_id, 0)
                             glovar.watch_ids["delete"].pop(the_id, 0)
+
+            elif sender == "NOFLOOD":
+
+                if action == "add":
+                    the_id = data["id"]
+                    the_type = data["type"]
+                    if action_type == "bad":
+                        if the_type == "channel":
+                            glovar.bad_ids["channels"].add(the_id)
+                        elif the_type == "user":
+                            glovar.bad_ids["users"].add(the_id)
+
+                        save("bad_ids")
+                    elif action_type == "watch":
+                        now = int(time())
+                        if the_type == "ban":
+                            glovar.watch_ids["ban"][the_id] = now
+                        elif the_type == "delete":
+                            glovar.watch_ids["delete"][the_id] = now
+
+                elif action == "declare":
+                    group_id = data["group_id"]
+                    message_id = data["message_id"]
+                    if action_type == "ban":
+                        glovar.declared_message_ids["ban"][group_id] = message_id
+                    elif action_type == "delete":
+                        glovar.declared_message_ids["delete"][group_id] = message_id
+
+                elif action == "update":
+                    if action_type == "score":
+                        uid = data["id"]
+                        init_user_id(uid)
+                        score = data["score"]
+                        glovar.user_ids[uid]["score"]["noflood"] = score
+                        save("user_ids")
 
             elif sender == "NOSPAM":
 
