@@ -99,7 +99,17 @@ def process_data(client, message):
         # but this is to ensure that the permissions are clear,
         # so it is intentionally written like this
         if "NOPORN" in receivers:
-            if sender == "CONFIG":
+            if sender == "CLEAN":
+
+                if action == "declare":
+                    group_id = data["group_id"]
+                    message_id = data["message_id"]
+                    if action_type == "ban":
+                        glovar.declared_message_ids["ban"][group_id] = message_id
+                    elif action_type == "delete":
+                        glovar.declared_message_ids["delete"][group_id] = message_id
+
+            elif sender == "CONFIG":
 
                 if action == "config":
                     if action_type == "commit":
@@ -127,6 +137,7 @@ def process_data(client, message):
                         thread(send_report_message, (180, client, gid, text, None, markup))
 
             elif sender == "CAPTCHA":
+
                 if action == "update":
                     if action_type == "score":
                         uid = data["id"]
@@ -141,12 +152,9 @@ def process_data(client, message):
                     the_id = data["id"]
                     the_type = data["type"]
                     if action_type == "bad":
-                        if the_type == "channel":
-                            glovar.bad_ids["channels"].add(the_id)
-                        elif the_type == "user":
+                        if the_type == "user":
                             glovar.bad_ids["users"].add(the_id)
-
-                        save("bad_ids")
+                            save("bad_ids")
                     elif action_type == "watch":
                         now = int(time())
                         if the_type == "ban":
@@ -175,7 +183,11 @@ def process_data(client, message):
                 if action == "add":
                     the_id = data["id"]
                     the_type = data["type"]
-                    if action_type == "except":
+                    if action_type == "bad":
+                        if the_type == "channel":
+                            glovar.bad_ids["channels"].add(the_id)
+                            save("bad_ids")
+                    elif action_type == "except":
                         if the_type == "channel":
                             glovar.except_ids["channels"].add(the_id)
                         elif the_type == "user":
@@ -228,12 +240,9 @@ def process_data(client, message):
                     the_id = data["id"]
                     the_type = data["type"]
                     if action_type == "bad":
-                        if the_type == "channel":
-                            glovar.bad_ids["channels"].add(the_id)
-                        elif the_type == "user":
+                        if the_type == "user":
                             glovar.bad_ids["users"].add(the_id)
-
-                        save("bad_ids")
+                            save("bad_ids")
                     elif action_type == "watch":
                         now = int(time())
                         if the_type == "ban":
@@ -263,12 +272,9 @@ def process_data(client, message):
                     the_id = data["id"]
                     the_type = data["type"]
                     if action_type == "bad":
-                        if the_type == "channel":
-                            glovar.bad_ids["channels"].add(the_id)
-                        elif the_type == "user":
+                        if the_type == "user":
                             glovar.bad_ids["users"].add(the_id)
-
-                        save("bad_ids")
+                            save("bad_ids")
 
                 elif action == "declare":
                     group_id = data["group_id"]
