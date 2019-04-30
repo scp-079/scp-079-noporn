@@ -12,6 +12,7 @@ See [this article](https://scp-079.org/noporn/).
 - [x] Update user's score
 - [x] Watch ban or ban by checking user's score and status
 - [x] Managed by SCP-079-CONFIG
+- [x] Add recheck feature
 
 ## Requirements
 
