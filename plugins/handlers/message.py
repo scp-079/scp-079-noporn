@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from copy import deepcopy
 from time import time
 
 from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
@@ -186,6 +187,12 @@ def process_data(client, message):
                             glovar.bad_ids["channels"].discard(the_id)
                         elif the_type == "user":
                             glovar.bad_ids["users"].discard(the_id)
+                            glovar.watch_ids["ban"].pop(the_id, {})
+                            glovar.watch_ids["delete"].pop(the_id, {})
+                            if glovar.user_ids.get(the_id):
+                                glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
+
+                            save("user_ids")
 
                         save("bad_ids")
                     elif action_type == "except":
