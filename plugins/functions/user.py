@@ -157,7 +157,7 @@ def update_score(client: Client, uid: int) -> bool:
         share_data(
             client=client,
             sender="NOPORN",
-            receivers=["LANG", "NOSPAM", "NOFLOOD"],
+            receivers=["CAPTCHA", "LANG", "NOSPAM", "NOFLOOD"],
             action="update",
             action_type="score",
             data={
