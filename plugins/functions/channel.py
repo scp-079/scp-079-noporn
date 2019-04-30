@@ -122,7 +122,7 @@ def share_bad_user(client: Client, uid: int) -> bool:
         share_data(
             client=client,
             sender="NOPORN",
-            receivers=["CAPTCHA", "CLEAN", "LANG", "NOFLOOD", "NOSPAM", "USER", "WATCH"],
+            receivers=["CAPTCHA", "CLEAN", "LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM", "USER", "WATCH"],
             action="add",
             action_type="bad",
             data={
@@ -161,7 +161,7 @@ def share_watch_ban_user(client: Client, uid: int) -> bool:
         share_data(
             client=client,
             sender="NOPORN",
-            receivers=["CAPTCHA", "LANG", "NOFLOOD", "NOSPAM"],
+            receivers=["CAPTCHA", "LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM"],
             action="add",
             action_type="watch",
             data={
