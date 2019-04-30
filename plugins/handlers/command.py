@@ -107,7 +107,7 @@ def noporn_config(client, message):
                         thread(delete_message, (client, gid, mid))
                         return
                     elif command_type == "default":
-                        if not new_config["default"]:
+                        if not new_config.get("default"):
                             new_config = deepcopy(glovar.default_config)
                     else:
                         command_context = get_command_context(message)
