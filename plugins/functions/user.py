@@ -95,6 +95,7 @@ def get_score(uid: int) -> float:
                      + user["score"].get("lang", 0)
                      + user["score"].get("noflood", 0)
                      + user["score"].get("noporn", 0)
+                     + user["score"].get("noporn-recheck", 0)
                      + user["score"].get("warn", 0))
     except Exception as e:
         logger.warning(f"Get score error: {e}", exc_info=True)
