@@ -118,7 +118,7 @@ def process_data(client, message):
                                 ]
                             ]
                         )
-                        thread(send_report_message, (120, client, gid, text, None, markup))
+                        thread(send_report_message, (180, client, gid, text, None, markup))
 
             elif sender == "LANG":
 
