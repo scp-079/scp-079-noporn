@@ -27,8 +27,8 @@ from .. import glovar
 from ..functions.etc import bold, code, get_command_context, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import is_class_c, test_group
-from ..functions.group import get_debug_text
-from ..functions.telegram import delete_messages, get_group_info, send_message, send_report_message
+from ..functions.group import delete_message, get_debug_text
+from ..functions.telegram import get_group_info, send_message, send_report_message
 from ..functions.user import share_data
 
 # Enable logging
@@ -73,8 +73,7 @@ def config(client, message):
                              f"操作：{'创建设置会话'}")
                     thread(send_message, (client, glovar.debug_channel_id, text))
 
-        mids = [mid]
-        thread(delete_messages, (client, gid, mids))
+        thread(delete_message, (client, gid, mid))
     except Exception as e:
         logger.warning(f"Config error: {e}", exc_info=True)
 
@@ -105,8 +104,7 @@ def noporn_config(client, message):
                                  f"过滤频道：{code((lambda x: '启用' if x else '禁用')(new_config.get('channel')))}\n"
                                  f"媒体复查：{code((lambda x: '启用' if x else '禁用')(new_config.get('recheck')))}")
                         thread(send_report_message, (15, client, gid, text))
-                        mids = [mid]
-                        thread(delete_messages, (client, gid, mids))
+                        thread(delete_message, (client, gid, mid))
                         return
                     elif command_type == "default":
                         if not new_config["default"]:
@@ -154,8 +152,7 @@ def noporn_config(client, message):
                      f"状态：{code(reason)}")
             thread(send_report_message, ((lambda x: 10 if x else 5)(success), client, gid, text))
 
-        mids = [mid]
-        thread(delete_messages, (client, gid, mids))
+        thread(delete_message, (client, gid, mid))
     except Exception as e:
         logger.warning(f"Config error: {e}", exc_info=True)
 

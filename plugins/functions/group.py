@@ -23,19 +23,22 @@ from pyrogram import Chat, Client, Message
 
 from .. import glovar
 from .etc import code, general_link, thread
-from .telegram import get_group_info, get_messages, leave_chat
+from .telegram import delete_messages, get_group_info, get_messages, leave_chat
 
 # Enable logging
 logger = logging.getLogger(__name__)
 
 
-def leave_group(client: Client, gid: int) -> bool:
-    # Leave a group, clear it's data
-    thread(leave_chat, (client, gid))
-    glovar.admin_ids.pop(gid, None)
-    glovar.configs.pop(gid, None)
+def delete_message(client: Client, gid: int, mid: int) -> bool:
+    # Delete a single message
+    try:
+        mids = [mid]
+        thread(delete_messages, (client, gid, mids))
+        return True
+    except Exception as e:
+        logger.warning(f"Delete message error: {e}", exc_info=True)
 
-    return True
+    return False
 
 
 def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
@@ -67,3 +70,12 @@ def get_message(client: Client, gid: int, mid: int) -> Optional[Message]:
         logger.warning(f"Get message error: {e}", exc_info=True)
 
     return result
+
+
+def leave_group(client: Client, gid: int) -> bool:
+    # Leave a group, clear it's data
+    thread(leave_chat, (client, gid))
+    glovar.admin_ids.pop(gid, None)
+    glovar.configs.pop(gid, None)
+
+    return True

@@ -26,9 +26,10 @@ from .etc import thread
 from .channel import ask_for_help, declare_message, forward_evidence, send_debug, share_bad_user
 from .channel import share_data, share_watch_ban_user
 from .file import save
+from .group import delete_message
 from ..functions.filters import is_high_score_user, is_nsfw_user, is_watch_ban, is_watch_delete
 from .ids import init_user_id
-from .telegram import delete_messages, kick_chat_member
+from .telegram import kick_chat_member
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -80,18 +81,6 @@ def ban_user(client: Client, gid: int, uid: int) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Ban user error: {e}", exc_info=True)
-
-    return False
-
-
-def delete_message(client: Client, gid: int, mid: int) -> bool:
-    # Delete a single message
-    try:
-        mids = [mid]
-        thread(delete_messages, (client, gid, mids))
-        return True
-    except Exception as e:
-        logger.warning(f"Delete message error: {e}", exc_info=True)
 
     return False
 
