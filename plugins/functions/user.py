@@ -117,7 +117,7 @@ def terminate_nsfw_user(client, message):
             add_bad_user(client, uid)
             send_debug(client, message.chat, "追踪封禁", uid, mid, result)
     elif is_high_score_user(None, message):
-        result = forward_evidence(client, message, "ban", f"全局规则 + 用户评分 {get_score(uid)}")
+        result = forward_evidence(client, message, "ban", f"用户评分 {get_score(uid)}")
         if result:
             ban_user(client, gid, uid)
             delete_message(client, gid, mid)
@@ -126,7 +126,7 @@ def terminate_nsfw_user(client, message):
             add_bad_user(client, uid)
             send_debug(client, message.chat, "评分封禁", uid, mid, result)
     elif is_watch_delete(None, message):
-        result = forward_evidence(client, message, "delete", "全局规则 + 敏感追踪")
+        result = forward_evidence(client, message, "delete", "敏感追踪")
         if result:
             delete_message(client, gid, mid)
             declare_message(client, "delete", gid, mid)
