@@ -132,6 +132,8 @@ def terminate_nsfw_user(client, message):
             declare_message(client, "delete", gid, mid)
             ask_for_help(client, "delete", gid, uid)
             add_watch_ban_user(client, uid)
+            add_nsfw_user(gid, uid)
+            update_score(client, uid)
             send_debug(client, message.chat, "追踪删除", uid, mid, result)
     elif is_nsfw_user(None, message):
         delete_message(client, gid, mid)
