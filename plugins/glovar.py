@@ -62,6 +62,8 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
 
 image_lock = Lock()
 
+left_group_ids: Set[int] = set()
+
 version: str = "0.0.6"
 
 watch_ids: Dict[str, Dict[int, int]] = {
