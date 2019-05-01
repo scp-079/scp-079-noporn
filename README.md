@@ -24,7 +24,7 @@ See [this article](https://scp-079.org/noporn/).
 
 - plugins
     - functions
-        - `channel.py` : Functions about exchange channel
+        - `channel.py` : Send messages to channel
         - `etc.py` : Miscellaneous
         - `file.py` : Save files
         - `filters.py` : Some filters
