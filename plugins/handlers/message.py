@@ -99,7 +99,17 @@ def process_data(client, message):
         # but this is to ensure that the permissions are clear,
         # so it is intentionally written like this
         if "NOPORN" in receivers:
-            if sender == "CLEAN":
+            if sender == "CAPTCHA":
+
+                if action == "update":
+                    if action_type == "score":
+                        uid = data["id"]
+                        init_user_id(uid)
+                        score = data["score"]
+                        glovar.user_ids[uid]["score"]["captcha"] = score
+                        save("user_ids")
+
+            elif sender == "CLEAN":
 
                 if action == "declare":
                     group_id = data["group_id"]
@@ -135,16 +145,6 @@ def process_data(client, message):
                             ]
                         )
                         thread(send_report_message, (180, client, gid, text, None, markup))
-
-            elif sender == "CAPTCHA":
-
-                if action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["captcha"] = score
-                        save("user_ids")
 
             elif sender == "LANG":
 
