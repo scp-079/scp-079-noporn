@@ -84,7 +84,7 @@ def init_group(client, message):
         logger.warning(f"Init group error: {e}", exc_info=True)
 
 
-@Client.on_message(Filters.incoming & Filters.channel & exchange_channel
+@Client.on_message(Filters.channel & exchange_channel
                    & ~Filters.command(glovar.all_commands, glovar.prefix))
 def process_data(client, message):
     try:

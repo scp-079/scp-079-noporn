@@ -59,7 +59,7 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
     try:
         share_data(
             client=client,
-            receivers=["LANG", "NOFLOOD", "NOSPAM", "USER"],
+            receivers=["LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM", "USER"],
             action="declare",
             action_type=level,
             data={
