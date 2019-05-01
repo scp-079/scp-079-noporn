@@ -67,36 +67,6 @@ def delay(secs: int, target: Callable, args: list) -> bool:
     return True
 
 
-def get_command_context(message: Message) -> str:
-    command_list = get_text(message).split(" ")
-    if len(list(filter(None, command_list))) > 2:
-        i = 1
-        command_type = command_list[i]
-        while command_type == "" and i < len(command_list):
-            i += 1
-            command_type = command_list[i]
-
-        command_context = get_text(message)[1 + len(command_list[0]) + i + len(command_list[1]):].strip()
-    else:
-        command_context = ""
-
-    return command_context
-
-
-def get_text(message: Message) -> Optional[str]:
-    text = None
-    if message.text:
-        text = message.text
-    elif message.caption:
-        text = message.caption
-
-    return text
-
-
-def general_link(text: Union[int, str], link: str) -> str:
-    return f"[{text}]({link})"
-
-
 def format_data(sender: str, receivers: List[str], action: str, action_type: str, data=None) -> str:
     """Make a unified format string for data exchange.
 
@@ -308,6 +278,36 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
     }
 
     return code_block(dumps(data, indent=4))
+
+
+def get_command_context(message: Message) -> str:
+    command_list = get_text(message).split(" ")
+    if len(list(filter(None, command_list))) > 2:
+        i = 1
+        command_type = command_list[i]
+        while command_type == "" and i < len(command_list):
+            i += 1
+            command_type = command_list[i]
+
+        command_context = get_text(message)[1 + len(command_list[0]) + i + len(command_list[1]):].strip()
+    else:
+        command_context = ""
+
+    return command_context
+
+
+def get_text(message: Message) -> Optional[str]:
+    text = None
+    if message.text:
+        text = message.text
+    elif message.caption:
+        text = message.caption
+
+    return text
+
+
+def general_link(text: Union[int, str], link: str) -> str:
+    return f"[{text}]({link})"
 
 
 def message_link(cid: int, mid: int) -> str:
