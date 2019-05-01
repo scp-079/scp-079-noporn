@@ -19,34 +19,13 @@
 import logging
 from os import remove
 from os.path import exists
-from typing import Optional
 
 from PIL import Image
-from pyrogram import Client, Message
+from pyrogram import Message
 from nsfw import classify
-
-from .etc import random_str
-from .telegram import download_media
 
 # Enable logging
 logger = logging.getLogger(__name__)
-
-
-def get_image_path(client: Client, file_id: str) -> Optional[str]:
-    # Download a image, get it's path on local machine
-    final_path = None
-    if file_id:
-        try:
-            file_path = random_str(8)
-            while exists(f"tmp/{file_path}"):
-                file_path = random_str(8)
-
-            file_path = f"tmp/{file_path}"
-            final_path = download_media(client, file_id, file_path)
-        except Exception as e:
-            logger.warning(f"Get image path error: {e}", exc_info=True)
-
-    return final_path
 
 
 def get_porn(path: str) -> float:

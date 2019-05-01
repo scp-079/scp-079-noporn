@@ -25,8 +25,9 @@ from pyrogram.errors import FloodWait
 
 from .. import glovar
 from .etc import code, general_link, format_data, thread, user_mention
+from .file import crypt_file
 from .group import get_debug_text
-from .telegram import send_message
+from .telegram import send_document, send_message
 
 
 # Enable logging
@@ -134,17 +135,31 @@ def share_bad_user(client: Client, uid: int) -> bool:
     return False
 
 
-def share_data(client: Client, receivers: List[str], action: str, action_type: str, data=None) -> bool:
+def share_data(client: Client, receivers: List[str], action: str, action_type: str, data: Union[dict, int, str],
+               file: str = None) -> bool:
     # Use this function to share data in exchange channel
     try:
-        text = format_data(
-            sender="NOPORN",
-            receivers=receivers,
-            action=action,
-            action_type=action_type,
-            data=data
-        )
-        thread(send_message, (client, glovar.exchange_channel_id, text))
+        sender = "NOPORN"
+        if file:
+            text = format_data(
+                sender=sender,
+                receivers=receivers,
+                action=action,
+                action_type=action_type,
+                data=data
+            )
+            crypt_file("encrypt", f"data/{file}", f"tmp/{file}")
+            thread(send_document, (client, glovar.exchange_channel_id, f"tmp/{file}", text))
+        else:
+            text = format_data(
+                sender=sender,
+                receivers=receivers,
+                action=action,
+                action_type=action_type,
+                data=data
+            )
+            thread(send_message, (client, glovar.exchange_channel_id, text))
+
         return True
     except Exception as e:
         logger.warning(f"Share data error: {e}", exc_info=True)

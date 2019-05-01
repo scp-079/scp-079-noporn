@@ -23,8 +23,9 @@ from typing import Union
 from pyrogram import Client, Filters, Message
 
 from .. import glovar
+from .file import get_downloaded_path
 from .ids import init_group_id
-from .image import get_file_id, get_image_path, get_porn
+from .image import get_file_id, get_porn
 
 
 # Enable logging
@@ -298,7 +299,7 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
             else:
                 file_id = message
 
-            image_path = get_image_path(client, file_id)
+            image_path = get_downloaded_path(client, file_id)
             if image_path:
                 porn = get_porn(image_path)
                 if porn > 0.8:

@@ -65,7 +65,7 @@ image_lock = Lock()
 
 left_group_ids: Set[int] = set()
 
-version: str = "0.0.8"
+version: str = "0.0.9"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},

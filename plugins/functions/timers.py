@@ -22,11 +22,11 @@ from time import sleep
 from pyrogram import Client
 
 from .. import glovar
-from .etc import code, format_data, general_link, thread
+from .etc import code, general_link, thread
 from .channel import share_data
-from .file import crypt_file, save
+from .file import save
 from .group import leave_group
-from .telegram import get_admins, get_group_info, send_document, send_message
+from .telegram import get_admins, get_group_info, send_message
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -37,15 +37,14 @@ def backup_files(client: Client) -> bool:
     try:
         for file in glovar.file_list:
             try:
-                exchange_text = format_data(
-                    sender="NOPORN",
+                share_data(
+                    client=client,
                     receivers=["BACKUP"],
                     action="backup",
                     action_type="pickle",
-                    data=file
+                    data=file,
+                    file=file
                 )
-                crypt_file("encrypt", f"data/{file}", f"tmp/{file}")
-                thread(send_document, (client, glovar.exchange_channel_id, f"tmp/{file}", exchange_text))
                 sleep(5)
             except Exception as e:
                 logger.warning(f"Send backup file {file} error: {e}", exc_info=True)

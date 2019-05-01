@@ -21,11 +21,14 @@ from os.path import exists
 from pickle import dump
 from shutil import copyfile
 from threading import Thread
+from typing import Optional
 
 from pyAesCrypt import decryptFile, encryptFile
+from pyrogram import Client
 
 from .. import glovar
 from .etc import random_str
+from .telegram import download_media
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -47,13 +50,26 @@ def crypt_file(operation: str, file_in: str, file_out: str) -> bool:
     return False
 
 
+def get_downloaded_path(client: Client, file_id: str) -> Optional[str]:
+    # Download file, get it's path on local machine
+    final_path = None
+    if file_id:
+        try:
+            file_path = get_new_path()
+            final_path = download_media(client, file_id, file_path)
+        except Exception as e:
+            logger.warning(f"Get image path error: {e}", exc_info=True)
+
+    return final_path
+
+
 def get_new_path() -> str:
     # Get a new path in tmp directory
     file_path = random_str(8)
     while exists(f"tmp/{file_path}"):
         file_path = random_str(8)
 
-    return file_path
+    return f"tmp/{file_path}"
 
 
 def save(file: str) -> bool:
