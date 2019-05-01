@@ -87,7 +87,6 @@ def update_admins(client: Client) -> bool:
                     group_name, group_link = get_group_info(client, gid)
                     share_data(
                         client=client,
-                        sender="NOPORN",
                         receivers=["MANAGE"],
                         action="leave",
                         action_type="request",
@@ -113,7 +112,6 @@ def update_admins(client: Client) -> bool:
                 leave_group(client, gid)
                 share_data(
                     client=client,
-                    sender="NOPORN",
                     receivers=["MANAGE"],
                     action="leave",
                     action_type="info",
@@ -130,7 +128,6 @@ def update_status(client: Client) -> bool:
     try:
         share_data(
             client=client,
-            sender="NOPORN",
             receivers=["BACKUP"],
             action="update",
             action_type="status",

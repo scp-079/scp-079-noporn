@@ -38,7 +38,6 @@ def ask_for_help(client: Client, level: str, gid: int, uid: int) -> bool:
     try:
         share_data(
             client=client,
-            sender="NOPORN",
             receivers=["USER"],
             action="help",
             action_type=level,
@@ -59,7 +58,6 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
     try:
         share_data(
             client=client,
-            sender="NOPORN",
             receivers=["LANG", "NOFLOOD", "NOSPAM", "USER"],
             action="declare",
             action_type=level,
@@ -121,7 +119,6 @@ def share_bad_user(client: Client, uid: int) -> bool:
     try:
         share_data(
             client=client,
-            sender="NOPORN",
             receivers=["CAPTCHA", "LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM", "USER", "WATCH"],
             action="add",
             action_type="bad",
@@ -137,11 +134,11 @@ def share_bad_user(client: Client, uid: int) -> bool:
     return False
 
 
-def share_data(client: Client, sender: str, receivers: List[str], action: str, action_type: str, data=None) -> bool:
+def share_data(client: Client, receivers: List[str], action: str, action_type: str, data=None) -> bool:
     # Use this function to share data in exchange channel
     try:
         text = format_data(
-            sender=sender,
+            sender="NOPORN",
             receivers=receivers,
             action=action,
             action_type=action_type,
@@ -160,7 +157,6 @@ def share_watch_ban_user(client: Client, uid: int) -> bool:
     try:
         share_data(
             client=client,
-            sender="NOPORN",
             receivers=["CAPTCHA", "LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM"],
             action="add",
             action_type="watch",
