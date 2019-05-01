@@ -1,4 +1,5 @@
 data/*
+tmp/*
 .idea/
 log
 config.ini
