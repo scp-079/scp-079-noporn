@@ -147,7 +147,7 @@ def terminate_nsfw_user(client, message):
             add_nsfw_user(gid, uid)
             declare_message(client, "delete", gid, mid)
             update_score(client, uid)
-            send_debug(client, message.chat, "delete", uid, mid, result)
+            send_debug(client, message.chat, "自动删除", uid, mid, result)
 
 
 def update_score(client: Client, uid: int) -> bool:
