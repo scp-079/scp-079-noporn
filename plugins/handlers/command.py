@@ -72,7 +72,7 @@ def config(client, message):
                     # Send a report message to debug channel
                     text = get_debug_text(client, message.chat)
                     text += (f"群管理：{user_mention(message.from_user.id)}\n"
-                             f"操作：{'创建设置会话'}")
+                             f"操作：{code('创建设置会话')}")
                     thread(send_message, (client, glovar.debug_channel_id, text))
 
         thread(delete_message, (client, gid, mid))
