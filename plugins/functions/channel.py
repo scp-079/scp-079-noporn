@@ -75,7 +75,7 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
     return False
 
 
-def forward_evidence(client: Client, message: Message, level: str, reason: str) -> Optional[Union[bool, int]]:
+def forward_evidence(client: Client, message: Message, level: str, rule: str) -> Optional[Union[bool, int]]:
     # Forward the message to logging channel as evidence
     result = None
     try:
@@ -96,7 +96,7 @@ def forward_evidence(client: Client, message: Message, level: str, reason: str) 
         text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
                 f"用户 ID：{code(uid)}\n"
                 f"操作等级：{code((lambda x: '自动封禁' if x == 'ban' else '自动删除')(level))}\n"
-                f"规则：{code(reason)}")
+                f"规则：{code(rule)}")
         thread(send_message, (client, glovar.logging_channel_id, text, result))
     except Exception as e:
         logger.warning(f"Forward evidence error: {e}", exc_info=True)

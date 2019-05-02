@@ -28,7 +28,7 @@ from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message
 from ..functions.filters import is_declared_ban_message_id, is_nsfw_user_id
-from ..functions.filters import is_nsfw_media, new_group, test_group
+from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
 from ..functions.group import get_debug_text, get_message, leave_group
 from ..functions.user import terminate_nsfw_user
 from ..functions.ids import init_group_id, init_user_id
@@ -43,8 +43,11 @@ logger = logging.getLogger(__name__)
                    & ~class_c & ~class_d & ~class_e & ~declared_ban_message)
 def check(client, message):
     try:
-        if is_nsfw_media(client, message):
-            terminate_nsfw_user(client, message)
+        gid = message.chat.id
+        if glovar.configs[gid].get("channel") and is_restricted_channel(message):
+            terminate_nsfw_user(client, message, "channel")
+        elif is_nsfw_media(client, message):
+            terminate_nsfw_user(client, message, "media")
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
 
@@ -342,7 +345,7 @@ def process_data(client, message):
                                         if is_nsfw_media(client, file_id):
                                             the_message = get_message(client, gid, mid)
                                             if the_message:
-                                                terminate_nsfw_user(client, the_message)
+                                                terminate_nsfw_user(client, the_message, "media")
 
             elif sender == "WARN":
 

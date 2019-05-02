@@ -307,3 +307,15 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
         logger.warning(f"Is NSFW media error: {e}", exc_info=True)
 
     return False
+
+
+def is_restricted_channel(message: Message) -> bool:
+    # Check if the message is forwarded form restricted channel
+    try:
+        if message.forward_from_chat:
+            if message.forward_from_chat.restriction_reason:
+                return True
+    except Exception as e:
+        logger.warning(f"Is restricted channel error: {e}", exc_info=True)
+
+    return False
