@@ -22,7 +22,6 @@ from configparser import RawConfigParser
 from os import mkdir
 from os.path import exists
 from shutil import rmtree
-from threading import Lock
 from typing import Dict, List, Set, Union
 
 # Enable logging
@@ -63,8 +62,6 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
         "warn": 0
     }
 }
-
-image_lock = Lock()
 
 left_group_ids: Set[int] = set()
 

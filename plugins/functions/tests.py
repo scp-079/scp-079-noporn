@@ -34,17 +34,13 @@ logger = logging.getLogger(__name__)
 def porn_test(client: Client, message: Message) -> bool:
     # Test image porn score in the test group
     try:
-        if glovar.image_lock.acquire():
-            try:
-                file_id = get_file_id(message)
-                image_path = get_downloaded_path(client, file_id)
-                if image_path:
-                    porn = get_porn(image_path)
-                    text = f"NSFW 得分：{code(porn)}"
-                    thread(send_message, (client, glovar.test_group_id, text, message.message_id))
-                return True
-            finally:
-                glovar.image_lock.release()
+        file_id = get_file_id(message)
+        image_path = get_downloaded_path(client, file_id)
+        if image_path:
+            porn = get_porn(image_path)
+            text = f"NSFW 得分：{code(porn)}"
+            thread(send_message, (client, glovar.test_group_id, text, message.message_id))
+        return True
     except Exception as e:
         logger.warning(f"Porn test error: {e}", exc_info=True)
 
