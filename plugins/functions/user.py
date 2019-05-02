@@ -146,7 +146,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
             declare_message(client, "delete", gid, mid)
         else:
             if the_type == "channel":
-                rule = "群组自定义"
+                rule = "受限频道"
             else:
                 rule = "全局规则"
 
