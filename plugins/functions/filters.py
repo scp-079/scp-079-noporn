@@ -79,8 +79,8 @@ def is_declared_message(_, message: Message) -> bool:
     try:
         gid = message.chat.id
         mid = message.message_id
-        if (mid == glovar.declared_message_ids["ban"].get(gid)
-                or mid == glovar.declared_message_ids["delete"].get(gid)):
+        if (mid in glovar.declared_message_ids["ban"].get(gid, set())
+                or mid in glovar.declared_message_ids["delete"].get(gid, set())):
             return True
     except Exception as e:
         logger.warning(f"Is declared message error: {e}", exc_info=True)
@@ -101,7 +101,7 @@ def is_declared_ban_message(_, message: Message) -> bool:
 
 def is_declared_ban_message_id(gid: int, mid: int) -> bool:
     try:
-        if mid == glovar.declared_message_ids["ban"].get(gid):
+        if mid in glovar.declared_message_ids["ban"].get(gid, set()):
             return True
     except Exception as e:
         logger.warning(f"Is declared ban message id error: {e}", exc_info=True)
@@ -113,7 +113,7 @@ def is_declared_delete_message(_, message: Message) -> bool:
     try:
         gid = message.chat.id
         mid = message.message_id
-        if mid == glovar.declared_message_ids["delete"].get(gid):
+        if mid in glovar.declared_message_ids["delete"].get(gid, set()):
             return True
     except Exception as e:
         logger.warning(f"Is declared delete message error: {e}", exc_info=True)

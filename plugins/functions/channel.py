@@ -57,6 +57,7 @@ def ask_for_help(client: Client, level: str, gid: int, uid: int) -> bool:
 def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
     # Declare a message
     try:
+        glovar.declared_message_ids[level][gid].add(mid)
         share_data(
             client=client,
             receivers=["LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM", "USER"],

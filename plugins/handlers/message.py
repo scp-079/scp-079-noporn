@@ -114,10 +114,12 @@ def process_data(client, message):
                 if action == "declare":
                     group_id = data["group_id"]
                     message_id = data["message_id"]
-                    if action_type == "ban":
-                        glovar.declared_message_ids["ban"][group_id] = message_id
-                    elif action_type == "delete":
-                        glovar.declared_message_ids["delete"][group_id] = message_id
+                    if glovar.configs.get(group_id):
+                        init_group_id(group_id)
+                        if action_type == "ban":
+                            glovar.declared_message_ids["ban"][group_id].add(message_id)
+                        elif action_type == "delete":
+                            glovar.declared_message_ids["delete"][group_id].add(message_id)
 
             elif sender == "CONFIG":
 
@@ -165,10 +167,12 @@ def process_data(client, message):
                 elif action == "declare":
                     group_id = data["group_id"]
                     message_id = data["message_id"]
-                    if action_type == "ban":
-                        glovar.declared_message_ids["ban"][group_id] = message_id
-                    elif action_type == "delete":
-                        glovar.declared_message_ids["delete"][group_id] = message_id
+                    if glovar.configs.get(group_id):
+                        init_group_id(group_id)
+                        if action_type == "ban":
+                            glovar.declared_message_ids["ban"][group_id].add(message_id)
+                        elif action_type == "delete":
+                            glovar.declared_message_ids["delete"][group_id].add(message_id)
 
                 elif action == "update":
                     if action_type == "score":
@@ -253,10 +257,12 @@ def process_data(client, message):
                 elif action == "declare":
                     group_id = data["group_id"]
                     message_id = data["message_id"]
-                    if action_type == "ban":
-                        glovar.declared_message_ids["ban"][group_id] = message_id
-                    elif action_type == "delete":
-                        glovar.declared_message_ids["delete"][group_id] = message_id
+                    if glovar.configs.get(group_id):
+                        init_group_id(group_id)
+                        if action_type == "ban":
+                            glovar.declared_message_ids["ban"][group_id].add(message_id)
+                        elif action_type == "delete":
+                            glovar.declared_message_ids["delete"][group_id].add(message_id)
 
                 elif action == "update":
                     if action_type == "score":
@@ -285,10 +291,12 @@ def process_data(client, message):
                 elif action == "declare":
                     group_id = data["group_id"]
                     message_id = data["message_id"]
-                    if action_type == "ban":
-                        glovar.declared_message_ids["ban"][group_id] = message_id
-                    elif action_type == "delete":
-                        glovar.declared_message_ids["delete"][group_id] = message_id
+                    if glovar.configs.get(group_id):
+                        init_group_id(group_id)
+                        if action_type == "ban":
+                            glovar.declared_message_ids["ban"][group_id].add(message_id)
+                        elif action_type == "delete":
+                            glovar.declared_message_ids["delete"][group_id].add(message_id)
 
                 elif action == "update":
                     if action_type == "score":
@@ -311,10 +319,12 @@ def process_data(client, message):
                 elif action == "declare":
                     group_id = data["group_id"]
                     message_id = data["message_id"]
-                    if action_type == "ban":
-                        glovar.declared_message_ids["ban"][group_id] = message_id
-                    elif action_type == "delete":
-                        glovar.declared_message_ids["delete"][group_id] = message_id
+                    if glovar.configs.get(group_id):
+                        init_group_id(group_id)
+                        if action_type == "ban":
+                            glovar.declared_message_ids["ban"][group_id].add(message_id)
+                        elif action_type == "delete":
+                            glovar.declared_message_ids["delete"][group_id].add(message_id)
 
             elif sender == "USER":
 
