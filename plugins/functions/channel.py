@@ -25,7 +25,7 @@ from pyrogram.errors import FloodWait
 
 from .. import glovar
 from .etc import code, general_link, format_data, thread, user_mention
-from .file import crypt_file
+from .file import crypt_file, save
 from .group import get_debug_text
 from .telegram import send_document, send_message
 
@@ -60,7 +60,7 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
         glovar.declared_message_ids[level][gid].add(mid)
         share_data(
             client=client,
-            receivers=["LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM", "USER"],
+            receivers=["LANG", "NOFLOOD", "RECHECK", "NOSPAM", "USER"],
             action="declare",
             action_type=level,
             data={
@@ -75,7 +75,8 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
     return False
 
 
-def forward_evidence(client: Client, message: Message, level: str, rule: str) -> Optional[Union[bool, int]]:
+def forward_evidence(client: Client, message: Message, level: str, rule: str,
+                     more: str = None) -> Optional[Union[bool, int]]:
     # Forward the message to logging channel as evidence
     result = None
     try:
@@ -95,8 +96,11 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
         result = result.message_id
         text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
                 f"用户 ID：{code(uid)}\n"
-                f"操作等级：{code((lambda x: '自动封禁' if x == 'ban' else '自动删除')(level))}\n"
-                f"规则：{code(rule)}")
+                f"操作等级：{code(level)}\n"
+                f"规则：{code(rule)}\n")
+        if more:
+            text += f"附加信息：{code(more)}"
+
         thread(send_message, (client, glovar.logging_channel_id, text, result))
     except Exception as e:
         logger.warning(f"Forward evidence error: {e}", exc_info=True)
@@ -105,12 +109,11 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
 
 
 def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, eid: int) -> bool:
-    # Send a message to debug channel
+    # Send the debug message
     text = get_debug_text(client, chat)
     text += (f"用户 ID：{user_mention(uid)}\n"
              f"执行操作：{code(action)}\n"
-             f"触发消息："
-             f"{general_link(mid, f'https://t.me/{glovar.logging_channel_username}/{eid}')}")
+             f"触发消息：{general_link(mid, f'https://t.me/{glovar.logging_channel_username}/{eid}')}")
     thread(send_message, (client, glovar.debug_channel_id, text))
 
     return False
@@ -173,7 +176,7 @@ def share_watch_ban_user(client: Client, uid: int) -> bool:
     try:
         share_data(
             client=client,
-            receivers=["CAPTCHA", "LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM"],
+            receivers=["CAPTCHA", "LANG", "NOFLOOD", "RECHECK", "NOSPAM"],
             action="add",
             action_type="watch",
             data={
@@ -184,3 +187,27 @@ def share_watch_ban_user(client: Client, uid: int) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Share watch ban user error: {e}", exc_info=True)
+
+
+def update_score(client: Client, uid: int) -> bool:
+    # Update a user's score, share it
+    try:
+        nsfw_count = len(glovar.user_ids[uid]["nsfw"])
+        noporn_score = nsfw_count * 0.6
+        glovar.user_ids[uid]["score"]["noporn"] = noporn_score
+        save("user_ids")
+        share_data(
+            client=client,
+            receivers=["CAPTCHA", "LANG", "NOFLOOD", "RECHECK", "NOSPAM"],
+            action="update",
+            action_type="score",
+            data={
+                "id": uid,
+                "score": noporn_score
+            }
+        )
+        return True
+    except Exception as e:
+        logger.warning(f"Update score error: {e}", exc_info=True)
+
+    return False

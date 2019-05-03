@@ -275,7 +275,7 @@ def process_data(client, message):
                         glovar.user_ids[uid]["score"]["noflood"] = score
                         save("user_ids")
 
-            elif sender == "NOPORN-RECHECK":
+            elif sender == "RECHECK":
 
                 if action == "add":
                     the_id = data["id"]
@@ -306,7 +306,7 @@ def process_data(client, message):
                         uid = data["id"]
                         init_user_id(uid)
                         score = data["score"]
-                        glovar.user_ids[uid]["score"]["noporn-recheck"] = score
+                        glovar.user_ids[uid]["score"]["recheck"] = score
                         save("user_ids")
 
             elif sender == "NOSPAM":

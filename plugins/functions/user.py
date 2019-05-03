@@ -24,7 +24,7 @@ from pyrogram import Client, Message
 from .. import glovar
 from .etc import thread
 from .channel import ask_for_help, declare_message, forward_evidence, send_debug, share_bad_user
-from .channel import share_data, share_watch_ban_user
+from .channel import share_watch_ban_user, update_score
 from .file import save
 from .group import delete_message
 from ..functions.filters import is_high_score_user, is_nsfw_user, is_watch_ban, is_watch_delete
@@ -96,7 +96,7 @@ def get_score(uid: int) -> float:
                      + user["score"].get("lang", 0)
                      + user["score"].get("noflood", 0)
                      + user["score"].get("noporn", 0)
-                     + user["score"].get("noporn-recheck", 0)
+                     + user["score"].get("recheck", 0)
                      + user["score"].get("warn", 0))
     except Exception as e:
         logger.warning(f"Get score error: {e}", exc_info=True)
@@ -111,7 +111,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
         uid = message.from_user.id
         mid = message.message_id
         if is_watch_ban(None, message):
-            result = forward_evidence(client, message, "ban", "敏感追踪")
+            result = forward_evidence(client, message, "自动封禁", "敏感追踪")
             if result:
                 ban_user(client, gid, uid)
                 delete_message(client, gid, mid)
@@ -120,7 +120,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
                 add_bad_user(client, uid)
                 send_debug(client, message.chat, "追踪封禁", uid, mid, result)
         elif is_high_score_user(None, message):
-            result = forward_evidence(client, message, "ban", f"用户评分 {get_score(uid)}")
+            result = forward_evidence(client, message, "自动封禁", f"用户评分 {get_score(uid)}")
             if result:
                 ban_user(client, gid, uid)
                 delete_message(client, gid, mid)
@@ -163,29 +163,5 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
         return True
     except Exception as e:
         logger.warning(f"Terminate user error: {e}", exc_info=True)
-
-    return False
-
-
-def update_score(client: Client, uid: int) -> bool:
-    # Update a user's score, share it
-    try:
-        nsfw_count = len(glovar.user_ids[uid]["nsfw"])
-        noporn_score = nsfw_count * 0.6
-        glovar.user_ids[uid]["score"]["noporn"] = noporn_score
-        save("user_ids")
-        share_data(
-            client=client,
-            receivers=["CAPTCHA", "LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM"],
-            action="update",
-            action_type="score",
-            data={
-                "id": uid,
-                "score": noporn_score
-            }
-        )
-        return True
-    except Exception as e:
-        logger.warning(f"Update score error: {e}", exc_info=True)
 
     return False
