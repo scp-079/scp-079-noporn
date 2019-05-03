@@ -72,7 +72,7 @@ def config(client, message):
                     # Send a report message to debug channel
                     text = get_debug_text(client, message.chat)
                     text += (f"群管理：{user_mention(message.from_user.id)}\n"
-                             f"操作：{code('创建设置会话')}")
+                             f"操作：{code('创建设置会话')}\n")
                     thread(send_message, (client, glovar.debug_channel_id, text))
 
         thread(delete_message, (client, gid, mid))
@@ -104,7 +104,7 @@ def noporn_config(client, message):
                         text += (f"操作：{code('查看设置')}\n"
                                  f"设置：{code((lambda x: '默认' if x else '自定义')(new_config.get('default')))}\n"
                                  f"过滤频道：{code((lambda x: '启用' if x else '禁用')(new_config.get('channel')))}\n"
-                                 f"媒体复查：{code((lambda x: '启用' if x else '禁用')(new_config.get('recheck')))}")
+                                 f"媒体复查：{code((lambda x: '启用' if x else '禁用')(new_config.get('recheck')))}\n")
                         thread(send_report_message, (15, client, gid, text))
                         thread(delete_message, (client, gid, mid))
                         return
@@ -151,7 +151,7 @@ def noporn_config(client, message):
                 save("configs")
 
             text += (f"操作：{code('更改设置')}\n"
-                     f"状态：{code(reason)}")
+                     f"状态：{code(reason)}\n")
             thread(send_report_message, ((lambda x: 10 if x else 5)(success), client, gid, text))
 
         thread(delete_message, (client, gid, mid))
@@ -167,7 +167,7 @@ def version(client, message):
         aid = message.from_user.id
         mid = message.message_id
         text = (f"版本：{bold(glovar.version)}\n"
-                f"管理员：{user_mention(aid)}")
+                f"管理员：{user_mention(aid)}\n")
         thread(send_message, (client, cid, text, mid))
     except Exception as e:
         logger.warning(f"Version error: {e}", exc_info=True)

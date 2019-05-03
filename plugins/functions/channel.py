@@ -113,7 +113,7 @@ def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, eid:
     text = get_debug_text(client, chat)
     text += (f"用户 ID：{user_mention(uid)}\n"
              f"执行操作：{code(action)}\n"
-             f"触发消息：{general_link(mid, f'https://t.me/{glovar.logging_channel_username}/{eid}')}")
+             f"触发消息：{general_link(mid, f'https://t.me/{glovar.logging_channel_username}/{eid}')}\n")
     thread(send_message, (client, glovar.debug_channel_id, text))
 
     return False
