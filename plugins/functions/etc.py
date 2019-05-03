@@ -81,6 +81,7 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
 
 
 def get_command_context(message: Message) -> str:
+    # Get the context "b" in "/command a b"
     command_list = get_text(message).split(" ")
     if len(list(filter(None, command_list))) > 2:
         i = 1
