@@ -65,7 +65,7 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
 
 left_group_ids: Set[int] = set()
 
-version: str = "0.0.9"
+version: str = "0.1.0"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
