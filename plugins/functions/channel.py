@@ -60,7 +60,7 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
         glovar.declared_message_ids[level][gid].add(mid)
         share_data(
             client=client,
-            receivers=["LANG", "NOFLOOD", "RECHECK", "NOSPAM", "USER"],
+            receivers=glovar.receivers_declare,
             action="declare",
             action_type=level,
             data={
@@ -124,7 +124,7 @@ def share_bad_user(client: Client, uid: int) -> bool:
     try:
         share_data(
             client=client,
-            receivers=["CAPTCHA", "LANG", "NOFLOOD", "NOPORN-RECHECK", "NOSPAM", "USER", "WATCH"],
+            receivers=glovar.receivers_bad,
             action="add",
             action_type="bad",
             data={
@@ -144,6 +144,9 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
     # Use this function to share data in exchange channel
     try:
         sender = "NOPORN"
+        if sender in receivers:
+            receivers.remove(sender)
+
         if file:
             text = format_data(
                 sender=sender,
@@ -176,7 +179,7 @@ def share_watch_ban_user(client: Client, uid: int) -> bool:
     try:
         share_data(
             client=client,
-            receivers=["CAPTCHA", "LANG", "NOFLOOD", "RECHECK", "NOSPAM"],
+            receivers=glovar.receivers_status,
             action="add",
             action_type="watch",
             data={
@@ -198,7 +201,7 @@ def update_score(client: Client, uid: int) -> bool:
         save("user_ids")
         share_data(
             client=client,
-            receivers=["CAPTCHA", "LANG", "NOFLOOD", "RECHECK", "NOSPAM"],
+            receivers=glovar.receivers_status,
             action="update",
             action_type="score",
             data={

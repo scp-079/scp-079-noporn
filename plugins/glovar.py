@@ -65,7 +65,14 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
 
 left_group_ids: Set[int] = set()
 
-version: str = "0.1.0"
+receivers_bad: List[str] = ["APPEAL", "CAPTCHA", "LANG", "NOFLOOD", "NOPORN",
+                            "NOSPAM", "MANAGE", "RECHECK", "USER", "WATCH"]
+
+receivers_declare: List[str] = ["LANG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"]
+
+receivers_status: List[str] = ["CAPTCHA", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
+
+version: str = "0.1.1"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
