@@ -196,6 +196,7 @@ logging_channel_username: str = ""
 default_group_link: str = ""
 project_link: str = ""
 project_name: str = ""
+punish_time: int = 0
 reset_day: str = ""
 user_name: str = ""
 
@@ -227,6 +228,7 @@ try:
     default_group_link = config["custom"].get("default_group_link", default_group_link)
     project_link = config["custom"].get("project_link", project_link)
     project_name = config["custom"].get("project_name", project_name)
+    punish_time = int(config["custom"].get("punish_time", punish_time))
     reset_day = config["custom"].get("reset_day", reset_day)
     user_name = config["custom"].get("user_name", user_name)
     # [encrypt]
@@ -253,6 +255,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or default_group_link in {"", "[DATA EXPUNGED]"}
         or project_link in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}
+        or punish_time == 0
         or reset_day in {"", "[DATA EXPUNGED]"}
         or user_name in {"", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):

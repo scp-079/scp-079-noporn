@@ -175,7 +175,7 @@ def is_nsfw_user_id(gid: int, uid: int) -> bool:
         if user:
             status = user["nsfw"].get(gid, 0)
             now = int(time())
-            if now - status < 300:
+            if now - status < glovar.punish_time:
                 return True
     except Exception as e:
         logger.warning(f"Is NSFW user id error: {e}", exc_info=True)
