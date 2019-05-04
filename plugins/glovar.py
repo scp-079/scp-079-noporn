@@ -90,87 +90,6 @@ watch_ids: Dict[str, Dict[int, int]] = {
 #     }
 # }
 
-# Load data from pickle
-
-# Init dir
-try:
-    rmtree("tmp")
-except Exception as e:
-    logger.info(f"Remove tmp error: {e}")
-
-for path in ["data", "tmp"]:
-    if not exists(path):
-        mkdir(path)
-
-# Init ids variables
-
-admin_ids: Dict[int, Set[int]] = {}
-# admin_ids = {
-#     -10012345678: {12345678}
-# }
-
-bad_ids: Dict[str, Set[int]] = {
-    "channels": set(),
-    "users": set()
-}
-# bad_ids = {
-#     "channels": {-10012345678},
-#     "users": {12345678}
-# }
-
-except_ids: Dict[str, Set[int]] = {
-    "channels": set(),
-    "users": set()
-}
-# except_ids = {
-#     "channels": {-10012345678},
-#     "users": {12345678}
-# }
-
-user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
-# user_ids = {
-#     12345678: {
-#         "nsfw": {
-#             -10012345678: 0
-#         },
-#         "score": {
-#             "noporn": 0.6,
-#             "warn": 0.4,
-#             "total": 1.0
-#         }
-#     }
-# }
-
-# Init data variables
-
-configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
-# configs = {
-#     -10012345678: {
-#         "default": True,
-#         "channel": True,
-#         "locked": 0,
-#         "recheck": False
-# }
-
-# Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "configs", "user_ids"]
-for file in file_list:
-    try:
-        try:
-            if exists(f"data/{file}") or exists(f"data/.{file}"):
-                with open(f"data/{file}", 'rb') as f:
-                    locals()[f"{file}"] = pickle.load(f)
-            else:
-                with open(f"data/{file}", 'wb') as f:
-                    pickle.dump(eval(f"{file}"), f)
-        except Exception as e:
-            logger.error(f"Load data {file} error: {e}")
-            with open(f"data/.{file}", 'rb') as f:
-                locals()[f"{file}"] = pickle.load(f)
-    except Exception as e:
-        logger.critical(f"Load data {file} backup error: {e}")
-        raise SystemExit("[DATA CORRUPTION]")
-
 # Read data from config.ini
 
 # [basic]
@@ -269,6 +188,87 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
     raise SystemExit('No proper settings')
 
 bot_ids: Set[int] = {captcha_id, clean_id, lang_id, noflood_id, noporn_id, nospam_id, user_id, warn_id}
+
+# Load data from pickle
+
+# Init dir
+try:
+    rmtree("tmp")
+except Exception as e:
+    logger.info(f"Remove tmp error: {e}")
+
+for path in ["data", "tmp"]:
+    if not exists(path):
+        mkdir(path)
+
+# Init ids variables
+
+admin_ids: Dict[int, Set[int]] = {}
+# admin_ids = {
+#     -10012345678: {12345678}
+# }
+
+bad_ids: Dict[str, Set[int]] = {
+    "channels": set(),
+    "users": set()
+}
+# bad_ids = {
+#     "channels": {-10012345678},
+#     "users": {12345678}
+# }
+
+except_ids: Dict[str, Set[int]] = {
+    "channels": set(),
+    "users": set()
+}
+# except_ids = {
+#     "channels": {-10012345678},
+#     "users": {12345678}
+# }
+
+user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
+# user_ids = {
+#     12345678: {
+#         "nsfw": {
+#             -10012345678: 0
+#         },
+#         "score": {
+#             "noporn": 0.6,
+#             "warn": 0.4,
+#             "total": 1.0
+#         }
+#     }
+# }
+
+# Init data variables
+
+configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
+# configs = {
+#     -10012345678: {
+#         "default": True,
+#         "channel": True,
+#         "locked": 0,
+#         "recheck": False
+# }
+
+# Load data
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "configs", "user_ids"]
+for file in file_list:
+    try:
+        try:
+            if exists(f"data/{file}") or exists(f"data/.{file}"):
+                with open(f"data/{file}", 'rb') as f:
+                    locals()[f"{file}"] = pickle.load(f)
+            else:
+                with open(f"data/{file}", 'wb') as f:
+                    pickle.dump(eval(f"{file}"), f)
+        except Exception as e:
+            logger.error(f"Load data {file} error: {e}")
+            with open(f"data/.{file}", 'rb') as f:
+                locals()[f"{file}"] = pickle.load(f)
+    except Exception as e:
+        logger.critical(f"Load data {file} backup error: {e}")
+        raise SystemExit("[DATA CORRUPTION]")
 
 # Start program
 copyright_text = (f"SCP-079-NOPORN v{version}, Copyright (C) 2019 SCP-079 <https://scp-079.org>\n"
