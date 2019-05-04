@@ -64,6 +64,8 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
     }
 }
 
+file_ids: Set[str] = set()
+
 left_group_ids: Set[int] = set()
 
 lock_image: Lock = Lock()

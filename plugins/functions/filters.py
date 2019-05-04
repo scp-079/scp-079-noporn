@@ -299,11 +299,15 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
             else:
                 file_id = message
 
-            image_path = get_downloaded_path(client, file_id)
-            if image_path:
-                porn = get_porn(image_path)
-                if porn > glovar.threshold_porn:
-                    return True
+            if file_id in glovar.file_ids:
+                return True
+            else:
+                image_path = get_downloaded_path(client, file_id)
+                if image_path:
+                    porn = get_porn(image_path)
+                    if porn > glovar.threshold_porn:
+                        glovar.file_ids.add(file_id)
+                        return True
         except Exception as e:
             logger.warning(f"Is NSFW media error: {e}", exc_info=True)
         finally:
