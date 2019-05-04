@@ -288,23 +288,26 @@ watch_delete = Filters.create(
 
 def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
     # Check if it is NSFW media, accept Message or file id
-    try:
-        if isinstance(message, Message):
-            target_user = is_nsfw_user(None, message)
-            if target_user and (message.media or message.entities):
-                return True
+    if glovar.lock_image.acquire():
+        try:
+            if isinstance(message, Message):
+                target_user = is_nsfw_user(None, message)
+                if target_user and (message.media or message.entities):
+                    return True
 
-            file_id = get_file_id(message)
-        else:
-            file_id = message
+                file_id = get_file_id(message)
+            else:
+                file_id = message
 
-        image_path = get_downloaded_path(client, file_id)
-        if image_path:
-            porn = get_porn(image_path)
-            if porn > 0.8:
-                return True
-    except Exception as e:
-        logger.warning(f"Is NSFW media error: {e}", exc_info=True)
+            image_path = get_downloaded_path(client, file_id)
+            if image_path:
+                porn = get_porn(image_path)
+                if porn > glovar.threshold_porn:
+                    return True
+        except Exception as e:
+            logger.warning(f"Is NSFW media error: {e}", exc_info=True)
+        finally:
+            glovar.lock_image.release()
 
     return False
 

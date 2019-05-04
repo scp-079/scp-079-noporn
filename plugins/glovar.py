@@ -75,7 +75,7 @@ receivers_declare: List[str] = ["LANG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK"
 
 receivers_status: List[str] = ["CAPTCHA", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
 
-version: str = "0.1.1"
+version: str = "0.1.2"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -201,6 +201,7 @@ project_link: str = ""
 project_name: str = ""
 punish_time: int = 0
 reset_day: str = ""
+threshold_porn: float = 0
 user_name: str = ""
 
 # [encrypt]
@@ -233,6 +234,7 @@ try:
     project_name = config["custom"].get("project_name", project_name)
     punish_time = int(config["custom"].get("punish_time", punish_time))
     reset_day = config["custom"].get("reset_day", reset_day)
+    threshold_porn = float(config["custom"].get("threshold_porn", threshold_porn))
     user_name = config["custom"].get("user_name", user_name)
     # [encrypt]
     password = config["encrypt"].get("password", password)
@@ -260,6 +262,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}
         or punish_time == 0
         or reset_day in {"", "[DATA EXPUNGED]"}
+        or threshold_porn == 0
         or user_name in {"", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
     logger.critical("No proper settings")
