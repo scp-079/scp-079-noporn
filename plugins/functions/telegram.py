@@ -26,6 +26,7 @@ from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInv
 from .. import glovar
 from .etc import delay
 
+# Enable logging
 logger = logging.getLogger(__name__)
 
 

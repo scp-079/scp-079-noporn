@@ -186,7 +186,6 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or threshold_porn == 0
         or user_name in {"", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
-    logger.critical("No proper settings")
     raise SystemExit('No proper settings')
 
 bot_ids: Set[int] = {captcha_id, clean_id, lang_id, noflood_id, noporn_id, nospam_id, user_id, warn_id}
