@@ -17,13 +17,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Optional, Union
+from typing import Optional
 
-from pyrogram import Chat, Client, Message
+from pyrogram import Client, Message
 
 from .. import glovar
-from .etc import code, general_link, thread
-from .telegram import delete_messages, get_group_info, get_messages, leave_chat
+from .etc import thread
+from .telegram import delete_messages, get_messages, leave_chat
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -39,23 +39,6 @@ def delete_message(client: Client, gid: int, mid: int) -> bool:
         logger.warning(f"Delete message error: {e}", exc_info=True)
 
     return False
-
-
-def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
-    # Get a debug message text prefix, accept int or Chat
-    if isinstance(context, int):
-        info_para = context
-        id_para = context
-    else:
-        info_para = context
-        id_para = context.id
-
-    group_name, group_link = get_group_info(client, info_para)
-    text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
-            f"群组名称：{general_link(group_name, group_link)}\n"
-            f"群组 ID：{code(id_para)}\n")
-
-    return text
 
 
 def get_message(client: Client, gid: int, mid: int) -> Optional[Message]:

@@ -26,8 +26,7 @@ from pyrogram.errors import FloodWait
 from .. import glovar
 from .etc import code, general_link, format_data, thread, user_mention
 from .file import crypt_file, save
-from .group import get_debug_text
-from .telegram import send_document, send_message
+from .telegram import get_group_info, send_document, send_message
 
 
 # Enable logging
@@ -106,6 +105,23 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
         logger.warning(f"Forward evidence error: {e}", exc_info=True)
 
     return result
+
+
+def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
+    # Get a debug message text prefix, accept int or Chat
+    if isinstance(context, int):
+        info_para = context
+        id_para = context
+    else:
+        info_para = context
+        id_para = context.id
+
+    group_name, group_link = get_group_info(client, info_para)
+    text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
+            f"群组名称：{general_link(group_name, group_link)}\n"
+            f"群组 ID：{code(id_para)}\n")
+
+    return text
 
 
 def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, eid: int) -> bool:

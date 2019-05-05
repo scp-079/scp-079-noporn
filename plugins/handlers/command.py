@@ -24,11 +24,11 @@ from copy import deepcopy
 from pyrogram import Client, Filters
 
 from .. import glovar
-from ..functions.channel import share_data
+from ..functions.channel import get_debug_text, share_data
 from ..functions.etc import bold, code, get_command_context, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import is_class_c, test_group
-from ..functions.group import delete_message, get_debug_text
+from ..functions.group import delete_message
 from ..functions.telegram import get_group_info, send_message, send_report_message
 
 # Enable logging

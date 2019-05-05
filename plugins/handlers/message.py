@@ -23,13 +23,13 @@ from time import time
 from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
 
 from .. import glovar
-
+from ..functions.channel import get_debug_text
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message
 from ..functions.filters import is_declared_ban_message_id, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
-from ..functions.group import get_debug_text, get_message, leave_group
+from ..functions.group import get_message, leave_group
 from ..functions.user import terminate_nsfw_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.telegram import get_admins, send_message, send_report_message
