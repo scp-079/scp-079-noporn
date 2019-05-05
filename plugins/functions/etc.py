@@ -21,7 +21,7 @@ from json import dumps, loads
 from random import choice
 from string import ascii_letters, digits
 from threading import Thread, Timer
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Union
 
 from pyrogram import Message
 
@@ -82,7 +82,8 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
 
 def get_command_context(message: Message) -> str:
     # Get the context "b" in "/command a b"
-    command_list = get_text(message).split(" ")
+    text = get_text(message)
+    command_list = text.split(" ")
     if len(list(filter(None, command_list))) > 2:
         i = 1
         command_type = command_list[i]
@@ -90,19 +91,28 @@ def get_command_context(message: Message) -> str:
             i += 1
             command_type = command_list[i]
 
-        command_context = get_text(message)[1 + len(command_list[0]) + i + len(command_type):].strip()
+        command_context = text[1 + len(command_list[0]) + i + len(command_type):].strip()
     else:
         command_context = ""
 
     return command_context
 
 
-def get_text(message: Message) -> Optional[str]:
-    text = None
+def get_text(message: Message) -> str:
+    text = ""
     if message.text:
-        text = message.text
+        text += message.text
     elif message.caption:
-        text = message.caption
+        text += message.caption
+
+    if message.entities:
+        for en in message.entities:
+            if en.url:
+                text += f"\n{en.url}"
+    elif message.caption_entities:
+        for en in message.caption_entities:
+            if en.url:
+                text += f"\n{en.url}"
 
     return text
 
@@ -122,7 +132,7 @@ def random_str(i: int) -> str:
 def receive_data(message: Message) -> dict:
     text = get_text(message)
     try:
-        assert text is not None, f"Can't get text from message: {message}"
+        assert text is not "", f"Can't get text from message: {message}"
         data = loads(text)
         return data
     except Exception as e:
