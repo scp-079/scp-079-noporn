@@ -230,13 +230,14 @@ except_ids: Dict[str, Set[int]] = {
 user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
 # user_ids = {
 #     12345678: {
-#         "nsfw": {
-#             -10012345678: 0
-#         },
+#         "nsfw": {},
 #         "score": {
-#             "noporn": 0.6,
-#             "warn": 0.4,
-#             "total": 1.0
+#             "captcha": 0,
+#             "lang": 0,
+#             "noflood": 0,
+#             "noporn": 0,
+#             "recheck": 0,
+#             "warn": 0
 #         }
 #     }
 # }
