@@ -101,7 +101,7 @@ def process_data(client, message):
         # seems like it can be simplified,
         # but this is to ensure that the permissions are clear,
         # so it is intentionally written like this
-        if "NOPORN" in receivers:
+        if glovar.sender in receivers:
             if sender == "CAPTCHA":
 
                 if action == "update":
@@ -275,6 +275,60 @@ def process_data(client, message):
                         glovar.user_ids[uid]["score"]["noflood"] = score
                         save("user_ids")
 
+            elif sender == "NOPORN":
+
+                if action == "add":
+                    the_id = data["id"]
+                    the_type = data["type"]
+                    if action_type == "bad":
+                        if the_type == "user":
+                            glovar.bad_ids["users"].add(the_id)
+                            save("bad_ids")
+                    elif action_type == "watch":
+                        now = int(time())
+                        if the_type == "ban":
+                            glovar.watch_ids["ban"][the_id] = now
+                        elif the_type == "delete":
+                            glovar.watch_ids["delete"][the_id] = now
+
+                elif action == "declare":
+                    group_id = data["group_id"]
+                    message_id = data["message_id"]
+                    if glovar.configs.get(group_id):
+                        init_group_id(group_id)
+                        if action_type == "ban":
+                            glovar.declared_message_ids["ban"][group_id].add(message_id)
+                        elif action_type == "delete":
+                            glovar.declared_message_ids["delete"][group_id].add(message_id)
+
+                elif action == "update":
+                    if action_type == "score":
+                        uid = data["id"]
+                        init_user_id(uid)
+                        score = data["score"]
+                        glovar.user_ids[uid]["score"]["noporn"] = score
+                        save("user_ids")
+
+            elif sender == "NOSPAM":
+
+                if action == "add":
+                    the_id = data["id"]
+                    the_type = data["type"]
+                    if action_type == "bad":
+                        if the_type == "user":
+                            glovar.bad_ids["users"].add(the_id)
+                            save("bad_ids")
+
+                elif action == "declare":
+                    group_id = data["group_id"]
+                    message_id = data["message_id"]
+                    if glovar.configs.get(group_id):
+                        init_group_id(group_id)
+                        if action_type == "ban":
+                            glovar.declared_message_ids["ban"][group_id].add(message_id)
+                        elif action_type == "delete":
+                            glovar.declared_message_ids["delete"][group_id].add(message_id)
+
             elif sender == "RECHECK":
 
                 if action == "add":
@@ -308,26 +362,6 @@ def process_data(client, message):
                         score = data["score"]
                         glovar.user_ids[uid]["score"]["recheck"] = score
                         save("user_ids")
-
-            elif sender == "NOSPAM":
-
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "user":
-                            glovar.bad_ids["users"].add(the_id)
-                            save("bad_ids")
-
-                elif action == "declare":
-                    group_id = data["group_id"]
-                    message_id = data["message_id"]
-                    if glovar.configs.get(group_id):
-                        init_group_id(group_id)
-                        if action_type == "ban":
-                            glovar.declared_message_ids["ban"][group_id].add(message_id)
-                        elif action_type == "delete":
-                            glovar.declared_message_ids["delete"][group_id].add(message_id)
 
             elif sender == "USER":
 
