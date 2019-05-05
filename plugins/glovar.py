@@ -77,6 +77,8 @@ receivers_declare: List[str] = ["LANG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK"
 
 receivers_status: List[str] = ["CAPTCHA", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
 
+sender: str = "NOPORN"
+
 version: str = "0.1.3"
 
 watch_ids: Dict[str, Dict[int, int]] = {
