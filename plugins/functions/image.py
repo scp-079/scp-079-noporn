@@ -24,6 +24,8 @@ from PIL import Image
 from pyrogram import Message
 from nsfw import classify
 
+from .. import glovar
+
 # Enable logging
 logger = logging.getLogger(__name__)
 
@@ -65,7 +67,7 @@ def get_file_id(message: Message) -> str:
                     and "image" in message.document.mime_type
                     and "gif" not in message.document.mime_type
                     and message.document.file_size
-                    and message.document.file_size < 1048576):
+                    and message.document.file_size < glovar.image_size):
                 file_id = message.document.file_id
             else:
                 file_id = message.document.thumb.file_id

@@ -120,6 +120,7 @@ logging_channel_username: str = ""
 
 # [custom]
 default_group_link: str = ""
+image_size: int = 0
 project_link: str = ""
 project_name: str = ""
 punish_time: int = 0
@@ -153,6 +154,7 @@ try:
     logging_channel_username = config["channels"].get("logging_channel_username", logging_channel_username)
     # [custom]
     default_group_link = config["custom"].get("default_group_link", default_group_link)
+    image_size = int(config["custom"].get("image_size", image_size))
     project_link = config["custom"].get("project_link", project_link)
     project_name = config["custom"].get("project_name", project_name)
     punish_time = int(config["custom"].get("punish_time", punish_time))
@@ -181,6 +183,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or test_group_id == 0
         or logging_channel_username in {"", "[DATA EXPUNGED]"}
         or default_group_link in {"", "[DATA EXPUNGED]"}
+        or image_size == 0
         or project_link in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}
         or punish_time == 0
