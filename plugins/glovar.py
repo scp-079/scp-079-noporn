@@ -64,7 +64,10 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
     }
 }
 
-file_ids: Set[str] = set()
+file_ids: Dict[str, Set[str]] = {
+    "nsfw": set(),
+    "safe": set()
+}
 
 left_group_ids: Set[int] = set()
 
@@ -79,7 +82,7 @@ receivers_status: List[str] = ["CAPTCHA", "LANG", "NOFLOOD", "NOPORN", "NOSPAM",
 
 sender: str = "NOPORN"
 
-version: str = "0.1.3"
+version: str = "0.1.4"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},

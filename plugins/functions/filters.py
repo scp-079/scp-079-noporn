@@ -23,7 +23,7 @@ from typing import Union
 from pyrogram import Client, Filters, Message
 
 from .. import glovar
-from .file import get_downloaded_path
+from .file import delete_file, get_downloaded_path
 from .ids import init_group_id
 from .image import get_file_id, get_porn
 
@@ -288,6 +288,7 @@ watch_delete = Filters.create(
 
 def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
     # Check if it is NSFW media, accept Message or file id
+    need_delete = []
     if glovar.lock_image.acquire():
         try:
             if isinstance(message, Message):
@@ -299,19 +300,26 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
             else:
                 file_id = message
 
-            if file_id in glovar.file_ids:
+            if file_id in glovar.file_ids["nsfw"]:
                 return True
+            elif file_id in glovar.file_ids["safe"]:
+                return False
             else:
                 image_path = get_downloaded_path(client, file_id)
                 if image_path:
+                    need_delete.append(image_path)
                     porn = get_porn(image_path)
                     if porn > glovar.threshold_porn:
-                        glovar.file_ids.add(file_id)
+                        glovar.file_ids["nsfw"].add(file_id)
                         return True
+                    else:
+                        glovar.file_ids["safe"].add(file_id)
         except Exception as e:
             logger.warning(f"Is NSFW media error: {e}", exc_info=True)
         finally:
             glovar.lock_image.release()
+            for file in need_delete:
+                delete_file(file)
 
     return False
 
