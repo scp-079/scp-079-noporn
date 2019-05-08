@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def is_class_c(_, message: Message) -> bool:
-    # Check if the user who sent this message is Class C personnel
+    # Check if the user who sent the message is Class C personnel
     try:
         uid = message.from_user.id
         gid = message.chat.id
@@ -48,7 +48,7 @@ def is_class_c(_, message: Message) -> bool:
 
 
 def is_class_d(_, message: Message) -> bool:
-    # Check if the user who sent this message is Class D personnel
+    # Check if the user who sent the message is Class D personnel
     try:
         uid = message.from_user.id
         if uid in glovar.bad_ids["users"]:
@@ -130,7 +130,7 @@ def is_declared_delete_message(_, message: Message) -> bool:
 
 
 def is_exchange_channel(_, message: Message) -> bool:
-    # Check if this message is sent from exchange channel
+    # Check if the message is sent from exchange channel
     try:
         cid = message.chat.id
         if cid == glovar.exchange_channel_id:
@@ -142,7 +142,7 @@ def is_exchange_channel(_, message: Message) -> bool:
 
 
 def is_high_score_user(_, message: Message) -> bool:
-    # Check if this message is sent by a high score user
+    # Check if the message is sent by a high score user
     try:
         uid = message.from_user.id
         user = glovar.user_ids.get(uid, {})
@@ -197,7 +197,7 @@ def is_nsfw_user_id(gid: int, uid: int) -> bool:
 
 
 def is_test_group(_, message: Message) -> bool:
-    # Check if this message is sent from test group
+    # Check if the message is sent from test group
     try:
         cid = message.chat.id
         if cid == glovar.test_group_id:
@@ -209,7 +209,7 @@ def is_test_group(_, message: Message) -> bool:
 
 
 def is_watch_ban(_, message: Message) -> bool:
-    # Check if this message is sent by a watch ban user
+    # Check if the message is sent by a watch ban user
     try:
         uid = message.from_user.id
         status = glovar.watch_ids["ban"].get(uid, 0)
@@ -223,7 +223,7 @@ def is_watch_ban(_, message: Message) -> bool:
 
 
 def is_watch_delete(_, message: Message) -> bool:
-    # Check if this message is sent by a watch delete user
+    # Check if the message is sent by a watch delete user
     try:
         uid = message.from_user.id
         status = glovar.watch_ids["delete"].get(uid, 0)
