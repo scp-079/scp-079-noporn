@@ -130,7 +130,7 @@ def message_link(cid: int, mid: int) -> str:
 
 def random_str(i: int) -> str:
     # Get a random string
-    return ''.join(choice(ascii_letters + digits) for _ in range(i))
+    return "".join(choice(ascii_letters + digits) for _ in range(i))
 
 
 def receive_data(message: Message) -> dict:
