@@ -74,8 +74,7 @@ def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
     return False
 
 
-def forward_evidence(client: Client, message: Message, level: str, rule: str,
-                     more: str = None) -> Optional[Union[bool, int]]:
+def forward_evidence(client: Client, message: Message, level: str, rule: str) -> Optional[Union[bool, int]]:
     # Forward the message to logging channel as evidence
     result = None
     try:
@@ -97,9 +96,6 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
                 f"用户 ID：{code(uid)}\n"
                 f"操作等级：{code(level)}\n"
                 f"规则：{code(rule)}\n")
-        if more:
-            text += f"附加信息：{code(more)}"
-
         thread(send_message, (client, glovar.logging_channel_id, text, result))
     except Exception as e:
         logger.warning(f"Forward evidence error: {e}", exc_info=True)
