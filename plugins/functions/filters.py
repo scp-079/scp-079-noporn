@@ -26,6 +26,7 @@ from .. import glovar
 from .file import delete_file, get_downloaded_path
 from .ids import init_group_id
 from .image import get_file_id, get_porn
+from .user import get_score
 
 
 # Enable logging
@@ -33,6 +34,7 @@ logger = logging.getLogger(__name__)
 
 
 def is_class_c(_, message: Message) -> bool:
+    # Check if the user who sent this message is Class C personnel
     try:
         uid = message.from_user.id
         gid = message.chat.id
@@ -46,6 +48,7 @@ def is_class_c(_, message: Message) -> bool:
 
 
 def is_class_d(_, message: Message) -> bool:
+    # Check if the user who sent this message is Class D personnel
     try:
         uid = message.from_user.id
         if uid in glovar.bad_ids["users"]:
@@ -60,6 +63,7 @@ def is_class_d(_, message: Message) -> bool:
 
 
 def is_class_e(_, message: Message) -> bool:
+    # Check if the user who sent this message is Class E personnel
     try:
         uid = message.from_user.id
         if uid in glovar.except_ids["users"]:
@@ -76,6 +80,7 @@ def is_class_e(_, message: Message) -> bool:
 
 
 def is_declared_message(_, message: Message) -> bool:
+    # Check if the message is declared by other bots
     try:
         gid = message.chat.id
         mid = message.message_id
@@ -89,6 +94,7 @@ def is_declared_message(_, message: Message) -> bool:
 
 
 def is_declared_ban_message(_, message: Message) -> bool:
+    # Check if the message is declared by other bots with "ban" type
     try:
         gid = message.chat.id
         mid = message.message_id
@@ -100,6 +106,7 @@ def is_declared_ban_message(_, message: Message) -> bool:
 
 
 def is_declared_ban_message_id(gid: int, mid: int) -> bool:
+    # Check if the message_id is declared by other bots with "ban" type
     try:
         if mid in glovar.declared_message_ids["ban"].get(gid, set()):
             return True
@@ -110,6 +117,7 @@ def is_declared_ban_message_id(gid: int, mid: int) -> bool:
 
 
 def is_declared_delete_message(_, message: Message) -> bool:
+    # Check if the message is declared by other bots with "delete" type
     try:
         gid = message.chat.id
         mid = message.message_id
@@ -122,6 +130,7 @@ def is_declared_delete_message(_, message: Message) -> bool:
 
 
 def is_exchange_channel(_, message: Message) -> bool:
+    # Check if this message is sent from exchange channel
     try:
         cid = message.chat.id
         if cid == glovar.exchange_channel_id:
@@ -133,11 +142,12 @@ def is_exchange_channel(_, message: Message) -> bool:
 
 
 def is_high_score_user(_, message: Message) -> bool:
+    # Check if this message is sent by a high score user
     try:
         uid = message.from_user.id
         user = glovar.user_ids.get(uid, {})
         if user:
-            score = user["score"]["lang"] + user["score"]["noflood"] + user["score"]["noporn"] + user["score"]["warn"]
+            score = get_score(uid)
             if score >= 3:
                 return True
     except Exception as e:
@@ -147,6 +157,7 @@ def is_high_score_user(_, message: Message) -> bool:
 
 
 def is_new_group(_, message: Message) -> bool:
+    # Check if the bot joined a new group
     try:
         new_users = message.new_chat_members
         for user in new_users:
@@ -159,6 +170,7 @@ def is_new_group(_, message: Message) -> bool:
 
 
 def is_nsfw_user(_, message: Message) -> bool:
+    # Check if the message is sent by a NSFW user
     try:
         gid = message.chat.id
         uid = message.from_user.id
@@ -170,6 +182,7 @@ def is_nsfw_user(_, message: Message) -> bool:
 
 
 def is_nsfw_user_id(gid: int, uid: int) -> bool:
+    # Check if the user_id is NSFW in the group
     try:
         user = glovar.user_ids.get(uid, {})
         if user:
@@ -184,6 +197,7 @@ def is_nsfw_user_id(gid: int, uid: int) -> bool:
 
 
 def is_test_group(_, message: Message) -> bool:
+    # Check if this message is sent from test group
     try:
         cid = message.chat.id
         if cid == glovar.test_group_id:
@@ -195,6 +209,7 @@ def is_test_group(_, message: Message) -> bool:
 
 
 def is_watch_ban(_, message: Message) -> bool:
+    # Check if this message is sent by a watch ban user
     try:
         uid = message.from_user.id
         status = glovar.watch_ids["ban"].get(uid, 0)
@@ -208,6 +223,7 @@ def is_watch_ban(_, message: Message) -> bool:
 
 
 def is_watch_delete(_, message: Message) -> bool:
+    # Check if this message is sent by a watch delete user
     try:
         uid = message.from_user.id
         status = glovar.watch_ids["delete"].get(uid, 0)
