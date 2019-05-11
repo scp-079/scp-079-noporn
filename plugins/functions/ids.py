@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 def init_group_id(gid: int) -> bool:
     # Init group data
     try:
-        if gid in glovar.left_group_ids:
+        if gid not in glovar.left_group_ids:
             if glovar.configs.get(gid) is None:
                 glovar.configs[gid] = deepcopy(glovar.default_config)
                 save("configs")

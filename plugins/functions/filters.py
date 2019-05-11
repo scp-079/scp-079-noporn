@@ -26,7 +26,6 @@ from .. import glovar
 from .file import delete_file, get_downloaded_path
 from .ids import init_group_id
 from .image import get_file_id, get_porn
-from .user import get_score
 
 
 # Enable logging
@@ -141,15 +140,27 @@ def is_exchange_channel(_, message: Message) -> bool:
     return False
 
 
-def is_high_score_user(_, message: Message) -> bool:
+def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
     # Check if the message is sent by a high score user
     try:
         uid = message.from_user.id
         user = glovar.user_ids.get(uid, {})
         if user:
-            score = get_score(uid)
+            score = 0
+            try:
+                user = glovar.user_ids.get(uid, {})
+                if user:
+                    score = (user["score"].get("captcha", 0)
+                             + user["score"].get("lang", 0)
+                             + user["score"].get("noflood", 0)
+                             + user["score"].get("noporn", 0)
+                             + user["score"].get("recheck", 0)
+                             + user["score"].get("warn", 0))
+            except Exception as e:
+                logger.warning(f"Get score error: {e}", exc_info=True)
+
             if score >= 3:
-                return True
+                return score
     except Exception as e:
         logger.warning(f"Is high score user error: {e}", exc_info=True)
 
