@@ -117,7 +117,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
                 ban_user(client, gid, uid)
                 delete_message(client, gid, mid)
                 declare_message(client, "ban", gid, mid)
-                ask_for_help(client, "ban", gid, uid, "single")
+                ask_for_help(client, "ban", gid, uid)
                 add_bad_user(client, uid)
                 send_debug(client, message.chat, "追踪封禁", uid, mid, result)
         elif is_high_score_user(None, message):
@@ -126,7 +126,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
                 ban_user(client, gid, uid)
                 delete_message(client, gid, mid)
                 declare_message(client, "ban", gid, mid)
-                ask_for_help(client, "ban", gid, uid, "single")
+                ask_for_help(client, "ban", gid, uid)
                 add_bad_user(client, uid)
                 send_debug(client, message.chat, "评分封禁", uid, mid, result)
         elif is_watch_delete(None, message):

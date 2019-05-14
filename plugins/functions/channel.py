@@ -33,7 +33,7 @@ from .telegram import get_group_info, send_document, send_message
 logger = logging.getLogger(__name__)
 
 
-def ask_for_help(client: Client, level: str, gid: int, uid: int, group: str) -> bool:
+def ask_for_help(client: Client, level: str, gid: int, uid: int, group: str = "single") -> bool:
     # Let USER help to delete all message from user, or ban user globally
     try:
         data = {
