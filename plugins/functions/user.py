@@ -22,7 +22,7 @@ from time import time
 from pyrogram import Client, Message
 
 from .. import glovar
-from .etc import thread
+from .etc import crypt_str, thread
 from .channel import ask_for_help, declare_message, forward_evidence, send_debug, share_bad_user
 from .channel import share_watch_ban_user, update_score
 from .file import save
@@ -82,6 +82,25 @@ def ban_user(client: Client, gid: int, uid: int) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Ban user error: {e}", exc_info=True)
+
+    return False
+
+
+def receive_watch_user(watch_type: str, uid: int, until: str) -> bool:
+    # Receive watch users that other bots shared
+    try:
+        until = crypt_str("decrypt", until, glovar.key)
+        until = int(until)
+        if watch_type == "ban":
+            glovar.watch_ids["ban"][uid] = until
+        elif watch_type == "delete":
+            glovar.watch_ids["delete"][uid] = until
+        else:
+            return False
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive watch user error: {e}", exc_info=True)
 
     return False
 

@@ -84,7 +84,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.1.5"
+version: str = "0.1.6"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -136,6 +136,7 @@ threshold_porn: float = 0
 user_name: str = ""
 
 # [encrypt]
+key: Union[str, bytes] = ""
 password: str = ""
 
 try:
@@ -171,6 +172,8 @@ try:
     threshold_porn = float(config["custom"].get("threshold_porn", threshold_porn))
     user_name = config["custom"].get("user_name", user_name)
     # [encrypt]
+    key = config["encrypt"].get("key", key)
+    key = key.encode("utf-8")
     password = config["encrypt"].get("password", password)
 except Exception as e:
     logger.warning(f"Read data from config.ini error: {e}", exc_info=True)
@@ -201,6 +204,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or reset_day in {"", "[DATA EXPUNGED]"}
         or threshold_porn == 0
         or user_name in {"", "[DATA EXPUNGED]"}
+        or key in {"", b"[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
     raise SystemExit('No proper settings')
 

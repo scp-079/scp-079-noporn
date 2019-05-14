@@ -18,7 +18,6 @@
 
 import logging
 from copy import deepcopy
-from time import time
 
 from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
 
@@ -30,7 +29,7 @@ from ..functions.filters import exchange_channel, class_c, class_d, class_e, dec
 from ..functions.filters import is_declared_ban_message_id, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
 from ..functions.group import get_message, leave_group
-from ..functions.user import terminate_nsfw_user
+from ..functions.user import receive_watch_user, terminate_nsfw_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.telegram import get_admins, send_message, send_report_message
 from ..functions.tests import porn_test
@@ -181,11 +180,7 @@ def process_data(client, message):
                             glovar.bad_ids["users"].add(the_id)
                             save("bad_ids")
                     elif action_type == "watch":
-                        now = int(time())
-                        if the_type == "ban":
-                            glovar.watch_ids["ban"][the_id] = now
-                        elif the_type == "delete":
-                            glovar.watch_ids["delete"][the_id] = now
+                        receive_watch_user(the_type, the_id, data["until"])
 
                 elif action == "declare":
                     group_id = data["group_id"]
@@ -271,11 +266,7 @@ def process_data(client, message):
                             glovar.bad_ids["users"].add(the_id)
                             save("bad_ids")
                     elif action_type == "watch":
-                        now = int(time())
-                        if the_type == "ban":
-                            glovar.watch_ids["ban"][the_id] = now
-                        elif the_type == "delete":
-                            glovar.watch_ids["delete"][the_id] = now
+                        receive_watch_user(the_type, the_id, data["until"])
 
                 elif action == "declare":
                     group_id = data["group_id"]
@@ -305,11 +296,7 @@ def process_data(client, message):
                             glovar.bad_ids["users"].add(the_id)
                             save("bad_ids")
                     elif action_type == "watch":
-                        now = int(time())
-                        if the_type == "ban":
-                            glovar.watch_ids["ban"][the_id] = now
-                        elif the_type == "delete":
-                            glovar.watch_ids["delete"][the_id] = now
+                        receive_watch_user(the_type, the_id, data["until"])
 
                 elif action == "declare":
                     group_id = data["group_id"]
@@ -359,11 +346,7 @@ def process_data(client, message):
                             glovar.bad_ids["users"].add(the_id)
                             save("bad_ids")
                     elif action_type == "watch":
-                        now = int(time())
-                        if the_type == "ban":
-                            glovar.watch_ids["ban"][the_id] = now
-                        elif the_type == "delete":
-                            glovar.watch_ids["delete"][the_id] = now
+                        receive_watch_user(the_type, the_id, data["until"])
 
                 elif action == "declare":
                     group_id = data["group_id"]
@@ -417,11 +400,7 @@ def process_data(client, message):
                     the_id = data["id"]
                     the_type = data["type"]
                     if action_type == "watch":
-                        now = int(time())
-                        if the_type == "ban":
-                            glovar.watch_ids["ban"][the_id] = now
-                        elif the_type == "delete":
-                            glovar.watch_ids["delete"][the_id] = now
+                        receive_watch_user(the_type, the_id, data["until"])
 
     except Exception as e:
         logger.warning(f"Process data error: {e}", exc_info=True)

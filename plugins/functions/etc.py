@@ -23,6 +23,7 @@ from string import ascii_letters, digits
 from threading import Thread, Timer
 from typing import Callable, List, Union
 
+from cryptography.fernet import Fernet
 from pyrogram import Message
 
 # Enable logging
@@ -61,6 +62,20 @@ def code_block(text) -> str:
         return f"```{text}```"
 
     return ""
+
+
+def crypt_str(operation: str, text: str, key: str) -> str:
+    # Encrypt or decrypt a string
+    f = Fernet(key)
+    text = text.encode("utf-8")
+    if operation == "decrypt":
+        result = f.decrypt(text)
+    else:
+        result = f.encrypt(text)
+
+    result = result.decode("utf-8")
+
+    return result
 
 
 def delay(secs: int, target: Callable, args: list) -> bool:
