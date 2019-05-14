@@ -234,12 +234,12 @@ bad_ids: Dict[str, Set[int]] = {
 #     "users": {12345678}
 # }
 
-except_ids: Dict[str, Set[int]] = {
-    "channels": set(),
+except_ids: Dict[str, Set[Union[int, str]]] = {
+    "stickers": set(),
     "users": set()
 }
 # except_ids = {
-#     "channels": {-10012345678},
+#     "stickers": {"file_id"},
 #     "users": {12345678}
 # }
 

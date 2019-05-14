@@ -60,6 +60,11 @@ def reset_data() -> bool:
     # Reset user data every month
     glovar.user_ids = {}
     save("user_ids")
+    glovar.bad_ids = {
+        "channels": set(),
+        "users": set()
+    }
+    save("bad_ids")
 
     return True
 
