@@ -48,9 +48,9 @@ def config(client, message):
             if len(command_list) == 2 and re.search("^noporn$", command_list[1], re.I):
                 now = int(time())
                 # Check the config lock
-                if now - glovar.configs[gid]["locked"] > 360:
+                if now - glovar.configs[gid]["lock"] > 360:
                     # Set lock
-                    glovar.configs[gid]["locked"] = now
+                    glovar.configs[gid]["lock"] = now
                     # Ask CONFIG generate a config session
                     group_name, group_link = get_group_info(client, message.chat)
                     share_data(

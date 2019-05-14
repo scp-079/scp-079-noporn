@@ -48,7 +48,7 @@ declared_message_ids: Dict[str, Dict[int, Set[int]]] = {
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
     "channel": True,
-    "locked": 0,
+    "lock": 0,
     "recheck": False
 }
 
@@ -262,7 +262,7 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 #     -10012345678: {
 #         "default": True,
 #         "channel": True,
-#         "locked": 0,
+#         "lock": 0,
 #         "recheck": False
 # }
 
