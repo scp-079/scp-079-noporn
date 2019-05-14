@@ -82,7 +82,9 @@ receivers_status: List[str] = ["CAPTCHA", "LANG", "NOFLOOD", "NOPORN", "NOSPAM",
 
 sender: str = "NOPORN"
 
-version: str = "0.1.4"
+should_hide: bool = False
+
+version: str = "0.1.5"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -117,6 +119,7 @@ warn_id: int = 0
 # [channels]
 debug_channel_id: int = 0
 exchange_channel_id: int = 0
+hide_channel_id: int = 0
 logging_channel_id: int = 0
 test_group_id: int = 0
 logging_channel_username: str = ""
@@ -152,6 +155,7 @@ try:
     # [channels]
     debug_channel_id = int(config["channels"].get("debug_channel_id", debug_channel_id))
     exchange_channel_id = int(config["channels"].get("exchange_channel_id", exchange_channel_id))
+    hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
     logging_channel_id = int(config["channels"].get("logging_channel_id", logging_channel_id))
     test_group_id = int(config["channels"].get("test_group_id", test_group_id))
     logging_channel_username = config["channels"].get("logging_channel_username", logging_channel_username)
@@ -182,6 +186,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or warn_id == 0
         or debug_channel_id == 0
         or exchange_channel_id == 0
+        or hide_channel_id == 0
         or logging_channel_id == 0
         or test_group_id == 0
         or logging_channel_username in {"", "[DATA EXPUNGED]"}

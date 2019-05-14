@@ -31,6 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def answer_callback(client: Client, query_id: str, text: str) -> Optional[bool]:
+    # Answer the callback
     result = None
     try:
         flood_wait = True
@@ -52,6 +53,7 @@ def answer_callback(client: Client, query_id: str, text: str) -> Optional[bool]:
 
 def edit_message_text(client: Client, cid: int, mid: int, text: str,
                       markup: InlineKeyboardMarkup = None) -> Optional[Message]:
+    # Edit the message's text
     result = None
     try:
         if text.strip():
@@ -77,6 +79,7 @@ def edit_message_text(client: Client, cid: int, mid: int, text: str,
 
 
 def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[bool]:
+    # Delete some messages
     result = None
     try:
         flood_wait = True
@@ -94,6 +97,7 @@ def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[b
 
 
 def download_media(client: Client, file_id: str, file_path: str):
+    # Download a media file
     result = None
     try:
         flood_wait = True
@@ -111,6 +115,7 @@ def download_media(client: Client, file_id: str, file_path: str):
 
 
 def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember]]]:
+    # Get a group's admins
     result = None
     try:
         flood_wait = True
@@ -132,6 +137,7 @@ def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember
 
 
 def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
+    # Get a group's name and link
     group_name = "Unknown Group"
     group_link = glovar.default_group_link
     try:
@@ -162,6 +168,7 @@ def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
 
 
 def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[Messages]:
+    # Get some messages
     result = None
     try:
         flood_wait = True
@@ -179,6 +186,7 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[Mess
 
 
 def kick_chat_member(client: Client, cid: int, uid: int) -> Optional[Union[bool, Message]]:
+    # Kick a chat member in a group
     result = None
     try:
         flood_wait = True
@@ -196,6 +204,7 @@ def kick_chat_member(client: Client, cid: int, uid: int) -> Optional[Union[bool,
 
 
 def leave_chat(client: Client, cid: int) -> bool:
+    # Leave a channel
     try:
         flood_wait = True
         while flood_wait:
@@ -214,7 +223,8 @@ def leave_chat(client: Client, cid: int) -> bool:
 
 
 def send_document(client: Client, cid: int, file: str, text: str = None, mid: int = None,
-                  markup: InlineKeyboardMarkup = None) -> Optional[Message]:
+                  markup: InlineKeyboardMarkup = None) -> Optional[Union[bool, Message]]:
+    # Send a document to a chat
     result = None
     try:
         flood_wait = True
@@ -232,6 +242,8 @@ def send_document(client: Client, cid: int, file: str, text: str = None, mid: in
             except FloodWait as e:
                 flood_wait = True
                 sleep(e.x + 1)
+            except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+                return False
     except Exception as e:
         logger.warning(f"Send document to {cid} error: {e}", exec_info=True)
 
@@ -239,7 +251,8 @@ def send_document(client: Client, cid: int, file: str, text: str = None, mid: in
 
 
 def send_message(client: Client, cid: int, text: str, mid: int = None,
-                 markup: InlineKeyboardMarkup = None) -> Optional[Message]:
+                 markup: InlineKeyboardMarkup = None) -> Optional[Union[bool, Message]]:
+    # Send a message to a chat
     result = None
     try:
         if text.strip():
@@ -258,6 +271,8 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
                 except FloodWait as e:
                     flood_wait = True
                     sleep(e.x + 1)
+                except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+                    return False
     except Exception as e:
         logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
 
@@ -266,6 +281,7 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
 
 def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int = None,
                         markup: InlineKeyboardMarkup = None) -> Optional[Message]:
+    # Send a message that will be auto deleted to a chat
     result = None
     try:
         if text.strip():
@@ -295,6 +311,7 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
 
 
 def unban_chat_member(client: Client, cid: int, uid: int) -> Optional[bool]:
+    # Unban a user in a group
     result = None
     try:
         flood_wait = True

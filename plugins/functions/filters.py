@@ -129,13 +129,22 @@ def is_declared_delete_message(_, message: Message) -> bool:
 
 
 def is_exchange_channel(_, message: Message) -> bool:
-    # Check if the message is sent from exchange channel
-    try:
-        cid = message.chat.id
-        if cid == glovar.exchange_channel_id:
+    # Check if the message is sent from the exchange channel
+    cid = message.chat.id
+    if glovar.should_hide:
+        if cid == glovar.hide_channel_id:
             return True
-    except Exception as e:
-        logger.warning(f"Is exchange channel error: {e}", exc_info=True)
+    elif cid == glovar.exchange_channel_id:
+        return True
+
+    return False
+
+
+def is_hide_channel(_, message: Message) -> bool:
+    # Check if the message is sent from the hide channel
+    cid = message.chat.id
+    if cid == glovar.hide_channel_id:
+        return True
 
     return False
 
@@ -280,6 +289,11 @@ declared_delete_message = Filters.create(
 exchange_channel = Filters.create(
     name="Exchange Channel",
     func=is_exchange_channel
+)
+
+hide_channel = Filters.create(
+    name="Hide Channel",
+    func=is_hide_channel
 )
 
 high_score_user = Filters.create(

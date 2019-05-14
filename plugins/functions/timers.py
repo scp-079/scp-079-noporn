@@ -128,7 +128,7 @@ def update_status(client: Client) -> bool:
         share_data(
             client=client,
             receivers=["BACKUP"],
-            action="update",
+            action="backup",
             action_type="status",
             data="awake"
         )

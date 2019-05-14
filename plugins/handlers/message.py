@@ -26,7 +26,7 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message
+from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, hide_channel
 from ..functions.filters import is_declared_ban_message_id, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
 from ..functions.group import get_message, leave_group
@@ -50,6 +50,26 @@ def check(client, message):
             terminate_nsfw_user(client, message, "media")
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
+
+
+@Client.on_message(Filters.incoming & Filters.channel & hide_channel
+                   & ~Filters.command(glovar.all_commands, glovar.prefix))
+def exchange_emergency(_, message):
+    try:
+        # Read basic information
+        data = receive_data(message)
+        sender = data["from"]
+        receivers = data["to"]
+        action = data["action"]
+        action_type = data["type"]
+        data = data["data"]
+        if "EMERGENCY" in receivers:
+            if sender == "EMERGENCY":
+                if action == "backup":
+                    if action_type == "hide":
+                        glovar.should_hide = data
+    except Exception as e:
+        logger.warning(f"Exchange emergency error: {e}", exc_info=True)
 
 
 @Client.on_message(Filters.incoming & Filters.group & Filters.new_chat_members & new_group)

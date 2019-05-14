@@ -115,7 +115,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
             if result:
                 delete_message(client, gid, mid)
                 declare_message(client, "delete", gid, mid)
-                ask_for_help(client, "delete", gid, uid)
+                ask_for_help(client, "delete", gid, uid, "global")
                 add_watch_ban_user(client, uid)
                 previous = add_nsfw_user(gid, uid)
                 if not previous:
