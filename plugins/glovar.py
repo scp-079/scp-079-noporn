@@ -133,6 +133,7 @@ project_name: str = ""
 punish_time: int = 0
 reset_day: str = ""
 threshold_porn: float = 0
+time_ban: int = 0
 user_name: str = ""
 
 # [encrypt]
@@ -170,6 +171,7 @@ try:
     punish_time = int(config["custom"].get("punish_time", punish_time))
     reset_day = config["custom"].get("reset_day", reset_day)
     threshold_porn = float(config["custom"].get("threshold_porn", threshold_porn))
+    time_ban = int(config["custom"].get("time_ban", time_ban))
     user_name = config["custom"].get("user_name", user_name)
     # [encrypt]
     key = config["encrypt"].get("key", key)
@@ -203,6 +205,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or punish_time == 0
         or reset_day in {"", "[DATA EXPUNGED]"}
         or threshold_porn == 0
+        or time_ban == 0
         or user_name in {"", "[DATA EXPUNGED]"}
         or key in {"", b"[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):

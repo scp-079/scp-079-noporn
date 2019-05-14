@@ -66,8 +66,11 @@ def add_watch_ban_user(client: Client, uid: int) -> bool:
     # Add a watch ban user, share it
     try:
         now = int(time())
-        glovar.watch_ids["ban"][uid] = now
-        share_watch_ban_user(client, uid)
+        until = now + glovar.time_ban
+        glovar.watch_ids["ban"][uid] = until
+        until = str(until)
+        until = crypt_str("encrypt", until, glovar.key)
+        share_watch_ban_user(client, uid, until)
         return True
     except Exception as e:
         logger.warning(f"Add watch ban user error: {e}", exc_info=True)

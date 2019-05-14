@@ -217,7 +217,7 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
     return False
 
 
-def share_watch_ban_user(client: Client, uid: int) -> bool:
+def share_watch_ban_user(client: Client, uid: int, until: str) -> bool:
     # Share a watch ban user with other bots
     try:
         share_data(
@@ -227,7 +227,8 @@ def share_watch_ban_user(client: Client, uid: int) -> bool:
             action_type="watch",
             data={
                 "id": uid,
-                "type": "ban"
+                "type": "ban",
+                "until": until
             }
         )
         return True
