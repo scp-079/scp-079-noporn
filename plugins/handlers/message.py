@@ -215,8 +215,8 @@ def process_data(client, message):
                             glovar.bad_ids["channels"].add(the_id)
                             save("bad_ids")
                     elif action_type == "except":
-                        if the_type == "channel":
-                            glovar.except_ids["channels"].add(the_id)
+                        if the_type == "sticker":
+                            glovar.except_ids["stickers"].add(the_id)
                         elif the_type == "user":
                             glovar.except_ids["users"].add(the_id)
 
