@@ -377,12 +377,12 @@ def process_data(client, message):
                             mid = data["message_id"]
                             file_id = data["image"]
                             if file_id:
-                                if not is_declared_ban_message_id(gid, mid):
-                                    if not is_nsfw_user_id(gid, uid):
-                                        if is_nsfw_media(client, file_id):
-                                            the_message = get_message(client, gid, mid)
-                                            if the_message:
-                                                terminate_nsfw_user(client, the_message, "media")
+                                if (not is_declared_ban_message_id(gid, mid)
+                                        and not is_nsfw_user_id(gid, uid)):
+                                    if is_nsfw_media(client, file_id):
+                                        the_message = get_message(client, gid, mid)
+                                        if the_message:
+                                            terminate_nsfw_user(client, the_message, "media")
 
             elif sender == "WARN":
 
