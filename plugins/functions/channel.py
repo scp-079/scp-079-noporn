@@ -101,6 +101,9 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
     # Forward the message to logging channel as evidence
     result = None
     try:
+        if not message or not message.from_user:
+            return result
+
         uid = message.from_user.id
         flood_wait = True
         while flood_wait:
