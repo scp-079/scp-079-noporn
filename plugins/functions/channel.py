@@ -98,7 +98,7 @@ def exchange_to_hide(client: Client) -> bool:
 
 
 def forward_evidence(client: Client, message: Message, level: str, rule: str) -> Optional[Union[bool, int]]:
-    # Forward the message to logging channel as evidence
+    # Forward the message to the logging channel as evidence
     result = None
     try:
         if not message or not message.from_user:
