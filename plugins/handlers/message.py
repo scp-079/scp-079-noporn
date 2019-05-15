@@ -25,7 +25,7 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import exchange_channel, class_c, class_d, class_e, declared_ban_message, hide_channel
+from ..functions.filters import class_c, class_d, class_e, declared_ban_message, exchange_channel, hide_channel
 from ..functions.filters import is_declared_ban_message_id, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
 from ..functions.group import get_message, leave_group
