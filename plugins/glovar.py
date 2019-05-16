@@ -84,7 +84,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.1.6"
+version: str = "0.1.7"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -242,11 +242,15 @@ bad_ids: Dict[str, Set[int]] = {
 # }
 
 except_ids: Dict[str, Set[Union[int, str]]] = {
+    "channels": set(),
     "stickers": set(),
+    "tmp": set(),
     "users": set()
 }
 # except_ids = {
+#     "channels": {-10012345678},
 #     "stickers": {"file_id"},
+#     "tmp": {"file_id"},
 #     "users": {12345678}
 # }
 

@@ -343,7 +343,9 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
 
             if file_id in glovar.file_ids["nsfw"]:
                 return True
-            elif file_id in glovar.file_ids["safe"]:
+            elif (file_id in glovar.file_ids["safe"]
+                  or file_id in glovar.file_ids["stickers"]
+                  or file_id in glovar.file_ids["tmp"]):
                 return False
             else:
                 image_path = get_downloaded_path(client, file_id)

@@ -210,8 +210,12 @@ def process_data(client, message):
                             glovar.bad_ids["channels"].add(the_id)
                             save("bad_ids")
                     elif action_type == "except":
-                        if the_type == "sticker":
+                        if the_type == "channels":
+                            glovar.except_ids["channels"].add(the_id)
+                        elif the_type == "sticker":
                             glovar.except_ids["stickers"].add(the_id)
+                        elif the_type == "tmp":
+                            glovar.except_ids["tmp"].add(the_id)
                         elif the_type == "user":
                             glovar.except_ids["users"].add(the_id)
 
@@ -247,6 +251,10 @@ def process_data(client, message):
                     elif action_type == "except":
                         if the_type == "channel":
                             glovar.except_ids["channels"].discard(the_id)
+                        elif the_type == "stickers":
+                            glovar.except_ids["stickers"].discard(the_id)
+                        elif the_type == "tmp":
+                            glovar.except_ids["tmp"].discard(the_id)
                         elif the_type == "user":
                             glovar.except_ids["users"].discard(the_id)
 
