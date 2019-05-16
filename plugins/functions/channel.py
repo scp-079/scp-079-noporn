@@ -118,7 +118,7 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
                 return False
 
         result = result.message_id
-        text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
+        text = (f"项目编号：{code(glovar.sender)}\n"
                 f"用户 ID：{code(uid)}\n"
                 f"操作等级：{code(level)}\n"
                 f"规则：{code(rule)}\n")
