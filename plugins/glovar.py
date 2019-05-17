@@ -79,7 +79,7 @@ receivers_bad: List[str] = ["APPEAL", "CAPTCHA", "LANG", "NOFLOOD", "NOPORN",
 
 receivers_declare: List[str] = ["LANG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"]
 
-receivers_status: List[str] = ["CAPTCHA", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
+receivers_status: List[str] = ["CAPTCHA", "CLEAN", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
 
 sender: str = "NOPORN"
 
