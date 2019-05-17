@@ -28,19 +28,6 @@ from .. import glovar
 logger = logging.getLogger(__name__)
 
 
-def get_porn(path: str) -> float:
-    # Get porn score
-    porn = 0
-    try:
-        image = Image.open(path)
-        sfw, nsfw = classify(image)
-        porn = nsfw
-    except Exception as e:
-        logger.warning(f"Get porn error: {e}", exc_info=True)
-
-    return porn
-
-
 def get_file_id(message: Message) -> str:
     # Get media message's file id
     if (message.photo or message.sticker or (message.animation and message.animation.thumb)
@@ -73,3 +60,16 @@ def get_file_id(message: Message) -> str:
         file_id = ""
 
     return file_id
+
+
+def get_porn(path: str) -> float:
+    # Get porn score
+    porn = 0
+    try:
+        image = Image.open(path)
+        sfw, nsfw = classify(image)
+        porn = nsfw
+    except Exception as e:
+        logger.warning(f"Get porn error: {e}", exc_info=True)
+
+    return porn

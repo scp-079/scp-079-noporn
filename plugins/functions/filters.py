@@ -221,7 +221,7 @@ def is_nsfw_user_id(gid: int, uid: int) -> bool:
 
 
 def is_test_group(_, message: Message) -> bool:
-    # Check if the message is sent from test group
+    # Check if the message is sent from the test group
     try:
         cid = message.chat.id
         if cid == glovar.test_group_id:
