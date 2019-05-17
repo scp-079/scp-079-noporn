@@ -275,8 +275,8 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 # configs = {
 #     -10012345678: {
 #         "default": True,
-#         "channel": True,
 #         "lock": 0,
+#         "channel": True,
 #         "recheck": False
 # }
 

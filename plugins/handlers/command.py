@@ -98,7 +98,7 @@ def noporn_config(client, message):
             if len(command_list) > 1:
                 now = int(time())
                 # Check the config lock
-                if now - new_config["locked"] > 360:
+                if now - new_config["lock"] > 360:
                     command_type = list(filter(None, command_list))[1]
                     if command_type == "show":
                         text += (f"操作：{code('查看设置')}\n"
