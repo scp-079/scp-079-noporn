@@ -132,8 +132,17 @@ def process_data(client, message):
                         save("user_ids")
 
             elif sender == "CLEAN":
+                if action == "add":
+                    the_id = data["id"]
+                    the_type = data["type"]
+                    if action_type == "bad":
+                        if the_type == "user":
+                            glovar.bad_ids["users"].add(the_id)
+                            save("bad_ids")
+                    elif action_type == "watch":
+                        receive_watch_user(the_type, the_id, data["until"])
 
-                if action == "declare":
+                elif action == "declare":
                     group_id = data["group_id"]
                     message_id = data["message_id"]
                     if glovar.configs.get(group_id):
@@ -142,6 +151,14 @@ def process_data(client, message):
                                 glovar.declared_message_ids["ban"][group_id].add(message_id)
                             elif action_type == "delete":
                                 glovar.declared_message_ids["delete"][group_id].add(message_id)
+
+                elif action == "update":
+                    if action_type == "score":
+                        uid = data["id"]
+                        init_user_id(uid)
+                        score = data["score"]
+                        glovar.user_ids[uid]["score"]["clean"] = score
+                        save("user_ids")
 
             elif sender == "CONFIG":
 
@@ -292,36 +309,6 @@ def process_data(client, message):
                         init_user_id(uid)
                         score = data["score"]
                         glovar.user_ids[uid]["score"]["noflood"] = score
-                        save("user_ids")
-
-            elif sender == "NOPORN":
-
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "user":
-                            glovar.bad_ids["users"].add(the_id)
-                            save("bad_ids")
-                    elif action_type == "watch":
-                        receive_watch_user(the_type, the_id, data["until"])
-
-                elif action == "declare":
-                    group_id = data["group_id"]
-                    message_id = data["message_id"]
-                    if glovar.configs.get(group_id):
-                        if init_group_id(group_id):
-                            if action_type == "ban":
-                                glovar.declared_message_ids["ban"][group_id].add(message_id)
-                            elif action_type == "delete":
-                                glovar.declared_message_ids["delete"][group_id].add(message_id)
-
-                elif action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["noporn"] = score
                         save("user_ids")
 
             elif sender == "NOSPAM":
