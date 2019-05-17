@@ -58,13 +58,19 @@ def backup_files(client: Client) -> bool:
 
 def reset_data() -> bool:
     # Reset user data every month
-    glovar.user_ids = {}
-    save("user_ids")
     glovar.bad_ids = {
         "channels": set(),
         "users": set()
     }
     save("bad_ids")
+
+    glovar.except_ids = {
+        "tmp": set()
+    }
+    save("except_ids")
+
+    glovar.user_ids = {}
+    save("user_ids")
 
     return True
 

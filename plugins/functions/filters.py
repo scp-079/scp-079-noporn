@@ -68,6 +68,10 @@ def is_class_e(_, message: Message) -> bool:
         if uid in glovar.except_ids["users"]:
             return True
 
+        for gid in glovar.admin_ids:
+            if uid in glovar.admin_ids[gid]:
+                return True
+
         if message.forward_from_chat:
             cid = message.forward_from_chat.id
             if cid in glovar.except_ids["channels"]:

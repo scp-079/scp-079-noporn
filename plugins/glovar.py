@@ -56,6 +56,7 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
     "nsfw": {},
     "score": {
         "captcha": 0,
+        "clean": 0,
         "lang": 0,
         "noflood": 0,
         "noporn": 0,
@@ -84,7 +85,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.1.7"
+version: str = "0.1.8"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -260,6 +261,7 @@ user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, in
 #         "nsfw": {},
 #         "score": {
 #             "captcha": 0,
+#             "clean": 0,
 #             "lang": 0,
 #             "noflood": 0,
 #             "noporn": 0,
