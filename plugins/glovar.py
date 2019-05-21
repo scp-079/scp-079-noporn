@@ -77,7 +77,7 @@ lock_image: Lock = Lock()
 receivers_bad: List[str] = ["APPEAL", "CAPTCHA", "LANG", "NOFLOOD", "NOPORN",
                             "NOSPAM", "MANAGE", "RECHECK", "USER", "WATCH"]
 
-receivers_declare: List[str] = ["LANG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"]
+receivers_declare: List[str] = ["CLEAN", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"]
 
 receivers_status: List[str] = ["CAPTCHA", "CLEAN", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
 

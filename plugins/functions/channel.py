@@ -28,7 +28,6 @@ from .etc import code, general_link, format_data, thread, user_mention
 from .file import crypt_file, save
 from .telegram import get_group_info, send_document, send_message
 
-
 # Enable logging
 logger = logging.getLogger(__name__)
 
