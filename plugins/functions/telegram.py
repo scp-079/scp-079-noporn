@@ -314,21 +314,3 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
         logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
 
     return result
-
-
-def unban_chat_member(client: Client, cid: int, uid: int) -> Optional[bool]:
-    # Unban a user in a group
-    result = None
-    try:
-        flood_wait = True
-        while flood_wait:
-            flood_wait = False
-            try:
-                result = client.unban_chat_member(chat_id=cid, user_id=uid)
-            except FloodWait as e:
-                flood_wait = True
-                sleep(e.x + 1)
-    except Exception as e:
-        logger.warning(f"Unban chat member {uid} in {cid} error: {e}")
-
-    return result
