@@ -22,8 +22,8 @@ from time import sleep
 from pyrogram import Client
 
 from .. import glovar
-from .etc import code, general_link, thread
 from .channel import share_data
+from .etc import code, general_link, thread
 from .file import save
 from .group import leave_group
 from .telegram import get_admins, get_group_info, send_message
