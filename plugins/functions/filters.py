@@ -85,49 +85,18 @@ def is_class_e(_, message: Message) -> bool:
 def is_declared_message(_, message: Message) -> bool:
     # Check if the message is declared by other bots
     try:
-        gid = message.chat.id
-        mid = message.message_id
+        if isinstance(message, int):
+            gid = _
+            mid = message
+        else:
+            gid = message.chat.id
+            mid = message.message_id
+
         if (mid in glovar.declared_message_ids["ban"].get(gid, set())
                 or mid in glovar.declared_message_ids["delete"].get(gid, set())):
             return True
     except Exception as e:
         logger.warning(f"Is declared message error: {e}", exc_info=True)
-
-    return False
-
-
-def is_declared_ban_message(_, message: Message) -> bool:
-    # Check if the message is declared by other bots with "ban" type
-    try:
-        gid = message.chat.id
-        mid = message.message_id
-        return is_declared_ban_message_id(gid, mid)
-    except Exception as e:
-        logger.warning(f"Is declared ban message error: {e}", exc_info=True)
-
-    return False
-
-
-def is_declared_ban_message_id(gid: int, mid: int) -> bool:
-    # Check if the message_id is declared by other bots with "ban" type
-    try:
-        if mid in glovar.declared_message_ids["ban"].get(gid, set()):
-            return True
-    except Exception as e:
-        logger.warning(f"Is declared ban message id error: {e}", exc_info=True)
-
-    return False
-
-
-def is_declared_delete_message(_, message: Message) -> bool:
-    # Check if the message is declared by other bots with "delete" type
-    try:
-        gid = message.chat.id
-        mid = message.message_id
-        if mid in glovar.declared_message_ids["delete"].get(gid, set()):
-            return True
-    except Exception as e:
-        logger.warning(f"Is declared delete message error: {e}", exc_info=True)
 
     return False
 
@@ -278,16 +247,6 @@ class_e = Filters.create(
 declared_message = Filters.create(
     name="Declared message",
     func=is_declared_message
-)
-
-declared_ban_message = Filters.create(
-    name="Declared ban message",
-    func=is_declared_ban_message
-)
-
-declared_delete_message = Filters.create(
-    name="Declared delete message",
-    func=is_declared_delete_message
 )
 
 exchange_channel = Filters.create(

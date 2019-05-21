@@ -25,8 +25,8 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import class_c, class_d, class_e, declared_ban_message, exchange_channel, hide_channel
-from ..functions.filters import is_declared_ban_message_id, is_nsfw_user_id
+from ..functions.filters import class_c, class_d, class_e, declared_message, exchange_channel, hide_channel
+from ..functions.filters import is_declared_message, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
 from ..functions.group import get_message, leave_group
 from ..functions.user import receive_watch_user, terminate_nsfw_user
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group & Filters.media
-                   & ~class_c & ~class_d & ~class_e & ~declared_ban_message)
+                   & ~class_c & ~class_d & ~class_e & ~declared_message)
 def check(client, message):
     try:
         gid = message.chat.id
@@ -373,7 +373,7 @@ def process_data(client, message):
                             mid = data["message_id"]
                             file_id = data["image"]
                             if file_id:
-                                if (not is_declared_ban_message_id(gid, mid)
+                                if (not is_declared_message(gid, mid)
                                         and not is_nsfw_user_id(gid, uid)):
                                     if is_nsfw_media(client, file_id):
                                         the_message = get_message(client, gid, mid)

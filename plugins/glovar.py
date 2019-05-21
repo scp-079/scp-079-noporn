@@ -85,7 +85,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.1.8"
+version: str = "0.1.9"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
