@@ -47,8 +47,8 @@ declared_message_ids: Dict[str, Dict[int, Set[int]]] = {
 
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
-    "channel": True,
     "lock": 0,
+    "channel": True,
     "recheck": False
 }
 
@@ -283,7 +283,7 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 # }
 
 # Load data
-file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "configs", "user_ids"]
+file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "user_ids", "configs"]
 for file in file_list:
     try:
         try:
