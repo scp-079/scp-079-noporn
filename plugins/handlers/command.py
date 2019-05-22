@@ -81,8 +81,8 @@ def config(client, message):
 
 
 @Client.on_message(Filters.incoming & Filters.group
-                   & Filters.command(["noporn_config"], glovar.prefix))
-def noporn_config(client, message):
+                   & Filters.command(["config_noporn"], glovar.prefix))
+def config_noporn(client, message):
     try:
         gid = message.chat.id
         mid = message.message_id
