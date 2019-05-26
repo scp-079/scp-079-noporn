@@ -86,14 +86,18 @@ def code_block(text) -> str:
 
 def crypt_str(operation: str, text: str, key: str) -> str:
     # Encrypt or decrypt a string
-    f = Fernet(key)
-    text = text.encode("utf-8")
-    if operation == "decrypt":
-        result = f.decrypt(text)
-    else:
-        result = f.encrypt(text)
+    result = ""
+    try:
+        f = Fernet(key)
+        text = text.encode("utf-8")
+        if operation == "decrypt":
+            result = f.decrypt(text)
+        else:
+            result = f.encrypt(text)
 
-    result = result.decode("utf-8")
+        result = result.decode("utf-8")
+    except Exception as e:
+        logger.warning(f"Crypt str error: {e}", exc_info=True)
 
     return result
 
