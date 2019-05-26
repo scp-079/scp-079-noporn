@@ -131,28 +131,36 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
 
 def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
     # Get a debug message text prefix, accept int or Chat
-    if isinstance(context, int):
-        info_para = context
-        id_para = context
-    else:
-        info_para = context
-        id_para = context.id
+    text = ""
+    try:
+        if isinstance(context, int):
+            info_para = context
+            id_para = context
+        else:
+            info_para = context
+            id_para = context.id
 
-    group_name, group_link = get_group_info(client, info_para)
-    text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
-            f"群组名称：{general_link(group_name, group_link)}\n"
-            f"群组 ID：{code(id_para)}\n")
+        group_name, group_link = get_group_info(client, info_para)
+        text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
+                f"群组名称：{general_link(group_name, group_link)}\n"
+                f"群组 ID：{code(id_para)}\n")
+    except Exception as e:
+        logger.warning(f"Get debug text error: {e}", exc_info=True)
 
     return text
 
 
 def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, eid: int) -> bool:
     # Send the debug message
-    text = get_debug_text(client, chat)
-    text += (f"用户 ID：{user_mention(uid)}\n"
-             f"执行操作：{code(action)}\n"
-             f"触发消息：{general_link(mid, f'https://t.me/{glovar.logging_channel_username}/{eid}')}\n")
-    thread(send_message, (client, glovar.debug_channel_id, text))
+    try:
+        text = get_debug_text(client, chat)
+        text += (f"用户 ID：{user_mention(uid)}\n"
+                 f"执行操作：{code(action)}\n"
+                 f"触发消息：{general_link(mid, f'https://t.me/{glovar.logging_channel_username}/{eid}')}\n")
+        thread(send_message, (client, glovar.debug_channel_id, text))
+        return True
+    except Exception as e:
+        logger.warning(f"Send debug error: {e}", exc_info=True)
 
     return False
 
