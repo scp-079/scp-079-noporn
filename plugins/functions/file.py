@@ -21,14 +21,13 @@ from os import remove
 from os.path import exists
 from pickle import dump
 from shutil import copyfile
-from threading import Thread
 from typing import Optional
 
 from pyAesCrypt import decryptFile, encryptFile
 from pyrogram import Client
 
 from .. import glovar
-from .etc import random_str
+from .etc import random_str, thread
 from .telegram import download_media
 
 # Enable logging
@@ -66,31 +65,40 @@ def delete_file(path: str) -> bool:
 def get_downloaded_path(client: Client, file_id: str) -> Optional[str]:
     # Download file, get it's path on local machine
     final_path = None
-    if file_id:
-        try:
+    try:
+        if file_id:
             file_path = get_new_path()
             final_path = download_media(client, file_id, file_path)
-        except Exception as e:
-            logger.warning(f"Get image path error: {e}", exc_info=True)
+    except Exception as e:
+        logger.warning(f"Get downloaded path error: {e}", exc_info=True)
 
     return final_path
 
 
 def get_new_path() -> str:
     # Get a new path in tmp directory
-    file_path = random_str(8)
-    while exists(f"tmp/{file_path}"):
+    result = ""
+    try:
         file_path = random_str(8)
+        while exists(f"tmp/{file_path}"):
+            file_path = random_str(8)
 
-    return f"tmp/{file_path}"
+        result = f"tmp/{file_path}"
+    except Exception as e:
+        logger.warning(f"Get new path error: {e}", exc_info=True)
+
+    return result
 
 
 def save(file: str) -> bool:
     # Save a global variable to a file
-    t = Thread(target=save_thread, args=(file,))
-    t.start()
+    try:
+        thread(save_thread, (file,))
+        return True
+    except Exception as e:
+        logger.warning(f"Save error: {e}", exc_info=True)
 
-    return True
+    return False
 
 
 def save_thread(file: str) -> bool:

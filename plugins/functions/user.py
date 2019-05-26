@@ -119,7 +119,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
             if result:
                 ban_user(client, gid, uid)
                 delete_message(client, gid, mid)
-                declare_message(client, "ban", gid, mid)
+                declare_message(client, gid, mid)
                 ask_for_help(client, "ban", gid, uid)
                 add_bad_user(client, uid)
                 send_debug(client, message.chat, "追踪封禁", uid, mid, result)
@@ -128,7 +128,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
             if result:
                 ban_user(client, gid, uid)
                 delete_message(client, gid, mid)
-                declare_message(client, "ban", gid, mid)
+                declare_message(client, gid, mid)
                 ask_for_help(client, "ban", gid, uid)
                 add_bad_user(client, uid)
                 send_debug(client, message.chat, "评分封禁", uid, mid, result)
@@ -136,7 +136,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
             result = forward_evidence(client, message, "自动删除", "敏感追踪")
             if result:
                 delete_message(client, gid, mid)
-                declare_message(client, "delete", gid, mid)
+                declare_message(client, gid, mid)
                 ask_for_help(client, "delete", gid, uid, "global")
                 add_watch_ban_user(client, uid)
                 previous = add_nsfw_user(gid, uid)
@@ -147,7 +147,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
         elif is_nsfw_user(None, message):
             delete_message(client, gid, mid)
             add_nsfw_user(gid, uid)
-            declare_message(client, "delete", gid, mid)
+            declare_message(client, gid, mid)
         else:
             if the_type == "channel":
                 rule = "受限频道"
@@ -158,7 +158,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
             if result:
                 delete_message(client, gid, mid)
                 previous = add_nsfw_user(gid, uid)
-                declare_message(client, "delete", gid, mid)
+                declare_message(client, gid, mid)
                 if not previous:
                     update_score(client, uid)
 

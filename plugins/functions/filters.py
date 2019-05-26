@@ -27,7 +27,6 @@ from .file import delete_file, get_downloaded_path
 from .ids import init_group_id
 from .image import get_file_id, get_porn
 
-
 # Enable logging
 logger = logging.getLogger(__name__)
 
@@ -92,8 +91,7 @@ def is_declared_message(_, message: Message) -> bool:
             gid = message.chat.id
             mid = message.message_id
 
-        if (mid in glovar.declared_message_ids["ban"].get(gid, set())
-                or mid in glovar.declared_message_ids["delete"].get(gid, set())):
+        if mid in glovar.declared_message_ids.get(gid, set()):
             return True
     except Exception as e:
         logger.warning(f"Is declared message error: {e}", exc_info=True)
@@ -103,21 +101,27 @@ def is_declared_message(_, message: Message) -> bool:
 
 def is_exchange_channel(_, message: Message) -> bool:
     # Check if the message is sent from the exchange channel
-    cid = message.chat.id
-    if glovar.should_hide:
-        if cid == glovar.hide_channel_id:
+    try:
+        cid = message.chat.id
+        if glovar.should_hide:
+            if cid == glovar.hide_channel_id:
+                return True
+        elif cid == glovar.exchange_channel_id:
             return True
-    elif cid == glovar.exchange_channel_id:
-        return True
+    except Exception as e:
+        logger.warning(f"Is exchange channel error: {e}", exc_info=True)
 
     return False
 
 
 def is_hide_channel(_, message: Message) -> bool:
     # Check if the message is sent from the hide channel
-    cid = message.chat.id
-    if cid == glovar.hide_channel_id:
-        return True
+    try:
+        cid = message.chat.id
+        if cid == glovar.hide_channel_id:
+            return True
+    except Exception as e:
+        logger.warning(f"Is hide channel error: {e}", exc_info=True)
 
     return False
 
@@ -304,8 +308,10 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
             else:
                 file_id = message
 
+            # If the file_id has been recorded as NSFW media
             if file_id in glovar.file_ids["nsfw"]:
                 return True
+            # If the file_id in except lists
             elif (file_id in glovar.file_ids["safe"]
                   or file_id in glovar.except_ids["stickers"]
                   or file_id in glovar.except_ids["tmp"]):

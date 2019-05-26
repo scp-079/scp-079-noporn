@@ -32,17 +32,9 @@ logger = logging.getLogger(__name__)
 
 all_commands: List[str] = ["config", "config_noporn"]
 
-declared_message_ids: Dict[str, Dict[int, Set[int]]] = {
-    "ban": {},
-    "delete": {}
-}
+declared_message_ids: Dict[int, Set[int]] = {}
 # declared_message_ids = {
-#     "ban": {
-#         -10012345678: {123}
-#     },
-#     "delete": {
-#         -10012345678: {124}
-#     }
+#     -10012345678: {123}
 # }
 
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
@@ -85,7 +77,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.1.9"
+version: str = "0.2.0"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -302,6 +294,6 @@ for file in file_list:
         raise SystemExit("[DATA CORRUPTION]")
 
 # Start program
-copyright_text = (f"SCP-079-NOPORN v{version}, Copyright (C) 2019 SCP-079 <https://scp-079.org>\n"
+copyright_text = (f"SCP-079-{sender} v{version}, Copyright (C) 2019 SCP-079 <https://scp-079.org>\n"
                   "Licensed under the terms of the GNU General Public License v3 or later (GPLv3+)\n")
 print(copyright_text)

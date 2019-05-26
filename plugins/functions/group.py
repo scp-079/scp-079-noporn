@@ -58,10 +58,14 @@ def get_message(client: Client, gid: int, mid: int) -> Optional[Message]:
 
 def leave_group(client: Client, gid: int) -> bool:
     # Leave a group, clear it's data
-    thread(leave_chat, (client, gid))
-    glovar.admin_ids.pop(gid, None)
-    save("admin_ids")
-    glovar.configs.pop(gid, None)
-    save("configs")
+    try:
+        thread(leave_chat, (client, gid))
+        glovar.admin_ids.pop(gid, None)
+        save("admin_ids")
+        glovar.configs.pop(gid, None)
+        save("configs")
+        return True
+    except Exception as e:
+        logger.warning(f"Leave group error: {e}", exc_info=True)
 
-    return True
+    return False

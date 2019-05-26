@@ -112,292 +112,274 @@ def init_group(client, message):
 def process_data(client, message):
     try:
         data = receive_data(message)
-        sender = data["from"]
-        receivers = data["to"]
-        action = data["action"]
-        action_type = data["type"]
-        data = data["data"]
-        # This will look awkward,
-        # seems like it can be simplified,
-        # but this is to ensure that the permissions are clear,
-        # so it is intentionally written like this
-        if glovar.sender in receivers:
-            if sender == "CAPTCHA":
+        if data:
+            sender = data["from"]
+            receivers = data["to"]
+            action = data["action"]
+            action_type = data["type"]
+            data = data["data"]
+            # This will look awkward,
+            # seems like it can be simplified,
+            # but this is to ensure that the permissions are clear,
+            # so it is intentionally written like this
+            if glovar.sender in receivers:
+                if sender == "CAPTCHA":
 
-                if action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["captcha"] = score
-                        save("user_ids")
-
-            elif sender == "CLEAN":
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "user":
-                            glovar.bad_ids["users"].add(the_id)
-                            save("bad_ids")
-                    elif action_type == "watch":
-                        receive_watch_user(the_type, the_id, data["until"])
-
-                elif action == "declare":
-                    group_id = data["group_id"]
-                    message_id = data["message_id"]
-                    if glovar.configs.get(group_id):
-                        if init_group_id(group_id):
-                            if action_type == "ban":
-                                glovar.declared_message_ids["ban"][group_id].add(message_id)
-                            elif action_type == "delete":
-                                glovar.declared_message_ids["delete"][group_id].add(message_id)
-
-                elif action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["clean"] = score
-                        save("user_ids")
-
-            elif sender == "CONFIG":
-
-                if action == "config":
-                    if action_type == "commit":
-                        gid = data["group_id"]
-                        config = data["config"]
-                        glovar.configs[gid] = config
-                        save("configs")
-                    elif action_type == "reply":
-                        gid = data["group_id"]
-                        uid = data["user_id"]
-                        link = data["config_link"]
-                        text = (f"管理员：{user_mention(uid)}\n"
-                                f"操作：{code('更改设置')}\n"
-                                f"说明：{code('请点击下方按钮进行设置')}")
-                        markup = InlineKeyboardMarkup(
-                            [
-                                [
-                                    InlineKeyboardButton(
-                                        "前往设置",
-                                        url=link
-                                    )
-                                ]
-                            ]
-                        )
-                        thread(send_report_message, (180, client, gid, text, None, markup))
-
-            elif sender == "LANG":
-
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "user":
-                            glovar.bad_ids["users"].add(the_id)
-                            save("bad_ids")
-                    elif action_type == "watch":
-                        receive_watch_user(the_type, the_id, data["until"])
-
-                elif action == "declare":
-                    group_id = data["group_id"]
-                    message_id = data["message_id"]
-                    if glovar.configs.get(group_id):
-                        if init_group_id(group_id):
-                            if action_type == "ban":
-                                glovar.declared_message_ids["ban"][group_id].add(message_id)
-                            elif action_type == "delete":
-                                glovar.declared_message_ids["delete"][group_id].add(message_id)
-
-                elif action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["lang"] = score
-                        save("user_ids")
-
-            elif sender == "MANAGE":
-
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "channel":
-                            glovar.bad_ids["channels"].add(the_id)
-                            save("bad_ids")
-                    elif action_type == "except":
-                        if the_type == "channels":
-                            glovar.except_ids["channels"].add(the_id)
-                        elif the_type == "sticker":
-                            glovar.except_ids["stickers"].add(the_id)
-                        elif the_type == "tmp":
-                            glovar.except_ids["tmp"].add(the_id)
-                        elif the_type == "user":
-                            glovar.except_ids["users"].add(the_id)
-
-                        save("except_ids")
-
-                elif action == "leave":
-                    if action_type == "approve":
-                        the_id = data["group_id"]
-                        reason = data["reason"]
-                        if action_type == "group":
-                            text = get_debug_text(client, the_id)
-                            text += (f"状态：{code('已退出该群组')}\n"
-                                     f"原因：{code(reason)}")
-                            leave_group(client, the_id)
-                            thread(send_message, (client, glovar.debug_channel_id, text))
-
-                elif action == "remove":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "channel":
-                            glovar.bad_ids["channels"].discard(the_id)
-                        elif the_type == "user":
-                            glovar.bad_ids["users"].discard(the_id)
-                            glovar.watch_ids["ban"].pop(the_id, {})
-                            glovar.watch_ids["delete"].pop(the_id, {})
-                            if glovar.user_ids.get(the_id):
-                                glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
-
+                    if action == "update":
+                        if action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["captcha"] = score
                             save("user_ids")
 
-                        save("bad_ids")
-                    elif action_type == "except":
-                        if the_type == "channel":
-                            glovar.except_ids["channels"].discard(the_id)
-                        elif the_type == "stickers":
-                            glovar.except_ids["stickers"].discard(the_id)
-                        elif the_type == "tmp":
-                            glovar.except_ids["tmp"].discard(the_id)
-                        elif the_type == "user":
-                            glovar.except_ids["users"].discard(the_id)
+                elif sender == "CLEAN":
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "user":
+                                glovar.bad_ids["users"].add(the_id)
+                                save("bad_ids")
+                        elif action_type == "watch":
+                            receive_watch_user(the_type, the_id, data["until"])
 
-                        save("except_ids")
-                    elif action_type == "watch":
-                        if the_type == "all":
-                            glovar.watch_ids["ban"].pop(the_id, 0)
-                            glovar.watch_ids["delete"].pop(the_id, 0)
+                    elif action == "update":
+                        if action_type == "declare":
+                            group_id = data["group_id"]
+                            message_id = data["message_id"]
+                            if glovar.configs.get(group_id):
+                                if init_group_id(group_id):
+                                    glovar.declared_message_ids[group_id].add(message_id)
+                        elif action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["clean"] = score
+                            save("user_ids")
 
-            elif sender == "NOFLOOD":
+                elif sender == "CONFIG":
 
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "user":
-                            glovar.bad_ids["users"].add(the_id)
-                            save("bad_ids")
-                    elif action_type == "watch":
-                        receive_watch_user(the_type, the_id, data["until"])
-
-                elif action == "declare":
-                    group_id = data["group_id"]
-                    message_id = data["message_id"]
-                    if glovar.configs.get(group_id):
-                        if init_group_id(group_id):
-                            if action_type == "ban":
-                                glovar.declared_message_ids["ban"][group_id].add(message_id)
-                            elif action_type == "delete":
-                                glovar.declared_message_ids["delete"][group_id].add(message_id)
-
-                elif action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["noflood"] = score
-                        save("user_ids")
-
-            elif sender == "NOSPAM":
-
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "user":
-                            glovar.bad_ids["users"].add(the_id)
-                            save("bad_ids")
-
-                elif action == "declare":
-                    group_id = data["group_id"]
-                    message_id = data["message_id"]
-                    if glovar.configs.get(group_id):
-                        if init_group_id(group_id):
-                            if action_type == "ban":
-                                glovar.declared_message_ids["ban"][group_id].add(message_id)
-                            elif action_type == "delete":
-                                glovar.declared_message_ids["delete"][group_id].add(message_id)
-
-            elif sender == "RECHECK":
-
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "bad":
-                        if the_type == "user":
-                            glovar.bad_ids["users"].add(the_id)
-                            save("bad_ids")
-                    elif action_type == "watch":
-                        receive_watch_user(the_type, the_id, data["until"])
-
-                elif action == "declare":
-                    group_id = data["group_id"]
-                    message_id = data["message_id"]
-                    if glovar.configs.get(group_id):
-                        if init_group_id(group_id):
-                            if action_type == "ban":
-                                glovar.declared_message_ids["ban"][group_id].add(message_id)
-                            elif action_type == "delete":
-                                glovar.declared_message_ids["delete"][group_id].add(message_id)
-
-                elif action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["recheck"] = score
-                        save("user_ids")
-
-            elif sender == "USER":
-
-                if action == "update":
-                    if action_type == "preview":
-                        # Get the preview data
-                        gid = data["group_id"]
-                        if glovar.configs.get(gid):
+                    if action == "config":
+                        if action_type == "commit":
+                            gid = data["group_id"]
+                            config = data["config"]
+                            glovar.configs[gid] = config
+                            save("configs")
+                        elif action_type == "reply":
+                            gid = data["group_id"]
                             uid = data["user_id"]
-                            mid = data["message_id"]
-                            file_id = data["image"]
-                            if file_id:
-                                if (not is_declared_message(gid, mid)
-                                        and not is_nsfw_user_id(gid, uid)):
-                                    if is_nsfw_media(client, file_id):
-                                        the_message = get_message(client, gid, mid)
-                                        if the_message:
-                                            terminate_nsfw_user(client, the_message, "media")
+                            link = data["config_link"]
+                            text = (f"管理员：{user_mention(uid)}\n"
+                                    f"操作：{code('更改设置')}\n"
+                                    f"说明：{code('请点击下方按钮进行设置')}")
+                            markup = InlineKeyboardMarkup(
+                                [
+                                    [
+                                        InlineKeyboardButton(
+                                            "前往设置",
+                                            url=link
+                                        )
+                                    ]
+                                ]
+                            )
+                            thread(send_report_message, (180, client, gid, text, None, markup))
 
-            elif sender == "WARN":
+                elif sender == "LANG":
 
-                if action == "update":
-                    if action_type == "score":
-                        uid = data["id"]
-                        init_user_id(uid)
-                        score = data["score"]
-                        glovar.user_ids[uid]["score"]["warn"] = score
-                        save("user_ids")
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "user":
+                                glovar.bad_ids["users"].add(the_id)
+                                save("bad_ids")
+                        elif action_type == "watch":
+                            receive_watch_user(the_type, the_id, data["until"])
 
-            elif sender == "WATCH":
+                    elif action == "update":
+                        if action_type == "declare":
+                            group_id = data["group_id"]
+                            message_id = data["message_id"]
+                            if glovar.configs.get(group_id):
+                                if init_group_id(group_id):
+                                    glovar.declared_message_ids[group_id].add(message_id)
+                        elif action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["lang"] = score
+                            save("user_ids")
 
-                if action == "add":
-                    the_id = data["id"]
-                    the_type = data["type"]
-                    if action_type == "watch":
-                        receive_watch_user(the_type, the_id, data["until"])
+                elif sender == "MANAGE":
 
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "channel":
+                                glovar.bad_ids["channels"].add(the_id)
+                                save("bad_ids")
+                        elif action_type == "except":
+                            if the_type == "channels":
+                                glovar.except_ids["channels"].add(the_id)
+                            elif the_type == "sticker":
+                                glovar.except_ids["stickers"].add(the_id)
+                            elif the_type == "tmp":
+                                glovar.except_ids["tmp"].add(the_id)
+                            elif the_type == "user":
+                                glovar.except_ids["users"].add(the_id)
+
+                            save("except_ids")
+
+                    elif action == "leave":
+                        if action_type == "approve":
+                            the_id = data["group_id"]
+                            reason = data["reason"]
+                            if action_type == "group":
+                                text = get_debug_text(client, the_id)
+                                text += (f"状态：{code('已退出该群组')}\n"
+                                         f"原因：{code(reason)}")
+                                leave_group(client, the_id)
+                                thread(send_message, (client, glovar.debug_channel_id, text))
+
+                    elif action == "remove":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "channel":
+                                glovar.bad_ids["channels"].discard(the_id)
+                            elif the_type == "user":
+                                glovar.bad_ids["users"].discard(the_id)
+                                glovar.watch_ids["ban"].pop(the_id, {})
+                                glovar.watch_ids["delete"].pop(the_id, {})
+                                if glovar.user_ids.get(the_id):
+                                    glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
+
+                                save("user_ids")
+
+                            save("bad_ids")
+                        elif action_type == "except":
+                            if the_type == "channel":
+                                glovar.except_ids["channels"].discard(the_id)
+                            elif the_type == "stickers":
+                                glovar.except_ids["stickers"].discard(the_id)
+                            elif the_type == "tmp":
+                                glovar.except_ids["tmp"].discard(the_id)
+                            elif the_type == "user":
+                                glovar.except_ids["users"].discard(the_id)
+
+                            save("except_ids")
+                        elif action_type == "watch":
+                            if the_type == "all":
+                                glovar.watch_ids["ban"].pop(the_id, 0)
+                                glovar.watch_ids["delete"].pop(the_id, 0)
+
+                elif sender == "NOFLOOD":
+
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "user":
+                                glovar.bad_ids["users"].add(the_id)
+                                save("bad_ids")
+                        elif action_type == "watch":
+                            receive_watch_user(the_type, the_id, data["until"])
+
+                    elif action == "update":
+                        if action_type == "declare":
+                            group_id = data["group_id"]
+                            message_id = data["message_id"]
+                            if glovar.configs.get(group_id):
+                                if init_group_id(group_id):
+                                    glovar.declared_message_ids[group_id].add(message_id)
+                        elif action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["noflood"] = score
+                            save("user_ids")
+
+                elif sender == "NOSPAM":
+
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "user":
+                                glovar.bad_ids["users"].add(the_id)
+                                save("bad_ids")
+
+                    elif action == "update":
+                        if action_type == "declare":
+                            group_id = data["group_id"]
+                            message_id = data["message_id"]
+                            if glovar.configs.get(group_id):
+                                if init_group_id(group_id):
+                                    glovar.declared_message_ids[group_id].add(message_id)
+
+                elif sender == "RECHECK":
+
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "user":
+                                glovar.bad_ids["users"].add(the_id)
+                                save("bad_ids")
+                        elif action_type == "watch":
+                            receive_watch_user(the_type, the_id, data["until"])
+
+                    elif action == "update":
+                        if action_type == "declare":
+                            group_id = data["group_id"]
+                            message_id = data["message_id"]
+                            if glovar.configs.get(group_id):
+                                if init_group_id(group_id):
+                                    glovar.declared_message_ids[group_id].add(message_id)
+                        elif action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["recheck"] = score
+                            save("user_ids")
+
+                elif sender == "USER":
+
+                    if action == "update":
+                        if action_type == "preview":
+                            # Get the preview data
+                            gid = data["group_id"]
+                            if glovar.configs.get(gid):
+                                uid = data["user_id"]
+                                mid = data["message_id"]
+                                file_id = data["image"]
+                                if file_id:
+                                    if (not is_declared_message(gid, mid)
+                                            and not is_nsfw_user_id(gid, uid)):
+                                        if is_nsfw_media(client, file_id):
+                                            the_message = get_message(client, gid, mid)
+                                            if the_message:
+                                                terminate_nsfw_user(client, the_message, "media")
+
+                elif sender == "WARN":
+
+                    if action == "update":
+                        if action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["warn"] = score
+                            save("user_ids")
+
+                elif sender == "WATCH":
+
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "watch":
+                            receive_watch_user(the_type, the_id, data["until"])
     except Exception as e:
         logger.warning(f"Process data error: {e}", exc_info=True)
 

@@ -56,15 +56,15 @@ def ask_for_help(client: Client, level: str, gid: int, uid: int, group: str = "s
     return False
 
 
-def declare_message(client: Client, level: str, gid: int, mid: int) -> bool:
+def declare_message(client: Client, gid: int, mid: int) -> bool:
     # Declare a message
     try:
-        glovar.declared_message_ids[level][gid].add(mid)
+        glovar.declared_message_ids[gid].add(mid)
         share_data(
             client=client,
             receivers=glovar.receivers_declare,
-            action="declare",
-            action_type=level,
+            action="update",
+            action_type="declare",
             data={
                 "group_id": gid,
                 "message_id": mid
@@ -104,6 +104,10 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
             return result
 
         uid = message.from_user.id
+        text = (f"项目编号：{code(glovar.sender)}\n"
+                f"用户 ID：{code(uid)}\n"
+                f"操作等级：{code(level)}\n"
+                f"规则：{code(rule)}\n")
         flood_wait = True
         while flood_wait:
             flood_wait = False
@@ -117,11 +121,8 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
                 return False
 
         result = result.message_id
-        text = (f"项目编号：{code(glovar.sender)}\n"
-                f"用户 ID：{code(uid)}\n"
-                f"操作等级：{code(level)}\n"
-                f"规则：{code(rule)}\n")
-        thread(send_message, (client, glovar.logging_channel_id, text, result))
+        result = send_message(client, glovar.logging_channel_id, text, result)
+        result = result.message_id
     except Exception as e:
         logger.warning(f"Forward evidence error: {e}", exc_info=True)
 
