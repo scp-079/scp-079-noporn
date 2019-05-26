@@ -40,7 +40,7 @@ See [this article](https://scp-079.org/noporn/).
         - `message.py`: Handle messages
     - `glovar.py` : Global variables
 - `.gitignore` : Ignore
-- `config.ini.example` -> `config.ini` : Configures
+- `config.ini.example` -> `config.ini` : Configuration
 - `LICENSE` : GPLv3
 - `main.py` : Start here
 - `README.md` : This file
