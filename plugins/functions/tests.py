@@ -38,13 +38,13 @@ def porn_test(client: Client, message: Message) -> bool:
             file_id = get_file_id(message)
             image_path = get_downloaded_path(client, file_id)
             if image_path:
-                porn = get_porn(image_path)
                 message_text = get_text(message)
                 if re.search("^管理员：[0-9]", message_text):
                     aid = int(message_text.split("\n")[0].split("：")[1])
                 else:
                     aid = message.from_user.id
 
+                porn = get_porn(image_path)
                 text = (f"管理员：{user_mention(aid)}\n\n"
                         f"NSFW 得分：{code(porn)}")
                 thread(send_message, (client, glovar.test_group_id, text, message.message_id))
