@@ -50,32 +50,6 @@ def answer_callback(client: Client, query_id: str, text: str) -> Optional[bool]:
     return result
 
 
-def edit_message_text(client: Client, cid: int, mid: int, text: str,
-                      markup: InlineKeyboardMarkup = None) -> Optional[Message]:
-    # Edit the message's text
-    result = None
-    try:
-        if text.strip():
-            flood_wait = True
-            while flood_wait:
-                flood_wait = False
-                try:
-                    result = client.edit_message_text(
-                        chat_id=cid,
-                        message_id=mid,
-                        text=text,
-                        disable_web_page_preview=True,
-                        reply_markup=markup
-                    )
-                except FloodWait as e:
-                    flood_wait = True
-                    wait_flood(e)
-    except Exception as e:
-        logger.warning(f"Edit message in {cid} error: {e}", exc_info=True)
-
-    return result
-
-
 def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[bool]:
     # Delete some messages
     result = None
