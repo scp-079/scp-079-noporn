@@ -34,7 +34,6 @@ exchange_channel_id = [DATA EXPUNGED]
 hide_channel_id = [DATA EXPUNGED]
 logging_channel_id = [DATA EXPUNGED]
 test_group_id = [DATA EXPUNGED]
-logging_channel_username = [DATA EXPUNGED]
 
 [custom]
 default_group_link = [DATA EXPUNGED]

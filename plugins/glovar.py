@@ -77,7 +77,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.2.1"
+version: str = "0.2.2"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -116,7 +116,6 @@ exchange_channel_id: int = 0
 hide_channel_id: int = 0
 logging_channel_id: int = 0
 test_group_id: int = 0
-logging_channel_username: str = ""
 
 # [custom]
 default_group_link: str = ""
@@ -155,7 +154,6 @@ try:
     hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
     logging_channel_id = int(config["channels"].get("logging_channel_id", logging_channel_id))
     test_group_id = int(config["channels"].get("test_group_id", test_group_id))
-    logging_channel_username = config["channels"].get("logging_channel_username", logging_channel_username)
     # [custom]
     default_group_link = config["custom"].get("default_group_link", default_group_link)
     image_size = int(config["custom"].get("image_size", image_size))
@@ -190,7 +188,6 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or hide_channel_id == 0
         or logging_channel_id == 0
         or test_group_id == 0
-        or logging_channel_username in {"", "[DATA EXPUNGED]"}
         or default_group_link in {"", "[DATA EXPUNGED]"}
         or image_size == 0
         or project_link in {"", "[DATA EXPUNGED]"}
