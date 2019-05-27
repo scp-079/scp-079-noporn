@@ -124,7 +124,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
                 add_bad_user(client, uid)
                 send_debug(client, message.chat, "追踪封禁", uid, mid, result)
         elif is_high_score_user(None, message):
-            result = forward_evidence(client, message, "自动封禁", f"用户评分 {is_high_score_user(None, message)}")
+            result = forward_evidence(client, message, "自动封禁", "用户评分", f"{is_high_score_user(None, message)}")
             if result:
                 ban_user(client, gid, uid)
                 delete_message(client, gid, mid)

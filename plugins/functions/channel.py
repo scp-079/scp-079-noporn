@@ -96,7 +96,8 @@ def exchange_to_hide(client: Client) -> bool:
     return False
 
 
-def forward_evidence(client: Client, message: Message, level: str, rule: str) -> Optional[Union[bool, Message]]:
+def forward_evidence(client: Client, message: Message, level: str, rule: str,
+                     more: str = None) -> Optional[Union[bool, Message]]:
     # Forward the message to the logging channel as evidence
     result = None
     try:
@@ -108,6 +109,9 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str) ->
                 f"用户 ID：{code(uid)}\n"
                 f"操作等级：{code(level)}\n"
                 f"规则：{code(rule)}\n")
+        if more:
+            text += f"附加信息：{code(more)}\n"
+
         flood_wait = True
         while flood_wait:
             flood_wait = False
