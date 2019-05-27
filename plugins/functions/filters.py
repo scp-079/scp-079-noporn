@@ -17,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from copy import deepcopy
 from time import time
 from typing import Union
 
@@ -67,11 +66,6 @@ def is_class_e(_, message: Message) -> bool:
         uid = message.from_user.id
         if uid in glovar.except_ids["users"]:
             return True
-
-        admin_ids = deepcopy(glovar.admin_ids)
-        for gid in admin_ids:
-            if uid in admin_ids[gid]:
-                return True
 
         if message.forward_from_chat:
             cid = message.forward_from_chat.id
