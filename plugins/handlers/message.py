@@ -314,6 +314,12 @@ def process_data(client, message):
                             if glovar.configs.get(group_id):
                                 if init_group_id(group_id):
                                     glovar.declared_message_ids[group_id].add(message_id)
+                        elif action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["nospam"] = score
+                            save("user_ids")
 
                 elif sender == "RECHECK":
 
