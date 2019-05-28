@@ -24,7 +24,7 @@ from pyrogram import Chat, Client, Message
 from pyrogram.errors import FloodWait
 
 from .. import glovar
-from .etc import code, general_link, format_data, message_link, thread, user_mention
+from .etc import code, general_link, format_data, message_link, thread
 from .file import crypt_file, save
 from .telegram import get_group_info, send_document, send_message
 
@@ -157,7 +157,7 @@ def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, em: 
     # Send the debug message
     try:
         text = get_debug_text(client, chat)
-        text += (f"用户 ID：{user_mention(uid)}\n"
+        text += (f"用户 ID：{code(uid)}\n"
                  f"执行操作：{code(action)}\n"
                  f"触发消息：{general_link(mid, message_link(em))}\n")
         thread(send_message, (client, glovar.debug_channel_id, text))
