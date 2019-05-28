@@ -52,6 +52,7 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
         "lang": 0,
         "noflood": 0,
         "noporn": 0,
+        "nospam": 0,
         "recheck": 0,
         "warn": 0
     }
