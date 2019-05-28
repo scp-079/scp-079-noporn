@@ -306,6 +306,8 @@ def process_data(client, message):
                             if the_type == "user":
                                 glovar.bad_ids["users"].add(the_id)
                                 save("bad_ids")
+                        elif action_type == "watch":
+                            receive_watch_user(the_type, the_id, data["until"])
 
                     elif action == "update":
                         if action_type == "declare":
