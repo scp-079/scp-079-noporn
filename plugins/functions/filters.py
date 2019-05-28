@@ -119,6 +119,7 @@ def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
                              + user["score"].get("lang", 0)
                              + user["score"].get("noflood", 0)
                              + user["score"].get("noporn", 0)
+                             + user["score"].get("nospam", 0)
                              + user["score"].get("recheck", 0)
                              + user["score"].get("warn", 0))
             except Exception as e:
