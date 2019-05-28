@@ -116,6 +116,7 @@ def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
                 user = glovar.user_ids.get(uid, {})
                 if user:
                     score = (user["score"].get("captcha", 0)
+                             + user["score"].get("clean", 0)
                              + user["score"].get("lang", 0)
                              + user["score"].get("noflood", 0)
                              + user["score"].get("noporn", 0)
