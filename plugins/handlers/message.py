@@ -227,6 +227,7 @@ def process_data(client, message):
                                 glovar.except_ids["tmp"].add(the_id)
 
                             save("except_ids")
+                            glovar.file_ids["nsfw"].discard(the_id)
 
                     elif action == "leave":
                         if action_type == "approve":
