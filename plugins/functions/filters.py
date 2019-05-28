@@ -60,19 +60,6 @@ def is_class_d(_, message: Message) -> bool:
         logger.warning(f"Is class d error: {e}", exc_info=True)
 
 
-def is_class_e(_, message: Message) -> bool:
-    # Check if the user who sent this message is Class E personnel
-    try:
-        if message.forward_from_chat:
-            cid = message.forward_from_chat.id
-            if cid in glovar.except_ids["channels"]:
-                return True
-    except Exception as e:
-        logger.warning(f"Is class e error: {e}", exc_info=True)
-
-    return False
-
-
 def is_declared_message(_, message: Message) -> bool:
     # Check if the message is declared by other bots
     try:
@@ -233,11 +220,6 @@ class_c = Filters.create(
 class_d = Filters.create(
     name="Class D",
     func=is_class_d
-)
-
-class_e = Filters.create(
-    name="Class E",
-    func=is_class_e
 )
 
 declared_message = Filters.create(

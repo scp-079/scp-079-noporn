@@ -25,7 +25,7 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, receive_data, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import class_c, class_d, class_e, declared_message, exchange_channel, hide_channel
+from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
 from ..functions.filters import is_declared_message, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
 from ..functions.group import get_message, leave_group
@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group & Filters.media
-                   & ~class_c & ~class_d & ~class_e & ~declared_message)
+                   & ~class_c & ~class_d & ~declared_message)
 def check(client, message):
     try:
         gid = message.chat.id
@@ -221,14 +221,10 @@ def process_data(client, message):
                                 glovar.bad_ids["channels"].add(the_id)
                                 save("bad_ids")
                         elif action_type == "except":
-                            if the_type == "channels":
-                                glovar.except_ids["channels"].add(the_id)
-                            elif the_type == "sticker":
+                            if the_type == "sticker":
                                 glovar.except_ids["stickers"].add(the_id)
                             elif the_type == "tmp":
                                 glovar.except_ids["tmp"].add(the_id)
-                            elif the_type == "user":
-                                glovar.except_ids["users"].add(the_id)
 
                             save("except_ids")
 
