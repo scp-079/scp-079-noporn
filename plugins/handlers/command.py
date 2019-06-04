@@ -71,7 +71,7 @@ def config(client, message):
                     )
                     # Send a report message to debug channel
                     text = get_debug_text(client, message.chat)
-                    text += (f"群管理：{user_mention(message.from_user.id)}\n"
+                    text += (f"群管理：{code(message.from_user.id)}\n"
                              f"操作：{code('创建设置会话')}\n")
                     thread(send_message, (client, glovar.debug_channel_id, text))
 
@@ -93,7 +93,7 @@ def config_noporn(client, message):
             success = True
             reason = "已更新"
             new_config = deepcopy(glovar.configs[gid])
-            text = f"管理员：{user_mention(aid)}\n"
+            text = f"管理员：{code(aid)}\n"
             # Check command format
             if len(command_list) > 1:
                 now = int(time())
