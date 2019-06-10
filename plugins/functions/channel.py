@@ -175,6 +175,7 @@ def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
 
 
 def receive_file_data(client: Client, message: Message) -> Any:
+    # Receive file's data from exchange channel
     data = None
     try:
         if message.document:
@@ -190,7 +191,7 @@ def receive_file_data(client: Client, message: Message) -> Any:
 
 
 def receive_text_data(message: Message) -> dict:
-    # Receive data from exchange channel
+    # Receive text's data from exchange channel
     data = {}
     try:
         text = get_text(message)
