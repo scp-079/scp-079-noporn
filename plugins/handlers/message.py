@@ -22,8 +22,8 @@ from copy import deepcopy
 from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
 
 from .. import glovar
-from ..functions.channel import get_debug_text
-from ..functions.etc import code, receive_data, thread, user_mention
+from ..functions.channel import get_debug_text, receive_text_data, receive_file_data
+from ..functions.etc import code, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
 from ..functions.filters import is_declared_message, is_nsfw_user_id
@@ -56,7 +56,7 @@ def check(client, message):
 def exchange_emergency(_, message):
     try:
         # Read basic information
-        data = receive_data(message)
+        data = receive_text_data(message)
         sender = data["from"]
         receivers = data["to"]
         action = data["action"]
@@ -92,12 +92,10 @@ def init_group(client, message):
                     text += (f"状态：{code('已退出群组')}\n"
                              f"原因：{code('获取管理员列表失败')}")
         else:
-            leave_group(client, gid)
             if gid in glovar.left_group_ids:
-                return
-            else:
-                glovar.left_group_ids.add(gid)
+                return leave_group(client, gid)
 
+            leave_group(client, gid)
             text += (f"状态：{code('已退出群组')}\n"
                      f"原因：{code('未授权使用')}\n"
                      f"邀请人：{user_mention(invited_by)}")
@@ -111,7 +109,7 @@ def init_group(client, message):
                    & ~Filters.command(glovar.all_commands, glovar.prefix))
 def process_data(client, message):
     try:
-        data = receive_data(message)
+        data = receive_text_data(message)
         if data:
             sender = data["from"]
             receivers = data["to"]
@@ -359,14 +357,16 @@ def process_data(client, message):
                             if glovar.configs.get(gid):
                                 uid = data["user_id"]
                                 mid = data["message_id"]
-                                file_id = data["image"]
-                                if file_id:
-                                    if (not is_declared_message(gid, mid)
-                                            and not is_nsfw_user_id(gid, uid)):
-                                        if is_nsfw_media(client, file_id):
-                                            the_message = get_message(client, gid, mid)
-                                            if the_message:
-                                                terminate_nsfw_user(client, the_message, "media")
+                                preview = receive_file_data(client, message)
+                                if preview:
+                                    file_id = data["file_id"]
+                                    if file_id:
+                                        if (not is_declared_message(gid, mid)
+                                                and not is_nsfw_user_id(gid, uid)):
+                                            if is_nsfw_media(client, file_id):
+                                                the_message = get_message(client, gid, mid)
+                                                if the_message:
+                                                    terminate_nsfw_user(client, the_message, "media")
 
                 elif sender == "WARN":
 

@@ -34,11 +34,12 @@ logger = logging.getLogger(__name__)
 def is_class_c(_, message: Message) -> bool:
     # Check if the user who sent the message is Class C personnel
     try:
-        uid = message.from_user.id
-        gid = message.chat.id
-        if init_group_id(gid):
-            if uid in glovar.admin_ids.get(gid, set()) or uid in glovar.bot_ids or message.from_user.is_self:
-                return True
+        if message.from_user:
+            uid = message.from_user.id
+            gid = message.chat.id
+            if init_group_id(gid):
+                if uid in glovar.admin_ids.get(gid, set()) or uid in glovar.bot_ids or message.from_user.is_self:
+                    return True
     except Exception as e:
         logger.warning(f"Is class c error: {e}", exc_info=True)
 
@@ -48,9 +49,15 @@ def is_class_c(_, message: Message) -> bool:
 def is_class_d(_, message: Message) -> bool:
     # Check if the user who sent the message is Class D personnel
     try:
-        uid = message.from_user.id
-        if uid in glovar.bad_ids["users"]:
-            return True
+        if message.from_user:
+            uid = message.from_user.id
+            if uid in glovar.bad_ids["users"]:
+                return True
+
+        if message.forward_from:
+            fid = message.forward_from.id
+            if fid in glovar.bad_ids["users"]:
+                return True
 
         if message.forward_from_chat:
             cid = message.forward_from_chat.id
@@ -118,6 +125,7 @@ def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
                     score = (user["score"].get("captcha", 0)
                              + user["score"].get("clean", 0)
                              + user["score"].get("lang", 0)
+                             + user["score"].get("long", 0)
                              + user["score"].get("noflood", 0)
                              + user["score"].get("noporn", 0)
                              + user["score"].get("nospam", 0)
@@ -150,9 +158,10 @@ def is_new_group(_, message: Message) -> bool:
 def is_nsfw_user(_, message: Message) -> bool:
     # Check if the message is sent by a NSFW user
     try:
-        gid = message.chat.id
-        uid = message.from_user.id
-        return is_nsfw_user_id(gid, uid)
+        if message.from_user:
+            gid = message.chat.id
+            uid = message.from_user.id
+            return is_nsfw_user_id(gid, uid)
     except Exception as e:
         logger.warning(f"Is NSFW user error: {e}", exc_info=True)
 
@@ -189,11 +198,12 @@ def is_test_group(_, message: Message) -> bool:
 def is_watch_ban(_, message: Message) -> bool:
     # Check if the message is sent by a watch ban user
     try:
-        uid = message.from_user.id
-        status = glovar.watch_ids["ban"].get(uid, 0)
-        now = int(time())
-        if now - status < 14400:
-            return True
+        if message.from_user:
+            uid = message.from_user.id
+            now = int(time())
+            until = glovar.watch_ids["ban"].get(uid, 0)
+            if now < until:
+                return True
     except Exception as e:
         logger.warning(f"Is watch ban error: {e}", exc_info=True)
 
@@ -203,11 +213,12 @@ def is_watch_ban(_, message: Message) -> bool:
 def is_watch_delete(_, message: Message) -> bool:
     # Check if the message is sent by a watch delete user
     try:
-        uid = message.from_user.id
-        status = glovar.watch_ids["delete"].get(uid, 0)
-        now = int(time())
-        if now - status < 10800:
-            return True
+        if message.from_user:
+            uid = message.from_user.id
+            now = int(time())
+            until = glovar.watch_ids["delete"].get(uid, 0)
+            if now < until:
+                return True
     except Exception as e:
         logger.warning(f"Is watch delete error: {e}", exc_info=True)
 

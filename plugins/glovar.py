@@ -50,6 +50,7 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
         "captcha": 0,
         "clean": 0,
         "lang": 0,
+        "long": 0,
         "noflood": 0,
         "noporn": 0,
         "nospam": 0,
@@ -67,19 +68,19 @@ left_group_ids: Set[int] = set()
 
 lock_image: Lock = Lock()
 
-receivers_bad: List[str] = ["ANALYZE", "APPEAL", "CAPTCHA", "CLEAN", "LANG", "NOFLOOD", "NOPORN",
+receivers_bad: List[str] = ["ANALYZE", "APPEAL", "CAPTCHA", "CLEAN", "LANG", "LONG", "NOFLOOD", "NOPORN",
                             "NOSPAM", "MANAGE", "RECHECK", "USER", "WATCH"]
 
-receivers_declare: List[str] = ["ANALYZE", "CLEAN", "LANG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"]
+receivers_declare: List[str] = ["ANALYZE", "CLEAN", "LANG", "LONG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"]
 
-receivers_status: List[str] = ["ANALYZE", "CAPTCHA", "CLEAN", "LANG",
+receivers_status: List[str] = ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
                                "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
 
 sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.2.2"
+version: str = "0.2.3"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -275,14 +276,14 @@ for file in file_list:
     try:
         try:
             if exists(f"data/{file}") or exists(f"data/.{file}"):
-                with open(f"data/{file}", 'rb') as f:
+                with open(f"data/{file}", "rb") as f:
                     locals()[f"{file}"] = pickle.load(f)
             else:
-                with open(f"data/{file}", 'wb') as f:
+                with open(f"data/{file}", "wb") as f:
                     pickle.dump(eval(f"{file}"), f)
         except Exception as e:
             logger.error(f"Load data {file} error: {e}")
-            with open(f"data/.{file}", 'rb') as f:
+            with open(f"data/.{file}", "rb") as f:
                 locals()[f"{file}"] = pickle.load(f)
     except Exception as e:
         logger.critical(f"Load data {file} backup error: {e}")

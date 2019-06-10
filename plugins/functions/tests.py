@@ -48,6 +48,7 @@ def porn_test(client: Client, message: Message) -> bool:
                 text = (f"管理员：{user_mention(aid)}\n\n"
                         f"NSFW 得分：{code(f'{porn:.8f}')}")
                 thread(send_message, (client, glovar.test_group_id, text, message.message_id))
+            
             return True
         except Exception as e:
             logger.warning(f"Porn test error: {e}", exc_info=True)

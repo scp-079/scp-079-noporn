@@ -188,7 +188,7 @@ def leave_chat(client: Client, cid: int) -> bool:
         while flood_wait:
             flood_wait = False
             try:
-                client.leave_chat(chat_id=cid)
+                client.leave_chat(chat_id=cid, delete=True)
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
