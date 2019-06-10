@@ -184,6 +184,8 @@ def receive_file_data(client: Client, message: Message) -> Any:
             if path:
                 with open(path, "rb") as f:
                     data = pickle.load(f)
+
+                thread(delete_file, (path,))
     except Exception as e:
         logger.warning(f"Receive file error: {e}", exc_info=True)
 
