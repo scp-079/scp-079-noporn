@@ -271,7 +271,7 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
             result = send_document(client, channel_id, file_path, text)
             # Delete the tmp file
             if result and "tmp/" in file_path:
-                delete_file(file_path)
+                thread(delete_file, (file_path,))
         else:
             text = format_data(
                 sender=glovar.sender,
