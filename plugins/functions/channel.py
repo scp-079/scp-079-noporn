@@ -121,9 +121,6 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
     # Forward the message to the logging channel as evidence
     result = None
     try:
-        if not message or not message.from_user:
-            return result
-
         uid = message.from_user.id
         text = (f"项目编号：{code(glovar.sender)}\n"
                 f"用户 ID：{code(uid)}\n"
