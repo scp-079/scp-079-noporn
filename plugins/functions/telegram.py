@@ -29,27 +29,6 @@ from .etc import delay, wait_flood
 logger = logging.getLogger(__name__)
 
 
-def answer_callback(client: Client, query_id: str, text: str) -> Optional[bool]:
-    # Answer the callback
-    result = None
-    try:
-        flood_wait = True
-        while flood_wait:
-            flood_wait = False
-            try:
-                result = client.answer_callback_query(
-                    callback_query_id=query_id,
-                    text=text
-                )
-            except FloodWait as e:
-                flood_wait = True
-                wait_flood(e)
-    except Exception as e:
-        logger.warning(f"Answer query to {query_id} error: {e}", exc_info=True)
-
-    return result
-
-
 def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[bool]:
     # Delete some messages
     result = None

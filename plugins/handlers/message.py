@@ -22,7 +22,7 @@ from copy import deepcopy
 from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
 
 from .. import glovar
-from ..functions.channel import get_debug_text, receive_text_data, receive_file_data
+from ..functions.channel import get_debug_text, receive_file_data, receive_text_data
 from ..functions.etc import code, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
@@ -209,6 +209,32 @@ def process_data(client, message):
                             glovar.user_ids[uid]["score"]["lang"] = score
                             save("user_ids")
 
+                elif sender == "LONG":
+
+                    if action == "add":
+                        the_id = data["id"]
+                        the_type = data["type"]
+                        if action_type == "bad":
+                            if the_type == "user":
+                                glovar.bad_ids["users"].add(the_id)
+                                save("bad_ids")
+                        elif action_type == "watch":
+                            receive_watch_user(the_type, the_id, data["until"])
+
+                    elif action == "update":
+                        if action_type == "declare":
+                            group_id = data["group_id"]
+                            message_id = data["message_id"]
+                            if glovar.configs.get(group_id):
+                                if init_group_id(group_id):
+                                    glovar.declared_message_ids[group_id].add(message_id)
+                        elif action_type == "score":
+                            uid = data["id"]
+                            init_user_id(uid)
+                            score = data["score"]
+                            glovar.user_ids[uid]["score"]["long"] = score
+                            save("user_ids")
+
                 elif sender == "MANAGE":
 
                     if action == "add":
@@ -359,7 +385,7 @@ def process_data(client, message):
                                 mid = data["message_id"]
                                 preview = receive_file_data(client, message)
                                 if preview:
-                                    file_id = data["file_id"]
+                                    file_id = preview["file_id"]
                                     if file_id:
                                         if (not is_declared_message(gid, mid)
                                                 and not is_nsfw_user_id(gid, uid)):
