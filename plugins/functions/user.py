@@ -111,60 +111,61 @@ def receive_watch_user(watch_type: str, uid: int, until: str) -> bool:
 def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool:
     # Delete NSFW user's message, or ban the user
     try:
-        gid = message.chat.id
-        uid = message.from_user.id
-        mid = message.message_id
-        if is_watch_ban(None, message):
-            result = forward_evidence(client, message, "自动封禁", "敏感追踪")
-            if result:
-                ban_user(client, gid, uid)
-                delete_message(client, gid, mid)
-                declare_message(client, gid, mid)
-                ask_for_help(client, "ban", gid, uid)
-                add_bad_user(client, uid)
-                send_debug(client, message.chat, "追踪封禁", uid, mid, result)
-        elif is_high_score_user(None, message):
-            result = forward_evidence(client, message, "自动封禁", "用户评分", f"{is_high_score_user(None, message)}")
-            if result:
-                ban_user(client, gid, uid)
-                delete_message(client, gid, mid)
-                declare_message(client, gid, mid)
-                ask_for_help(client, "ban", gid, uid)
-                add_bad_user(client, uid)
-                send_debug(client, message.chat, "评分封禁", uid, mid, result)
-        elif is_watch_delete(None, message):
-            result = forward_evidence(client, message, "自动删除", "敏感追踪")
-            if result:
-                delete_message(client, gid, mid)
-                declare_message(client, gid, mid)
-                ask_for_help(client, "delete", gid, uid, "global")
-                add_watch_ban_user(client, uid)
-                previous = add_nsfw_user(gid, uid)
-                if not previous:
-                    update_score(client, uid)
+        if message.from_user:
+            gid = message.chat.id
+            uid = message.from_user.id
+            mid = message.message_id
+            if is_watch_ban(None, message):
+                result = forward_evidence(client, message, "自动封禁", "敏感追踪")
+                if result:
+                    ban_user(client, gid, uid)
+                    delete_message(client, gid, mid)
+                    declare_message(client, gid, mid)
+                    ask_for_help(client, "ban", gid, uid)
+                    add_bad_user(client, uid)
+                    send_debug(client, message.chat, "追踪封禁", uid, mid, result)
+            elif is_high_score_user(None, message):
+                result = forward_evidence(client, message, "自动封禁", "用户评分", f"{is_high_score_user(None, message)}")
+                if result:
+                    ban_user(client, gid, uid)
+                    delete_message(client, gid, mid)
+                    declare_message(client, gid, mid)
+                    ask_for_help(client, "ban", gid, uid)
+                    add_bad_user(client, uid)
+                    send_debug(client, message.chat, "评分封禁", uid, mid, result)
+            elif is_watch_delete(None, message):
+                result = forward_evidence(client, message, "自动删除", "敏感追踪")
+                if result:
+                    delete_message(client, gid, mid)
+                    declare_message(client, gid, mid)
+                    ask_for_help(client, "delete", gid, uid, "global")
+                    add_watch_ban_user(client, uid)
+                    previous = add_nsfw_user(gid, uid)
+                    if not previous:
+                        update_score(client, uid)
 
-                send_debug(client, message.chat, "追踪删除", uid, mid, result)
-        elif is_nsfw_user(None, message):
-            delete_message(client, gid, mid)
-            add_nsfw_user(gid, uid)
-            declare_message(client, gid, mid)
-        else:
-            if the_type == "channel":
-                rule = "受限频道"
+                    send_debug(client, message.chat, "追踪删除", uid, mid, result)
+            elif is_nsfw_user(None, message):
+                delete_message(client, gid, mid)
+                add_nsfw_user(gid, uid)
+                declare_message(client, gid, mid)
             else:
-                rule = "全局规则"
+                if the_type == "channel":
+                    rule = "受限频道"
+                else:
+                    rule = "全局规则"
 
-            result = forward_evidence(client, message, "自动删除", rule)
-            if result:
-                delete_message(client, gid, mid)
-                previous = add_nsfw_user(gid, uid)
-                declare_message(client, gid, mid)
-                if not previous:
-                    update_score(client, uid)
+                result = forward_evidence(client, message, "自动删除", rule)
+                if result:
+                    delete_message(client, gid, mid)
+                    previous = add_nsfw_user(gid, uid)
+                    declare_message(client, gid, mid)
+                    if not previous:
+                        update_score(client, uid)
 
-                send_debug(client, message.chat, "自动删除", uid, mid, result)
+                    send_debug(client, message.chat, "自动删除", uid, mid, result)
 
-        return True
+            return True
     except Exception as e:
         logger.warning(f"Terminate user error: {e}", exc_info=True)
 
