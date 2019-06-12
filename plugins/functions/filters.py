@@ -88,12 +88,13 @@ def is_declared_message(_, message: Message) -> bool:
 def is_exchange_channel(_, message: Message) -> bool:
     # Check if the message is sent from the exchange channel
     try:
-        cid = message.chat.id
-        if glovar.should_hide:
-            if cid == glovar.hide_channel_id:
+        if message.chat:
+            cid = message.chat.id
+            if glovar.should_hide:
+                if cid == glovar.hide_channel_id:
+                    return True
+            elif cid == glovar.exchange_channel_id:
                 return True
-        elif cid == glovar.exchange_channel_id:
-            return True
     except Exception as e:
         logger.warning(f"Is exchange channel error: {e}", exc_info=True)
 
@@ -103,9 +104,10 @@ def is_exchange_channel(_, message: Message) -> bool:
 def is_hide_channel(_, message: Message) -> bool:
     # Check if the message is sent from the hide channel
     try:
-        cid = message.chat.id
-        if cid == glovar.hide_channel_id:
-            return True
+        if message.chat:
+            cid = message.chat.id
+            if cid == glovar.hide_channel_id:
+                return True
     except Exception as e:
         logger.warning(f"Is hide channel error: {e}", exc_info=True)
 
@@ -115,27 +117,28 @@ def is_hide_channel(_, message: Message) -> bool:
 def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
     # Check if the message is sent by a high score user
     try:
-        uid = message.from_user.id
-        user = glovar.user_ids.get(uid, {})
-        if user:
-            score = 0
-            try:
-                user = glovar.user_ids.get(uid, {})
-                if user:
-                    score = (user["score"].get("captcha", 0)
-                             + user["score"].get("clean", 0)
-                             + user["score"].get("lang", 0)
-                             + user["score"].get("long", 0)
-                             + user["score"].get("noflood", 0)
-                             + user["score"].get("noporn", 0)
-                             + user["score"].get("nospam", 0)
-                             + user["score"].get("recheck", 0)
-                             + user["score"].get("warn", 0))
-            except Exception as e:
-                logger.warning(f"Get score error: {e}", exc_info=True)
+        if message.from_user:
+            uid = message.from_user.id
+            user = glovar.user_ids.get(uid, {})
+            if user:
+                score = 0
+                try:
+                    user = glovar.user_ids.get(uid, {})
+                    if user:
+                        score = (user["score"].get("captcha", 0)
+                                 + user["score"].get("clean", 0)
+                                 + user["score"].get("lang", 0)
+                                 + user["score"].get("long", 0)
+                                 + user["score"].get("noflood", 0)
+                                 + user["score"].get("noporn", 0)
+                                 + user["score"].get("nospam", 0)
+                                 + user["score"].get("recheck", 0)
+                                 + user["score"].get("warn", 0))
+                except Exception as e:
+                    logger.warning(f"Get score error: {e}", exc_info=True)
 
-            if score >= 3:
-                return score
+                if score >= 3:
+                    return score
     except Exception as e:
         logger.warning(f"Is high score user error: {e}", exc_info=True)
 
@@ -146,9 +149,10 @@ def is_new_group(_, message: Message) -> bool:
     # Check if the bot joined a new group
     try:
         new_users = message.new_chat_members
-        for user in new_users:
-            if user.is_self:
-                return True
+        if message.new_chat_members:
+            for user in new_users:
+                if user.is_self:
+                    return True
     except Exception as e:
         logger.warning(f"Is new group error: {e}", exc_info=True)
 
@@ -186,9 +190,10 @@ def is_nsfw_user_id(gid: int, uid: int) -> bool:
 def is_test_group(_, message: Message) -> bool:
     # Check if the message is sent from the test group
     try:
-        cid = message.chat.id
-        if cid == glovar.test_group_id:
-            return True
+        if message.chat:
+            cid = message.chat.id
+            if cid == glovar.test_group_id:
+                return True
     except Exception as e:
         logger.warning(f"Is test group error: {e}", exc_info=True)
 

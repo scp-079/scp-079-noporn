@@ -21,11 +21,11 @@ import re
 from time import time
 from copy import deepcopy
 
-from pyrogram import Client, Filters
+from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from ..functions.channel import get_debug_text, share_data
-from ..functions.etc import bold, code, get_command_context, thread, user_mention
+from ..functions.etc import bold, code, get_command_context, get_command_type, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import is_class_c, test_group
 from ..functions.group import delete_message
@@ -37,15 +37,15 @@ logger = logging.getLogger(__name__)
 
 @Client.on_message(Filters.incoming & Filters.group
                    & Filters.command(["config"], glovar.prefix))
-def config(client, message):
+def config(client: Client, message: Message):
     try:
         gid = message.chat.id
         mid = message.message_id
         # Check permission
         if is_class_c(None, message):
-            command_list = list(filter(None, message.command))
+            command_type = get_command_type(message)
             # Check command format
-            if len(command_list) == 2 and re.search("^noporn$", command_list[1], re.I):
+            if command_type and re.search("^noporn$", command_type, re.I):
                 now = int(time())
                 # Check the config lock
                 if now - glovar.configs[gid]["lock"] > 360:
@@ -82,24 +82,23 @@ def config(client, message):
 
 @Client.on_message(Filters.incoming & Filters.group
                    & Filters.command(["config_noporn"], glovar.prefix))
-def config_noporn(client, message):
+def config_noporn(client: Client, message: Message):
     try:
         gid = message.chat.id
         mid = message.message_id
         # Check permission
         if is_class_c(None, message):
             aid = message.from_user.id
-            command_list = message.command
             success = True
             reason = "已更新"
             new_config = deepcopy(glovar.configs[gid])
             text = f"管理员：{code(aid)}\n"
             # Check command format
-            if len(command_list) > 1:
+            command_type, command_context = get_command_context(message)
+            if command_type:
                 now = int(time())
                 # Check the config lock
                 if now - new_config["lock"] > 360:
-                    command_type = list(filter(None, command_list))[1]
                     if command_type == "show":
                         text += (f"操作：{code('查看设置')}\n"
                                  f"设置：{code((lambda x: '默认' if x else '自定义')(new_config.get('default')))}\n"
@@ -112,7 +111,6 @@ def config_noporn(client, message):
                         if not new_config.get("default"):
                             new_config = deepcopy(glovar.default_config)
                     else:
-                        command_context = get_command_context(message)
                         if command_context:
                             if command_type == "channel":
                                 if command_context == "off":
@@ -161,7 +159,7 @@ def config_noporn(client, message):
 
 @Client.on_message(Filters.incoming & Filters.group & test_group
                    & Filters.command(["version"], glovar.prefix))
-def version(client, message):
+def version(client: Client, message: Message):
     try:
         cid = message.chat.id
         aid = message.from_user.id

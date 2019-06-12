@@ -38,7 +38,7 @@ def get_file_id(message: Message) -> str:
                 or (message.document and message.document.thumb)
                 or (message.audio and message.audio.thumb)):
             if message.photo:
-                file_id = message.photo.sizes[-1].file_id
+                file_id = message.photo.file_id
             elif message.sticker:
                 file_id = message.sticker.file_id
             elif message.animation:

@@ -145,9 +145,10 @@ def get_channel_link(message: Union[int, Message]) -> str:
     return text
 
 
-def get_command_context(message: Message) -> str:
+def get_command_context(message: Message) -> (str, str):
     # Get the context "b" in "/command a b"
-    result = ""
+    command_type = ""
+    command_context = ""
     try:
         text = get_text(message)
         command_list = text.split(" ")
@@ -158,9 +159,22 @@ def get_command_context(message: Message) -> str:
                 i += 1
                 command_type = command_list[i]
 
-            result = text[1 + len(command_list[0]) + i + len(command_type):].strip()
+            command_context = text[1 + len(command_list[0]) + i + len(command_type):].strip()
     except Exception as e:
         logger.warning(f"Get command context error: {e}", exc_info=True)
+
+    return command_type, command_context
+
+
+def get_command_type(message: Message) -> str:
+    # Get the command type "a" in "/command a"
+    result = ""
+    try:
+        text = get_text(message)
+        command_list = list(filter(None, text.split(" ")))
+        result = text[len(command_list[0]):].strip()
+    except Exception as e:
+        logging.warning(f"Get command type error: {e}", exc_info=True)
 
     return result
 
