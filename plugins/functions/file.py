@@ -53,10 +53,11 @@ def crypt_file(operation: str, file_in: str, file_out: str) -> bool:
 def delete_file(path: str) -> bool:
     # Delete a file
     try:
-        if exists(path):
-            remove(path)
+        if path:
+            if exists(path):
+                remove(path)
 
-        return True
+            return True
     except Exception as e:
         logger.warning(f"Delete file error: {e}", exc_info=True)
 

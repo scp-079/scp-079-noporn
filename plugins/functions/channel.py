@@ -171,7 +171,7 @@ def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
     return text
 
 
-def receive_file_data(client: Client, message: Message) -> Any:
+def receive_file_data(client: Client, message: Message, decrypt: bool = False) -> Any:
     # Receive file's data from exchange channel
     data = None
     try:
@@ -179,10 +179,21 @@ def receive_file_data(client: Client, message: Message) -> Any:
             file_id = message.document.file_id
             path = get_downloaded_path(client, file_id)
             if path:
-                with open(path, "rb") as f:
+                if decrypt:
+                    # Decrypt the file, save to the tmp directory
+                    path_decrypted = get_new_path()
+                    crypt_file("decrypt", path, path_decrypted)
+                    path_final = path_decrypted
+                else:
+                    # Read the file directly
+                    path_decrypted = ""
+                    path_final = path
+
+                with open(path_final, "rb") as f:
                     data = pickle.load(f)
 
                 thread(delete_file, (path,))
+                thread(delete_file, (path_decrypted,))
     except Exception as e:
         logger.warning(f"Receive file error: {e}", exc_info=True)
 
