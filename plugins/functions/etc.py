@@ -146,7 +146,7 @@ def get_channel_link(message: Union[int, Message]) -> str:
 
 
 def get_command_context(message: Message) -> (str, str):
-    # Get the context "b" in "/command a b"
+    # Get the type "a" and the context "b" in "/command a b"
     command_type = ""
     command_context = ""
     try:
