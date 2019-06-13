@@ -152,7 +152,7 @@ def get_command_context(message: Message) -> (str, str):
     try:
         text = get_text(message)
         command_list = text.split(" ")
-        if len(list(filter(None, command_list))) > 2:
+        if len(list(filter(None, command_list))) > 1:
             i = 1
             command_type = command_list[i]
             while command_type == "" and i < len(command_list):
