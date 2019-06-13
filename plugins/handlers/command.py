@@ -182,9 +182,11 @@ def print_message(client: Client, message: Message):
         if message.reply_to_message:
             result = str(message.reply_to_message).replace("pyrogram.", "")
             result = re.sub('"phone_number": ".*?"', '"phone_number": "███████████"', result)
-            text = (f"管理员：{user_mention(aid)}\n\n"
-                    f"消息结构：" + "-" * 24 + "\n\n"
-                    f"{code_block(result)}\n")
-            thread(send_message, (client, cid, text, mid))
+            result_list = [result[i:i + 3000] for i in range(0, len(result), 3000)]
+            for result in result_list:
+                text = (f"管理员：{user_mention(aid)}\n\n"
+                        f"消息结构：" + "-" * 24 + "\n\n"
+                        f"{code_block(result)}\n")
+                thread(send_message, (client, cid, text, mid))
     except Exception as e:
         logger.warning(f"Print message error: {e}", exc_info=True)
