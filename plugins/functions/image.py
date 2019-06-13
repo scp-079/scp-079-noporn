@@ -32,21 +32,21 @@ def get_file_id(message: Message) -> str:
     # Get media message's file id
     file_id = ""
     try:
-        if (message.photo or message.sticker or (message.animation and message.animation.thumb)
-                or (message.video and message.video.thumb)
-                or (message.video_note and message.video_note.thumb)
-                or (message.document and message.document.thumb)
-                or (message.audio and message.audio.thumb)):
+        if (message.photo or message.sticker or (message.animation and message.animation.thumbs)
+                or (message.video and message.video.thumbs)
+                or (message.video_note and message.video_note.thumbs)
+                or (message.document and message.document.thumbs)
+                or (message.audio and message.audio.thumbs)):
             if message.photo:
                 file_id = message.photo.file_id
             elif message.sticker:
                 file_id = message.sticker.file_id
             elif message.animation:
-                file_id = message.animation.thumb.file_id
+                file_id = message.animation.thumbs[-1].file_id
             elif message.video:
-                file_id = message.video.thumb.file_id
+                file_id = message.video.thumbs[-1].file_id
             elif message.video_note:
-                file_id = message.video_note.thumb.file_id
+                file_id = message.video_note.thumbs[-1].file_id
             elif message.document:
                 if (message.document.mime_type
                         and "image" in message.document.mime_type
@@ -55,9 +55,9 @@ def get_file_id(message: Message) -> str:
                         and message.document.file_size < glovar.image_size):
                     file_id = message.document.file_id
                 else:
-                    file_id = message.document.thumb.file_id
+                    file_id = message.document.thumbs[-1].file_id
             else:
-                file_id = message.audio.thumb.file_id
+                file_id = message.audio.thumbs[-1].file_id
     except Exception as e:
         logger.warning(f"Get file id error: {e}", exc_info=True)
 
