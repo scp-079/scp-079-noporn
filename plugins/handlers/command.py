@@ -169,3 +169,22 @@ def version(client: Client, message: Message):
         thread(send_message, (client, cid, text, mid))
     except Exception as e:
         logger.warning(f"Version error: {e}", exc_info=True)
+
+
+from ..functions.etc import code_block
+@Client.on_message(Filters.incoming & Filters.group & test_group
+                   & Filters.command(["print"], glovar.prefix))
+def print_message(client: Client, message: Message):
+    try:
+        cid = message.chat.id
+        aid = message.from_user.id
+        mid = message.message_id
+        if message.reply_to_message:
+            result = str(message.reply_to_message).replace("pyrogram.", "")
+            result = re.sub('"phone_number": ".*?"', '"phone_number": "███████████"', result)
+            text = (f"管理员：{user_mention(aid)}\n\n"
+                    f"消息结构：" + "-" * 24 + "\n\n"
+                    f"{code_block(result)}\n")
+            thread(send_message, (client, cid, text, mid))
+    except Exception as e:
+        logger.warning(f"Print message error: {e}", exc_info=True)
