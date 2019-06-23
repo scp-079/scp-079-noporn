@@ -74,8 +74,11 @@ def is_declared_message(_, message: Message) -> bool:
             gid = _
             mid = message
         else:
-            gid = message.chat.id
-            mid = message.message_id
+            if message.chat:
+                gid = message.chat.id
+                mid = message.message_id
+            else:
+                return False
 
         if mid in glovar.declared_message_ids.get(gid, set()):
             return True
