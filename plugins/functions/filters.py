@@ -152,7 +152,7 @@ def is_new_group(_, message: Message) -> bool:
     # Check if the bot joined a new group
     try:
         new_users = message.new_chat_members
-        if message.new_chat_members:
+        if new_users:
             for user in new_users:
                 if user.is_self:
                     return True
