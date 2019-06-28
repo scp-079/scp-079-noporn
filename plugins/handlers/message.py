@@ -27,7 +27,7 @@ from ..functions.etc import code, thread, user_mention
 from ..functions.file import get_new_path, save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
 from ..functions.filters import is_declared_message, is_nsfw_user_id
-from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
+from ..functions.filters import is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
 from ..functions.group import get_message, leave_group
 from ..functions.user import receive_watch_user, terminate_nsfw_user
 from ..functions.ids import init_group_id, init_user_id
@@ -45,7 +45,9 @@ def check(client, message):
         gid = message.chat.id
         if glovar.configs[gid].get("channel") and is_restricted_channel(message):
             terminate_nsfw_user(client, message, "channel")
-        elif is_nsfw_media(client, message):
+        elif is_nsfw_url(message):
+            terminate_nsfw_user(client, message, "url")
+        elif message.media and is_nsfw_media(client, message):
             terminate_nsfw_user(client, message, "media")
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)

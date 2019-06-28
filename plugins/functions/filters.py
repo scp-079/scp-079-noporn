@@ -17,12 +17,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from copy import deepcopy
+from hashlib import md5
 from time import time
 from typing import Union
 
 from pyrogram import Client, Filters, Message
 
 from .. import glovar
+from .etc import get_text
 from .file import delete_file, get_downloaded_path
 from .ids import init_group_id
 from .image import get_file_id, get_porn
@@ -328,6 +331,23 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
             glovar.lock_image.release()
             for file in need_delete:
                 delete_file(file)
+
+    return False
+
+
+def is_nsfw_url(message: Message) -> bool:
+    # Check if the message include NSFW url
+    try:
+        text = get_text(message)
+        if text:
+            md5sum = md5(text.encode()).hexdigest()
+            if md5sum not in glovar.except_ids["tmp"]:
+                url_list = deepcopy(glovar.url_list)
+                for url in url_list:
+                    if url in text:
+                        return True
+    except Exception as e:
+        logger.warning(f"Is NSFW url error: {e}", exc_info=True)
 
     return False
 

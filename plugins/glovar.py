@@ -80,6 +80,8 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
+url_list: Set[str] = set()
+
 version: str = "0.2.4"
 
 watch_ids: Dict[str, Dict[int, int]] = {
