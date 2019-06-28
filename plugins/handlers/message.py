@@ -389,7 +389,7 @@ def process_data(client, message):
                                     image = preview["image"]
                                     if image:
                                         image_path = get_new_path()
-                                        image.save(image_path)
+                                        image.save(image_path, "PNG")
                                         if (not is_declared_message(gid, mid)
                                                 and not is_nsfw_user_id(gid, uid)):
                                             if is_nsfw_media(client, image_path):
