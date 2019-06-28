@@ -153,7 +153,7 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
                 if the_type == "channel":
                     rule = "受限频道"
                 elif the_type == "url":
-                    rule = ""
+                    rule = "预览链接"
                 else:
                     rule = "全局规则"
 
