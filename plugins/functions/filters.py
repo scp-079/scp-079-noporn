@@ -300,27 +300,28 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                     return True
 
                 file_id = get_file_id(message)
-            else:
-                file_id = message
+                # If the file_id has been recorded as NSFW media
+                if file_id in glovar.file_ids["nsfw"]:
+                    return True
+                # If the file_id in except lists
+                elif (file_id in glovar.file_ids["safe"]
+                      or file_id in glovar.except_ids["stickers"]
+                      or file_id in glovar.except_ids["tmp"]):
+                    return False
 
-            # If the file_id has been recorded as NSFW media
-            if file_id in glovar.file_ids["nsfw"]:
-                return True
-            # If the file_id in except lists
-            elif (file_id in glovar.file_ids["safe"]
-                  or file_id in glovar.except_ids["stickers"]
-                  or file_id in glovar.except_ids["tmp"]):
-                return False
-            else:
                 image_path = get_downloaded_path(client, file_id)
-                if image_path:
-                    need_delete.append(image_path)
-                    porn = get_porn(image_path)
-                    if porn > glovar.threshold_porn:
-                        glovar.file_ids["nsfw"].add(file_id)
-                        return True
-                    else:
-                        glovar.file_ids["safe"].add(file_id)
+            else:
+                file_id = "PREVIEW"
+                image_path = message
+
+            if image_path:
+                need_delete.append(image_path)
+                porn = get_porn(image_path)
+                if porn > glovar.threshold_porn:
+                    glovar.file_ids["nsfw"].add(file_id)
+                    return True
+                else:
+                    glovar.file_ids["safe"].add(file_id)
         except Exception as e:
             logger.warning(f"Is NSFW media error: {e}", exc_info=True)
         finally:

@@ -24,7 +24,7 @@ from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup
 from .. import glovar
 from ..functions.channel import get_debug_text, receive_file_data, receive_text_data
 from ..functions.etc import code, thread, user_mention
-from ..functions.file import save
+from ..functions.file import get_new_path, save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
 from ..functions.filters import is_declared_message, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_restricted_channel, new_group, test_group
@@ -386,11 +386,13 @@ def process_data(client, message):
                                 mid = data["message_id"]
                                 preview = receive_file_data(client, message)
                                 if preview:
-                                    file_id = preview["file_id"]
-                                    if file_id:
+                                    image = preview["image"]
+                                    if image:
+                                        image_path = get_new_path()
+                                        image.save(image_path)
                                         if (not is_declared_message(gid, mid)
                                                 and not is_nsfw_user_id(gid, uid)):
-                                            if is_nsfw_media(client, file_id):
+                                            if is_nsfw_media(client, image_path):
                                                 the_message = get_message(client, gid, mid)
                                                 if the_message:
                                                     terminate_nsfw_user(client, the_message, "media")
