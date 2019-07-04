@@ -3,6 +3,7 @@ asn1crypto==0.24.0
 cffi==1.12.3
 cryptography==2.6.1
 nsfw==0.3.2
+numpy==1.16.4
 Pillow==6.0.0
 pyaes==1.6.1
 pyAesCrypt==0.4.3
