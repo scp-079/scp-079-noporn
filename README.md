@@ -19,7 +19,7 @@ See [this article](https://scp-079.org/noporn/).
 - Python 3.6 or higher.
 - Ubuntu: `sudo apt update && sudo apt install caffe-cpu`
 - virtualenv: `virtualenv -p python3 scp-079 --system-site-packages`
-- pip : `pip install -r requirements.txt` or `pip install -U APScheduler Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
+- pip: `pip install -r requirements.txt` or `pip install -U APScheduler Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
 
 ## Files
 
