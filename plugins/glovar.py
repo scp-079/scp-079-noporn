@@ -82,7 +82,7 @@ should_hide: bool = False
 
 url_list: Set[str] = set()
 
-version: str = "0.2.4"
+version: str = "0.2.5"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
