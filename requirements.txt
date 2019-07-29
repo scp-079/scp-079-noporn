@@ -9,7 +9,7 @@ kiwisolver==1.1.0
 matplotlib==3.1.1
 networkx==2.3
 nsfw==0.3.2
-numpy==1.17.0
+numpy==1.16.4
 Pillow==6.0.0
 pyaes==1.6.1
 pyAesCrypt==0.4.3
