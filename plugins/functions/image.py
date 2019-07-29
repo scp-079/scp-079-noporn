@@ -69,7 +69,6 @@ def get_porn(path: str) -> float:
     porn = 0
     try:
         image = Image.open(path)
-        logger.warning(path)
         sfw, nsfw = classify(image)
         porn = nsfw
     except Exception as e:
