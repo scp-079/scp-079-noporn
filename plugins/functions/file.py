@@ -69,8 +69,8 @@ def get_downloaded_path(client: Client, file_id: str) -> Optional[str]:
     final_path = None
     try:
         if file_id:
-            file_path = get_new_path()
-            final_path = download_media(client, file_id, file_path) + "webp"
+            file_path = get_new_path() + ".webp"
+            final_path = download_media(client, file_id, file_path)
     except Exception as e:
         logger.warning(f"Get downloaded path error: {e}", exc_info=True)
 
