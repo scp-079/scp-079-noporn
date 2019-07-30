@@ -18,6 +18,7 @@ See [this article](https://scp-079.org/noporn/).
 
 - Python 3.6 or higher
 - Ubuntu: `sudo apt update && sudo apt install caffe-cpu`
+- Follow the file `fix.py` to fix a error
 - virtualenv: `virtualenv -p python3 scp-079 --system-site-packages`
 - pip: `pip install -r requirements.txt` or `pip install -U APScheduler Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
 
@@ -29,6 +30,7 @@ See [this article](https://scp-079.org/noporn/).
         - `etc.py` : Miscellaneous
         - `file.py` : Save files
         - `filters.py` : Some filters
+        - `fix.py` : Show steps to fix an error
         - `group.py` : Functions about group
         - `ids.py` : Modify id lists
         - `image.py` : Functions about image
