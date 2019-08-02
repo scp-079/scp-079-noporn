@@ -18,14 +18,13 @@
 
 import logging
 from copy import deepcopy
-from hashlib import md5
 from time import time
 from typing import Union
 
 from pyrogram import Client, Filters, Message
 
 from .. import glovar
-from .etc import get_text
+from .etc import get_md5sum, get_text
 from .file import delete_file, get_downloaded_path
 from .ids import init_group_id
 from .image import get_file_id, get_porn
@@ -154,11 +153,14 @@ def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
 def is_new_group(_, message: Message) -> bool:
     # Check if the bot joined a new group
     try:
-        new_users = message.new_chat_members
-        if new_users:
-            for user in new_users:
-                if user.is_self:
-                    return True
+        if message.new_chat_members:
+            new_users = message.new_chat_members
+            if new_users:
+                for user in new_users:
+                    if user.is_self:
+                        return True
+        elif message.group_chat_created or message.supergroup_chat_created:
+            return True
     except Exception as e:
         logger.warning(f"Is new group error: {e}", exc_info=True)
 
@@ -303,14 +305,14 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                     return True
 
                 file_id = get_file_id(message)
-                # If the file_id has been recorded as NSFW media
-                if file_id in glovar.file_ids["nsfw"]:
-                    return True
                 # If the file_id in except lists
-                elif (file_id in glovar.file_ids["safe"]
-                      or file_id in glovar.except_ids["stickers"]
-                      or file_id in glovar.except_ids["tmp"]):
+                if (file_id in glovar.file_ids["sfw"]
+                        or file_id in glovar.except_ids["long"]
+                        or file_id in glovar.except_ids["tmp"]):
                     return False
+                # If the file_id has been recorded as NSFW media
+                elif file_id in glovar.file_ids["nsfw"] or file_id in glovar.bad_ids["contents"]:
+                    return True
 
                 image_path = get_downloaded_path(client, file_id)
             else:
@@ -324,7 +326,7 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                     glovar.file_ids["nsfw"].add(file_id)
                     return True
                 else:
-                    glovar.file_ids["safe"].add(file_id)
+                    glovar.file_ids["sfw"].add(file_id)
         except Exception as e:
             logger.warning(f"Is NSFW media error: {e}", exc_info=True)
         finally:
@@ -340,12 +342,15 @@ def is_nsfw_url(message: Message) -> bool:
     try:
         text = get_text(message)
         if text:
-            md5sum = md5(text.encode()).hexdigest()
-            if md5sum not in glovar.except_ids["tmp"]:
-                url_list = deepcopy(glovar.url_list)
-                for url in url_list:
-                    if url in text:
-                        return True
+            md5sum = get_md5sum("string", text)
+            if md5sum and md5sum not in glovar.except_ids["tmp"]:
+                if md5sum in glovar.bad_ids["contents"]:
+                    return True
+                else:
+                    url_list = deepcopy(glovar.url_list)
+                    for url in url_list:
+                        if url in text:
+                            return True
     except Exception as e:
         logger.warning(f"Is NSFW url error: {e}", exc_info=True)
 

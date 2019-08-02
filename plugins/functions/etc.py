@@ -17,6 +17,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from hashlib import md5
+from html import escape
 from json import dumps
 from random import choice, uniform
 from string import ascii_letters, digits
@@ -37,7 +39,7 @@ def bold(text: Any) -> str:
     try:
         text = str(text)
         if text.strip():
-            return f"**{text}**"
+            return f"<b>{escape(str(text))}</b>"
     except Exception as e:
         logger.warning(f"Bold error: {e}", exc_info=True)
 
@@ -65,7 +67,7 @@ def code(text: Any) -> str:
     try:
         text = str(text)
         if text.strip():
-            return f"`{text}`"
+            return f"<code>{escape(str(text))}</code>"
     except Exception as e:
         logger.warning(f"Code error: {e}", exc_info=True)
 
@@ -77,7 +79,7 @@ def code_block(text: Any) -> str:
     try:
         text = str(text)
         if text.strip():
-            return f"```{text}```"
+            return f"<pre>{escape(str(text))}</pre>"
     except Exception as e:
         logger.warning(f"Code block error: {e}", exc_info=True)
 
@@ -119,7 +121,7 @@ def general_link(text: Union[int, str], link: str) -> str:
     # Get a general markdown link
     result = ""
     try:
-        result = f"[{text}]({link})"
+        result = f'<a href="{link}">{escape(str(text))}</a>'
     except Exception as e:
         logger.warning(f"General link error: {e}", exc_info=True)
 
@@ -179,6 +181,26 @@ def get_command_type(message: Message) -> str:
     return result
 
 
+def get_md5sum(the_type: str, ctx: str) -> str:
+    # Get the md5sum of a string or file
+    result = ""
+    try:
+        if ctx:
+            if the_type == "file":
+                hash_md5 = md5()
+                with open(ctx, "rb") as f:
+                    for chunk in iter(lambda: f.read(4096), b""):
+                        hash_md5.update(chunk)
+
+                result = hash_md5.hexdigest()
+            elif the_type == "string":
+                result = md5(ctx.encode()).hexdigest()
+    except Exception as e:
+        logger.warning(f"Get md5sum error: {e}", exc_info=True)
+
+    return result
+
+
 def get_text(message: Message) -> str:
     # Get message's text
     text = ""
@@ -234,7 +256,7 @@ def user_mention(uid: int) -> str:
     # Get a mention text
     text = ""
     try:
-        text = f"[{uid}](tg://user?id={uid})"
+        text = general_link(f"{uid}", f"tg://user?id={uid}")
     except Exception as e:
         logger.warning(f"User mention error: {e}", exc_info=True)
 

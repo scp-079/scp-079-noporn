@@ -61,11 +61,13 @@ def reset_data() -> bool:
     try:
         glovar.bad_ids = {
             "channels": set(),
+            "contents": set(),
             "users": set()
         }
         save("bad_ids")
 
         glovar.except_ids = {
+            "long": set(),
             "tmp": set()
         }
         save("except_ids")
@@ -134,7 +136,7 @@ def update_admins(client: Client) -> bool:
                     data=gid
                 )
         except Exception as e:
-            logger.warning(f"Update admin in {gid} error: {e}")
+            logger.warning(f"Update admin in {gid} error: {e}", exc_info=True)
 
     return True
 
@@ -151,6 +153,6 @@ def update_status(client: Client) -> bool:
         )
         return True
     except Exception as e:
-        logger.warning(f"Update status error: {e}")
+        logger.warning(f"Update status error: {e}", exc_info=True)
 
     return False

@@ -85,8 +85,6 @@ def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember
                 wait_flood(e)
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return False
-
-        result = result.chat_members
     except Exception as e:
         logger.warning(f"Get admin ids in {cid} error: {e}", exc_info=True)
 
@@ -192,6 +190,7 @@ def send_document(client: Client, cid: int, file: str, text: str = None, mid: in
                     chat_id=cid,
                     document=file,
                     caption=text,
+                    parse_mode="html",
                     reply_to_message_id=mid,
                     reply_markup=markup
                 )
@@ -219,6 +218,7 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
                     result = client.send_message(
                         chat_id=cid,
                         text=text,
+                        parse_mode="html",
                         disable_web_page_preview=True,
                         reply_to_message_id=mid,
                         reply_markup=markup
@@ -247,6 +247,7 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
                     result = client.send_message(
                         chat_id=cid,
                         text=text,
+                        parse_mode="html",
                         disable_web_page_preview=True,
                         reply_to_message_id=mid,
                         reply_markup=markup

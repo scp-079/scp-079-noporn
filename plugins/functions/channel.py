@@ -26,8 +26,10 @@ from pyrogram import Chat, Client, Message
 from pyrogram.errors import FloodWait
 
 from .. import glovar
-from .etc import code, code_block, general_link, get_text, message_link, thread
+from .etc import code, code_block, general_link, get_md5sum, get_text, message_link, thread
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
+from .group import get_message
+from .image import get_file_id
 from .telegram import get_group_info, send_document, send_message
 
 # Enable logging
@@ -83,14 +85,17 @@ def exchange_to_hide(client: Client) -> bool:
     # Let other bots exchange data in the hide channel instead
     try:
         glovar.should_hide = True
-        text = format_data(
-            sender="EMERGENCY",
+        share_data(
+            client=client,
             receivers=["EMERGENCY"],
             action="backup",
             action_type="hide",
             data=True
         )
-        thread(send_message, (client, glovar.hide_channel_id, text))
+        text = (f"项目编号：{code(glovar.sender)}\n"
+                f"发现状况：{code('数据交换频道失效')}\n"
+                f"自动处理：{code('启用 1 号协议')}\n")
+        thread(send_message, (client, glovar.critical_channel_id, text))
         return True
     except Exception as e:
         logger.warning(f"Exchange to hide error: {e}", exc_info=True)
@@ -148,6 +153,23 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
         result = send_message(client, glovar.logging_channel_id, text, result)
     except Exception as e:
         logger.warning(f"Forward evidence error: {e}", exc_info=True)
+
+    return result
+
+
+def get_content(client: Client, mid: int) -> str:
+    # Get the message that will be added to except_ids, return the file_id or text's hash
+    result = ""
+    try:
+        message = get_message(client, glovar.logging_channel_id, mid)
+        file_id = get_file_id(message)
+        text = get_text(message)
+        if file_id:
+            result = file_id
+        elif text:
+            result = get_md5sum("string", text)
+    except Exception as e:
+        logger.warning(f"Get except message error: {e}", exc_info=True)
 
     return result
 
@@ -294,7 +316,7 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
         if result is False:
             # Use hide channel instead
             exchange_to_hide(client)
-            thread(share_data, (client, receivers, action, action_type, data, file))
+            thread(share_data, (client, receivers, action, action_type, data, file, encrypt))
 
         return True
     except Exception as e:

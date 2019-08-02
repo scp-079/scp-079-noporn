@@ -61,7 +61,7 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
 
 file_ids: Dict[str, Set[str]] = {
     "nsfw": set(),
-    "safe": set()
+    "sfw": set()
 }
 
 left_group_ids: Set[int] = set()
@@ -82,7 +82,7 @@ should_hide: bool = False
 
 url_list: Set[str] = set()
 
-version: str = "0.2.5"
+version: str = "0.2.6"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -117,6 +117,7 @@ user_id: int = 0
 warn_id: int = 0
 
 # [channels]
+critical_channel_id: int = 0
 debug_channel_id: int = 0
 exchange_channel_id: int = 0
 hide_channel_id: int = 0
@@ -156,6 +157,7 @@ try:
     user_id = int(config["bots"].get("user_id", user_id))
     warn_id = int(config["bots"].get("warn_id", warn_id))
     # [channels]
+    critical_channel_id = int(config["channels"].get("critical_channel_id", critical_channel_id))
     debug_channel_id = int(config["channels"].get("debug_channel_id", debug_channel_id))
     exchange_channel_id = int(config["channels"].get("exchange_channel_id", exchange_channel_id))
     hide_channel_id = int(config["channels"].get("hide_channel_id", hide_channel_id))
@@ -191,6 +193,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or tip_id == 0
         or user_id == 0
         or warn_id == 0
+        or critical_channel_id == 0
         or debug_channel_id == 0
         or exchange_channel_id == 0
         or hide_channel_id == 0
@@ -230,8 +233,9 @@ admin_ids: Dict[int, Set[int]] = {}
 #     -10012345678: {12345678}
 # }
 
-bad_ids: Dict[str, Set[int]] = {
+bad_ids: Dict[str, Set[Union[int, str]]] = {
     "channels": set(),
+    "contents": set(),
     "users": set()
 }
 # bad_ids = {
@@ -240,12 +244,12 @@ bad_ids: Dict[str, Set[int]] = {
 # }
 
 except_ids: Dict[str, Set[Union[int, str]]] = {
-    "stickers": set(),
+    "long": set(),
     "tmp": set()
 }
 # except_ids = {
-#     "stickers": {"file_id"},
-#     "tmp": {"file_id"}
+#     "long": {"file_id or hash"},
+#     "tmp": {"file_id or hash"}
 # }
 
 user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
