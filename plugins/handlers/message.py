@@ -81,51 +81,33 @@ def init_group(client: Client, message: Message):
     try:
         gid = message.chat.id
         text = get_debug_text(client, message.chat)
-        if message.new_chat_members:
-            invited_by = message.from_user.id
-            # Check permission
-            if invited_by == glovar.user_id:
-                # Remove the left status
-                if gid in glovar.left_group_ids:
-                    glovar.left_group_ids.discard(gid)
+        invited_by = message.from_user.id
+        # Check permission
+        if invited_by == glovar.user_id:
+            # Remove the left status
+            if gid in glovar.left_group_ids:
+                glovar.left_group_ids.discard(gid)
 
-                # Update group's admin list
-                if init_group_id(gid):
-                    admin_members = get_admins(client, gid)
-                    if admin_members:
-                        glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
-                                                 if not admin.user.is_bot and not admin.user.is_deleted}
-                        save("admin_ids")
-                        text += f"状态：{code('已加入群组')}\n"
-                    else:
-                        thread(leave_group, (client, gid))
-                        text += (f"状态：{code('已退出群组')}\n"
-                                 f"原因：{code('获取管理员列表失败')}\n")
-            else:
-                if gid in glovar.left_group_ids:
-                    return leave_group(client, gid)
-
-                leave_group(client, gid)
-                text += (f"状态：{code('已退出群组')}\n"
-                         f"原因：{code('未授权使用')}\n"
-                         f"邀请人：{user_mention(invited_by)}")
+            # Update group's admin list
+            if init_group_id(gid):
+                admin_members = get_admins(client, gid)
+                if admin_members:
+                    glovar.admin_ids[gid] = {admin.user.id for admin in admin_members
+                                             if not admin.user.is_bot and not admin.user.is_deleted}
+                    save("admin_ids")
+                    text += f"状态：{code('已加入群组')}\n"
+                else:
+                    thread(leave_group, (client, gid))
+                    text += (f"状态：{code('已退出群组')}\n"
+                             f"原因：{code('获取管理员列表失败')}\n")
         else:
-            admin_members = get_admins(client, gid)
-            invited_by = 0
-            if admin_members:
-                admin_id = [admin.user.id for admin in admin_members
-                            if not admin.user.is_bot and not admin.user.is_deleted]
-                if admin_id:
-                    invited_by = admin_id[-1]
-
             if gid in glovar.left_group_ids:
                 return leave_group(client, gid)
 
             leave_group(client, gid)
             text += (f"状态：{code('已退出群组')}\n"
-                     f"原因：{code('未授权使用')}\n")
-            if invited_by:
-                text += f"邀请人：{user_mention(invited_by)}\n"
+                     f"原因：{code('未授权使用')}\n"
+                     f"邀请人：{user_mention(invited_by)}")
 
         thread(send_message, (client, glovar.debug_channel_id, text))
     except Exception as e:
