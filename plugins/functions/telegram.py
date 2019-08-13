@@ -86,7 +86,7 @@ def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return False
     except Exception as e:
-        logger.warning(f"Get admin ids in {cid} error: {e}", exc_info=True)
+        logger.warning(f"Get admins in {cid} error: {e}", exc_info=True)
 
     return result
 
