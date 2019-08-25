@@ -250,11 +250,11 @@ bad_ids: Dict[str, Set[Union[int, str]]] = {
 
 except_ids: Dict[str, Set[Union[int, str]]] = {
     "long": set(),
-    "tmp": set()
+    "temp": set()
 }
 # except_ids = {
 #     "long": {"file_id or hash"},
-#     "tmp": {"file_id or hash"}
+#     "temp": {"file_id or hash"}
 # }
 
 user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
