@@ -28,7 +28,7 @@ from ..functions.file import get_new_path, save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
 from ..functions.filters import is_class_e, is_declared_message, is_nsfw_user_id
 from ..functions.filters import is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
-from ..functions.group import get_message, leave_group
+from ..functions.group import get_message, leave_group, update_declared_id
 from ..functions.user import receive_watch_user, terminate_nsfw_user
 from ..functions.ids import init_group_id, init_user_id
 from ..functions.telegram import get_admins, send_message, send_report_message
@@ -166,9 +166,7 @@ def process_data(client: Client, message: Message):
                         if action_type == "declare":
                             group_id = data["group_id"]
                             message_id = data["message_id"]
-                            if glovar.configs.get(group_id):
-                                if init_group_id(group_id):
-                                    glovar.declared_message_ids[group_id].add(message_id)
+                            update_declared_id(group_id, message_id)
                         elif action_type == "score":
                             uid = data["id"]
                             init_user_id(uid)
@@ -219,9 +217,7 @@ def process_data(client: Client, message: Message):
                         if action_type == "declare":
                             group_id = data["group_id"]
                             message_id = data["message_id"]
-                            if glovar.configs.get(group_id):
-                                if init_group_id(group_id):
-                                    glovar.declared_message_ids[group_id].add(message_id)
+                            update_declared_id(group_id, message_id)
                         elif action_type == "score":
                             uid = data["id"]
                             init_user_id(uid)
@@ -245,9 +241,7 @@ def process_data(client: Client, message: Message):
                         if action_type == "declare":
                             group_id = data["group_id"]
                             message_id = data["message_id"]
-                            if glovar.configs.get(group_id):
-                                if init_group_id(group_id):
-                                    glovar.declared_message_ids[group_id].add(message_id)
+                            update_declared_id(group_id, message_id)
                         elif action_type == "score":
                             uid = data["id"]
                             init_user_id(uid)
@@ -331,9 +325,7 @@ def process_data(client: Client, message: Message):
                         if action_type == "declare":
                             group_id = data["group_id"]
                             message_id = data["message_id"]
-                            if glovar.configs.get(group_id):
-                                if init_group_id(group_id):
-                                    glovar.declared_message_ids[group_id].add(message_id)
+                            update_declared_id(group_id, message_id)
                         elif action_type == "score":
                             uid = data["id"]
                             init_user_id(uid)
@@ -357,9 +349,7 @@ def process_data(client: Client, message: Message):
                         if action_type == "declare":
                             group_id = data["group_id"]
                             message_id = data["message_id"]
-                            if glovar.configs.get(group_id):
-                                if init_group_id(group_id):
-                                    glovar.declared_message_ids[group_id].add(message_id)
+                            update_declared_id(group_id, message_id)
                         elif action_type == "score":
                             uid = data["id"]
                             init_user_id(uid)
@@ -383,9 +373,7 @@ def process_data(client: Client, message: Message):
                         if action_type == "declare":
                             group_id = data["group_id"]
                             message_id = data["message_id"]
-                            if glovar.configs.get(group_id):
-                                if init_group_id(group_id):
-                                    glovar.declared_message_ids[group_id].add(message_id)
+                            update_declared_id(group_id, message_id)
                         elif action_type == "score":
                             uid = data["id"]
                             init_user_id(uid)
@@ -422,7 +410,7 @@ def process_data(client: Client, message: Message):
                         if action_type == "preview":
                             # Get the preview data
                             gid = data["group_id"]
-                            if glovar.configs.get(gid):
+                            if glovar.admin_ids.get(gid):
                                 uid = data["user_id"]
                                 mid = data["message_id"]
                                 preview = receive_file_data(client, message)
