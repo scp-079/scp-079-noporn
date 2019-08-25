@@ -117,7 +117,7 @@ def init_group(client: Client, message: Message):
             leave_group(client, gid)
             text += (f"状态：{code('已退出群组')}\n"
                      f"原因：{code('未授权使用')}\n"
-                     f"邀请人：{user_mention(invited_by)}")
+                     f"邀请人：{user_mention(invited_by)}\n")
 
         thread(send_message, (client, glovar.debug_channel_id, text))
     except Exception as e:
