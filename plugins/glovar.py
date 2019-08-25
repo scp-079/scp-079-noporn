@@ -32,7 +32,6 @@ logging.basicConfig(
     filename='log',
     filemode='w'
 )
-
 logger = logging.getLogger(__name__)
 
 # Init
