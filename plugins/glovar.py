@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 # Init
 
-all_commands: List[str] = ["config", "config_noporn"]
+all_commands: List[str] = ["config", "config_noporn", "version"]
 
 declared_message_ids: Dict[int, Set[int]] = {}
 # declared_message_ids = {
