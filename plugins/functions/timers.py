@@ -96,7 +96,7 @@ def send_count(client: Client) -> bool:
 
 def update_admins(client: Client) -> bool:
     # Update admin list every day
-    group_list = list(glovar.configs)
+    group_list = list(glovar.admin_ids)
     for gid in group_list:
         try:
             should_leave = True
