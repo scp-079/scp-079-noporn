@@ -70,13 +70,13 @@ lock: Dict[str, Lock] = {
     "regex": Lock()
 }
 
-receivers_bad: List[str] = ["ANALYZE", "APPEAL", "CAPTCHA", "CLEAN", "LANG", "LONG", "NOFLOOD", "NOPORN",
-                            "NOSPAM", "MANAGE", "RECHECK", "USER", "WATCH"]
-
-receivers_declare: List[str] = ["ANALYZE", "CLEAN", "LANG", "LONG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"]
-
-receivers_status: List[str] = ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
-                               "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
+receivers: Dict[str, List[str]] = {
+    "bad": ["ANALYZE", "APPEAL", "CAPTCHA", "CLEAN", "LANG", "LONG", "NOFLOOD", "NOPORN",
+            "NOSPAM", "MANAGE", "RECHECK", "USER", "WATCH"],
+    "declare": ["ANALYZE", "CLEAN", "LANG", "LONG", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER"],
+    "status": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
+               "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
+}
 
 regex: Dict[str, str] = {
     "wb": "追踪封禁"

@@ -67,7 +67,7 @@ def declare_message(client: Client, gid: int, mid: int) -> bool:
         glovar.declared_message_ids[gid].add(mid)
         share_data(
             client=client,
-            receivers=glovar.receivers_declare,
+            receivers=glovar.receivers["declare"],
             action="update",
             action_type="declare",
             data={
@@ -271,7 +271,7 @@ def share_bad_user(client: Client, uid: int) -> bool:
     try:
         share_data(
             client=client,
-            receivers=glovar.receivers_bad,
+            receivers=glovar.receivers["bad"],
             action="add",
             action_type="bad",
             data={
@@ -370,7 +370,7 @@ def share_watch_ban_user(client: Client, uid: int, until: str) -> bool:
     try:
         share_data(
             client=client,
-            receivers=glovar.receivers_status,
+            receivers=glovar.receivers["status"],
             action="add",
             action_type="watch",
             data={
@@ -394,7 +394,7 @@ def update_score(client: Client, uid: int) -> bool:
         save("user_ids")
         share_data(
             client=client,
-            receivers=glovar.receivers_status,
+            receivers=glovar.receivers["status"],
             action="update",
             action_type="score",
             data={

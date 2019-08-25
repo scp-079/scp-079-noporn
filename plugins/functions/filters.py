@@ -243,58 +243,58 @@ def is_watch_delete(_, message: Message) -> bool:
 
 
 class_c = Filters.create(
-    name="Class C",
-    func=is_class_c
+    func=is_class_c,
+    name="Class C"
 )
 
 class_d = Filters.create(
-    name="Class D",
-    func=is_class_d
+    func=is_class_d,
+    name="Class D"
 )
 
 declared_message = Filters.create(
-    name="Declared message",
-    func=is_declared_message
+    func=is_declared_message,
+    name="Declared message"
 )
 
 exchange_channel = Filters.create(
-    name="Exchange Channel",
-    func=is_exchange_channel
+    func=is_exchange_channel,
+    name="Exchange Channel"
 )
 
 hide_channel = Filters.create(
-    name="Hide Channel",
-    func=is_hide_channel
+    func=is_hide_channel,
+    name="Hide Channel"
 )
 
 high_score_user = Filters.create(
-    name="High score user",
-    func=is_high_score_user
+    func=is_high_score_user,
+    name="High score user"
 )
 
 new_group = Filters.create(
-    name="New Group",
-    func=is_new_group
+    func=is_new_group,
+    name="New Group"
 )
 
 nsfw_user = Filters.create(
-    name="NSFW User",
-    func=is_nsfw_user
+    func=is_nsfw_user,
+    name="NSFW User"
 )
 
 test_group = Filters.create(
-    name="Test Group",
-    func=is_test_group
+    func=is_test_group,
+    name="Test Group"
 )
 
 watch_ban = Filters.create(
-    name="Watch Ban",
-    func=is_watch_ban
+    func=is_watch_ban,
+    name="Watch Ban"
 )
 
 watch_delete = Filters.create(
-    name="Watch Delete",
-    func=is_watch_delete
+    func=is_watch_delete,
+    name="Watch Delete"
 )
 
 
