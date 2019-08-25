@@ -184,7 +184,7 @@ def get_content(client: Optional[Client], mid: Union[int, Message]) -> str:
             elif text:
                 result += get_md5sum("string", text)
     except Exception as e:
-        logger.warning(f"Get except message error: {e}", exc_info=True)
+        logger.warning(f"Get content error: {e}", exc_info=True)
 
     return result
 
