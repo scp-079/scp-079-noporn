@@ -27,7 +27,7 @@ from pyrogram.errors import FloodWait
 
 from .. import glovar
 from .etc import code, code_block, general_link, get_md5sum, get_text, message_link, thread
-from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
+from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .group import get_message
 from .image import get_file_id
 from .telegram import get_group_info, send_document, send_message
@@ -53,6 +53,7 @@ def ask_for_help(client: Client, level: str, gid: int, uid: int, group: str = "s
             action_type=level,
             data=data
         )
+
         return True
     except Exception as e:
         logger.warning(f"Ask for help error: {e}", exc_info=True)
@@ -74,6 +75,7 @@ def declare_message(client: Client, gid: int, mid: int) -> bool:
                 "message_id": mid
             }
         )
+
         return True
     except Exception as e:
         logger.warning(f"Declare message error: {e}", exc_info=True)
@@ -96,6 +98,7 @@ def exchange_to_hide(client: Client) -> bool:
                 f"发现状况：{code('数据交换频道失效')}\n"
                 f"自动处理：{code('启用 1 号协议')}\n")
         thread(send_message, (client, glovar.critical_channel_id, text))
+
         return True
     except Exception as e:
         logger.warning(f"Exchange to hide error: {e}", exc_info=True)
@@ -157,17 +160,24 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
     return result
 
 
-def get_content(client: Client, mid: int) -> str:
+def get_content(client: Optional[Client], mid: Union[int, Message]) -> str:
     # Get the message that will be added to except_ids, return the file_id or text's hash
     result = ""
     try:
-        message = get_message(client, glovar.logging_channel_id, mid)
-        file_id = get_file_id(message)
-        text = get_text(message)
-        if file_id:
-            result = file_id
-        elif text:
-            result = get_md5sum("string", text)
+        if client and isinstance(mid, int):
+            message = get_message(client, glovar.logging_channel_id, mid)
+            if message:
+                message = message.reply_to_message
+        else:
+            message = mid
+
+        if message:
+            file_id = get_file_id(message)
+            text = get_text(message)
+            if file_id:
+                result += file_id
+            elif text:
+                result += get_md5sum("string", text)
     except Exception as e:
         logger.warning(f"Get except message error: {e}", exc_info=True)
 
@@ -243,6 +253,7 @@ def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, em: 
                  f"执行操作：{code(action)}\n"
                  f"触发消息：{general_link(mid, message_link(em))}\n")
         thread(send_message, (client, glovar.debug_channel_id, text))
+
         return True
     except Exception as e:
         logger.warning(f"Send debug error: {e}", exc_info=True)
@@ -263,6 +274,7 @@ def share_bad_user(client: Client, uid: int) -> bool:
                 "type": "user"
             }
         )
+
         return True
     except Exception as e:
         logger.warning(f"Share bad user error: {e}", exc_info=True)
@@ -328,6 +340,26 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
     return False
 
 
+def share_regex_count(client: Client, word_tye: str) -> bool:
+    # Use this function to share regex count to REGEX
+    try:
+        file = data_to_file(eval(f"glovar.{word_tye}_words"))
+        share_data(
+            client=client,
+            receivers=["REGEX"],
+            action="update",
+            action_type="download",
+            data=f"{word_tye}_words",
+            file=file
+        )
+
+        return True
+    except Exception as e:
+        logger.warning(f"Share regex update error: {e}", exc_info=True)
+
+    return False
+
+
 def share_watch_ban_user(client: Client, uid: int, until: str) -> bool:
     # Share a watch ban user with other bots
     try:
@@ -342,6 +374,7 @@ def share_watch_ban_user(client: Client, uid: int, until: str) -> bool:
                 "until": until
             }
         )
+
         return True
     except Exception as e:
         logger.warning(f"Share watch ban user error: {e}", exc_info=True)
@@ -364,6 +397,7 @@ def update_score(client: Client, uid: int) -> bool:
                 "score": noporn_score
             }
         )
+
         return True
     except Exception as e:
         logger.warning(f"Update score error: {e}", exc_info=True)

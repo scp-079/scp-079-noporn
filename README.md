@@ -20,7 +20,7 @@ See [this article](https://scp-079.org/noporn/).
 - Ubuntu: `sudo apt update && sudo apt install caffe-cpu`
 - Follow the file `fix.py` to fix a error
 - virtualenv: `virtualenv -p python3 scp-079 --system-site-packages`
-- pip: `pip install -r requirements.txt` or `pip install -U APScheduler Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
+- pip: `pip install -r requirements.txt` or `pip install -U APScheduler OpenCC Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
 
 ## Files
 

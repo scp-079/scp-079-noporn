@@ -24,6 +24,7 @@ from pyrogram import Client, Message
 from .. import glovar
 from .etc import code, get_text, thread, user_mention
 from .file import get_downloaded_path
+from .filters import is_class_e, is_nsfw_url
 from .image import get_file_id, get_porn
 from .telegram import send_message
 
@@ -33,7 +34,7 @@ logger = logging.getLogger(__name__)
 
 def porn_test(client: Client, message: Message) -> bool:
     # Test image porn score in the test group
-    if glovar.lock_image.acquire():
+    if glovar.lock["image"].acquire():
         try:
             file_id = get_file_id(message)
             image_path = get_downloaded_path(client, file_id)
@@ -46,13 +47,15 @@ def porn_test(client: Client, message: Message) -> bool:
 
                 porn = get_porn(image_path)
                 text = (f"管理员：{user_mention(aid)}\n\n"
-                        f"NSFW 得分：{code(f'{porn:.8f}')}")
+                        f"NSFW 得分：{code(f'{porn:.8f}')}\n"
+                        f"白名单：{code(is_class_e(message))}\n"
+                        f"NSFW 链接：{code(is_nsfw_url(message))}\n")
                 thread(send_message, (client, glovar.test_group_id, text, message.message_id))
             
             return True
         except Exception as e:
             logger.warning(f"Porn test error: {e}", exc_info=True)
         finally:
-            glovar.lock_image.release()
+            glovar.lock["image"].release()
 
     return False

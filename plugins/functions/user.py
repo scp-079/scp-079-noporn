@@ -22,12 +22,12 @@ from time import time
 from pyrogram import Client, Message
 
 from .. import glovar
-from .etc import crypt_str, thread
+from .etc import crypt_str, get_full_name, thread
 from .channel import ask_for_help, declare_message, forward_evidence, send_debug, share_bad_user
 from .channel import share_watch_ban_user, update_score
 from .file import save
 from .group import delete_message
-from .filters import is_high_score_user, is_nsfw_user, is_watch_ban, is_watch_delete
+from .filters import is_high_score_user, is_nsfw_user, is_regex_text, is_watch_ban, is_watch_delete
 from .ids import init_user_id
 from .telegram import kick_chat_member
 
@@ -41,6 +41,7 @@ def add_bad_user(client: Client, uid: int) -> bool:
         glovar.bad_ids["users"].add(uid)
         save("bad_ids")
         share_bad_user(client, uid)
+
         return True
     except Exception as e:
         logger.warning(f"Add bad user error: {e}", exc_info=True)
@@ -55,6 +56,7 @@ def add_nsfw_user(gid: int, uid: int) -> bool:
         now = int(time())
         previous = glovar.user_ids[uid]["nsfw"].get(gid)
         glovar.user_ids[uid]["nsfw"][gid] = now
+
         return bool(previous)
     except Exception as e:
         logger.warning(f"Add NSFW user error: {e}", exc_info=True)
@@ -71,6 +73,7 @@ def add_watch_ban_user(client: Client, uid: int) -> bool:
         until = str(until)
         until = crypt_str("encrypt", until, glovar.key)
         share_watch_ban_user(client, uid, until)
+
         return True
     except Exception as e:
         logger.warning(f"Add watch ban user error: {e}", exc_info=True)
@@ -82,6 +85,7 @@ def ban_user(client: Client, gid: int, uid: int) -> bool:
     # Ban a user
     try:
         thread(kick_chat_member, (client, gid, uid))
+
         return True
     except Exception as e:
         logger.warning(f"Ban user error: {e}", exc_info=True)
@@ -115,7 +119,16 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
             gid = message.chat.id
             uid = message.from_user.id
             mid = message.message_id
-            if is_watch_ban(None, message):
+            if is_regex_text("wb", get_full_name(message.from_user)):
+                result = forward_evidence(client, message, "自动封禁", "用户昵称")
+                if result:
+                    ban_user(client, gid, uid)
+                    delete_message(client, gid, mid)
+                    declare_message(client, gid, mid)
+                    ask_for_help(client, "ban", gid, uid)
+                    add_bad_user(client, uid)
+                    send_debug(client, message.chat, "昵称封禁", uid, mid, result)
+            elif is_watch_ban(None, message):
                 result = forward_evidence(client, message, "自动封禁", "敏感追踪")
                 if result:
                     ban_user(client, gid, uid)

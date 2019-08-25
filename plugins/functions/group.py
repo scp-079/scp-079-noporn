@@ -35,6 +35,7 @@ def delete_message(client: Client, gid: int, mid: int) -> bool:
     try:
         mids = [mid]
         thread(delete_messages, (client, gid, mids))
+
         return True
     except Exception as e:
         logger.warning(f"Delete message error: {e}", exc_info=True)

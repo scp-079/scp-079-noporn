@@ -22,7 +22,7 @@ from time import sleep
 from pyrogram import Client
 
 from .. import glovar
-from .channel import share_data
+from .channel import share_data, share_regex_count
 from .etc import code, general_link, thread
 from .file import save
 from .group import leave_group
@@ -61,14 +61,13 @@ def reset_data() -> bool:
     try:
         glovar.bad_ids = {
             "channels": set(),
-            "contents": set(),
             "users": set()
         }
         save("bad_ids")
 
         glovar.except_ids = {
             "long": set(),
-            "tmp": set()
+            "temp": set()
         }
         save("except_ids")
 
@@ -78,6 +77,19 @@ def reset_data() -> bool:
         return True
     except Exception as e:
         logger.warning(f"Reset data error: {e}", exc_info=True)
+
+    return False
+
+
+def send_count(client: Client) -> bool:
+    # Send regex count to REGEX
+    try:
+        for word_type in glovar.regex:
+            share_regex_count(client, word_type)
+
+        return True
+    except Exception as e:
+        logger.warning(f"Send count error: {e}", exc_info=True)
 
     return False
 
@@ -158,6 +170,7 @@ def update_status(client: Client) -> bool:
             action_type="status",
             data="awake"
         )
+
         return True
     except Exception as e:
         logger.warning(f"Update status error: {e}", exc_info=True)

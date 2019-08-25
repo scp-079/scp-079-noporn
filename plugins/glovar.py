@@ -40,8 +40,7 @@ declared_message_ids: Dict[int, Set[int]] = {}
 default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
     "default": True,
     "lock": 0,
-    "channel": True,
-    "recheck": False
+    "channel": True
 }
 
 default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
@@ -66,7 +65,10 @@ file_ids: Dict[str, Set[str]] = {
 
 left_group_ids: Set[int] = set()
 
-lock_image: Lock = Lock()
+lock: Dict[str, Lock] = {
+    "image": Lock(),
+    "regex": Lock()
+}
 
 receivers_bad: List[str] = ["ANALYZE", "APPEAL", "CAPTCHA", "CLEAN", "LANG", "LONG", "NOFLOOD", "NOPORN",
                             "NOSPAM", "MANAGE", "RECHECK", "USER", "WATCH"]
@@ -76,13 +78,17 @@ receivers_declare: List[str] = ["ANALYZE", "CLEAN", "LANG", "LONG", "NOFLOOD", "
 receivers_status: List[str] = ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
                                "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
 
+regex: Dict[str, str] = {
+    "wb": "追踪封禁"
+}
+
 sender: str = "NOPORN"
 
 should_hide: bool = False
 
 url_list: Set[str] = set()
 
-version: str = "0.2.6"
+version: str = "0.2.7"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},
@@ -235,7 +241,6 @@ admin_ids: Dict[int, Set[int]] = {}
 
 bad_ids: Dict[str, Set[Union[int, str]]] = {
     "channels": set(),
-    "contents": set(),
     "users": set()
 }
 # bad_ids = {
@@ -275,12 +280,19 @@ configs: Dict[int, Dict[str, Union[bool, int, Dict[str, bool]]]] = {}
 #     -10012345678: {
 #         "default": True,
 #         "lock": 0,
-#         "channel": True,
-#         "recheck": False
+#         "channel": True
 # }
+
+# Init word variables
+wb_words: Dict[str, int] = {}
+# type_words = {
+#     "regex": 0
+# }
+
 
 # Load data
 file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "user_ids", "configs"]
+file_list += [f"{f}_words" for f in regex]
 for file in file_list:
     try:
         try:

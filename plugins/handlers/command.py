@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 @Client.on_message(Filters.incoming & Filters.group
                    & Filters.command(["config"], glovar.prefix))
 def config(client: Client, message: Message):
+    # Request CONFIG session
     try:
         gid = message.chat.id
         mid = message.message_id
@@ -83,6 +84,7 @@ def config(client: Client, message: Message):
 @Client.on_message(Filters.incoming & Filters.group
                    & Filters.command(["config_noporn"], glovar.prefix))
 def config_noporn(client: Client, message: Message):
+    # Config the bot directly
     try:
         gid = message.chat.id
         mid = message.message_id
@@ -102,8 +104,7 @@ def config_noporn(client: Client, message: Message):
                     if command_type == "show":
                         text += (f"操作：{code('查看设置')}\n"
                                  f"设置：{code((lambda x: '默认' if x else '自定义')(new_config.get('default')))}\n"
-                                 f"过滤频道：{code((lambda x: '启用' if x else '禁用')(new_config.get('channel')))}\n"
-                                 f"媒体复查：{code((lambda x: '启用' if x else '禁用')(new_config.get('recheck')))}\n")
+                                 f"过滤频道：{code((lambda x: '启用' if x else '禁用')(new_config.get('channel')))}\n")
                         thread(send_report_message, (15, client, gid, text))
                         thread(delete_message, (client, gid, mid))
                         return
@@ -120,14 +121,6 @@ def config_noporn(client: Client, message: Message):
                                 else:
                                     success = False
                                     reason = "过滤选项有误"
-                            elif command_type == "recheck":
-                                if command_context == "off":
-                                    new_config["recheck"] = False
-                                elif command_context == "on":
-                                    new_config["recheck"] = True
-                                else:
-                                    success = False
-                                    reason = "复查选项有误"
                             else:
                                 success = False
                                 reason = "命令类别有误"
@@ -160,6 +153,7 @@ def config_noporn(client: Client, message: Message):
 @Client.on_message(Filters.incoming & Filters.group & test_group
                    & Filters.command(["version"], glovar.prefix))
 def version(client: Client, message: Message):
+    # Check the program's version
     try:
         cid = message.chat.id
         aid = message.from_user.id

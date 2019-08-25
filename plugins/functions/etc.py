@@ -27,7 +27,8 @@ from time import sleep
 from typing import Any, Callable, Optional, Union
 
 from cryptography.fernet import Fernet
-from pyrogram import Message
+from opencc import convert
+from pyrogram import Message, User
 from pyrogram.errors import FloodWait
 
 # Enable logging
@@ -181,6 +182,23 @@ def get_command_type(message: Message) -> str:
     return result
 
 
+def get_full_name(user: User) -> str:
+    # Get user's full name
+    text = ""
+    try:
+        if user and not user.is_deleted:
+            text = user.first_name
+            if user.last_name:
+                text += f" {user.last_name}"
+
+        if text:
+            text = t2s(text)
+    except Exception as e:
+        logger.warning(f"Get full name error: {e}", exc_info=True)
+
+    return text
+
+
 def get_md5sum(the_type: str, ctx: str) -> str:
     # Get the md5sum of a string or file
     result = ""
@@ -235,6 +253,16 @@ def random_str(i: int) -> str:
         text = "".join(choice(ascii_letters + digits) for _ in range(i))
     except Exception as e:
         logger.warning(f"Random str error: {e}", exc_info=True)
+
+    return text
+
+
+def t2s(text: str) -> str:
+    # Convert Traditional Chinese to Simplified Chinese
+    try:
+        text = convert(text, config="t2s.json")
+    except Exception as e:
+        logger.warning(f"T2S error: {e}", exc_info=True)
 
     return text
 
