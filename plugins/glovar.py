@@ -46,15 +46,15 @@ default_config: Dict[str, Union[bool, int, Dict[str, bool]]] = {
 default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
     "nsfw": {},
     "score": {
-        "captcha": 0,
-        "clean": 0,
-        "lang": 0,
-        "long": 0,
-        "noflood": 0,
-        "noporn": 0,
-        "nospam": 0,
-        "recheck": 0,
-        "warn": 0
+        "captcha": 0.0,
+        "clean": 0.0,
+        "lang": 0.0,
+        "long": 0.0,
+        "noflood": 0.0,
+        "noporn": 0.0,
+        "nospam": 0.0,
+        "recheck": 0.0,
+        "warn": 0.0
     }
 }
 
@@ -262,13 +262,14 @@ user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, in
 #     12345678: {
 #         "nsfw": {},
 #         "score": {
-#             "captcha": 0,
-#             "clean": 0,
-#             "lang": 0,
-#             "noflood": 0,
-#             "noporn": 0,
-#             "recheck": 0,
-#             "warn": 0
+#             "captcha": 0.0,
+#             "clean": 0.0,
+#             "lang": 0.0,
+#             "long": 0.0,
+#             "noflood": 0.0,
+#             "noporn": 0.0,
+#             "recheck": 0.0,
+#             "warn": 0.0
 #         }
 #     }
 # }
