@@ -26,7 +26,7 @@ from pyrogram import Chat, Client, Message
 from pyrogram.errors import FloodWait
 
 from .. import glovar
-from .etc import code, code_block, general_link, get_md5sum, get_text, message_link, thread
+from .etc import code, code_block, general_link, get_full_name, get_md5sum, get_text, message_link, thread
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .group import get_message
 from .image import get_file_id
@@ -134,6 +134,11 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
                 f"用户 ID：{code(uid)}\n"
                 f"操作等级：{code(level)}\n"
                 f"规则：{code(rule)}\n")
+        if "昵称" in rule:
+            name = get_full_name(message.from_user)
+            if name:
+                text += f"用户昵称：{code(name)}\n"
+
         if more:
             text += f"附加信息：{code(more)}\n"
 
