@@ -35,6 +35,7 @@ See [this article](https://scp-079.org/noporn/).
         - `ids.py` : Modify id lists
         - `image.py` : Functions about image
         - `telegram.py` : Some telegram functions
+        - `tests.py` : Some test functions
         - `timers.py` : Timer functions
         - `user.py` : Functions about user
     - handlers
