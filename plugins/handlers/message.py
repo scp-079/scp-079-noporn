@@ -38,7 +38,7 @@ from ..functions.tests import porn_test
 logger = logging.getLogger(__name__)
 
 
-@Client.on_message(Filters.incoming & Filters.group & ~test_group & Filters.media
+@Client.on_message(Filters.incoming & Filters.group & ~test_group
                    & ~class_c & ~class_d & ~declared_message)
 def check(client: Client, message: Message):
     # Check the messages sent from groups
