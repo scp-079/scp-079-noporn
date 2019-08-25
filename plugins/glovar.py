@@ -226,7 +226,8 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or user_name in {"", "[DATA EXPUNGED]"}
         or key in {"", b"[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
-    raise SystemExit('No proper settings')
+    logger.critical("No proper settings")
+    raise SystemExit("No proper settings")
 
 bot_ids: Set[int] = {captcha_id, clean_id, lang_id, long_id,
                      noflood_id, noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
