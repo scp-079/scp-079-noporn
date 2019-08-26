@@ -27,7 +27,6 @@ from ..functions.file import save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel, is_class_e
 from ..functions.filters import is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
 from ..functions.group import leave_group
-from ..functions.user import terminate_nsfw_user
 from ..functions.ids import init_group_id
 from ..functions.receive import receive_add_except, receive_bad_channel, receive_bad_user, receive_config_commit
 from ..functions.receive import receive_config_reply, receive_declared_message, receive_preview, receive_leave_approve
@@ -35,6 +34,7 @@ from ..functions.receive import receive_regex, receive_remove_bad, receive_remov
 from ..functions.receive import receive_text_data, receive_user_score, receive_watch_user
 from ..functions.telegram import get_admins, send_message
 from ..functions.tests import porn_test
+from ..functions.user import terminate_nsfw_user
 
 # Enable logging
 logger = logging.getLogger(__name__)
