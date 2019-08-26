@@ -143,6 +143,7 @@ def process_data(client: Client, message: Message):
             # but this is to ensure that the permissions are clear,
             # so it is intentionally written like this
             if glovar.sender in receivers:
+
                 if sender == "CAPTCHA":
 
                     if action == "update":
@@ -150,6 +151,7 @@ def process_data(client: Client, message: Message):
                             receive_user_score(sender, data)
 
                 elif sender == "CLEAN":
+
                     if action == "add":
                         if action_type == "bad":
                             receive_bad_user(data)
