@@ -86,6 +86,11 @@ def send_count(client: Client) -> bool:
     try:
         for word_type in glovar.regex:
             share_regex_count(client, word_type)
+            word_list = list(eval(f"glovar.{word_type}_words"))
+            for word in word_list:
+                eval(f"glovar.{word_type}_words")[word] = 0
+
+            save(f"{word_type}_words")
 
         return True
     except Exception as e:
