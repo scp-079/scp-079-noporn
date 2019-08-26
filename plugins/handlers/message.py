@@ -28,8 +28,8 @@ from ..functions.filters import class_c, class_d, declared_message, exchange_cha
 from ..functions.filters import is_class_e, is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id
-from ..functions.receive import receive_add_except, receive_bad_channel, receive_bad_user, receive_config_commit
-from ..functions.receive import receive_config_reply, receive_declared_message, receive_preview, receive_leave_approve
+from ..functions.receive import receive_add_bad, receive_add_except, receive_config_commit, receive_config_reply
+from ..functions.receive import receive_declared_message, receive_preview, receive_leave_approve
 from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except, receive_remove_watch
 from ..functions.receive import receive_text_data, receive_user_score, receive_watch_user
 from ..functions.telegram import get_admins, send_message
@@ -154,7 +154,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "add":
                         if action_type == "bad":
-                            receive_bad_user(data)
+                            receive_add_bad(sender, data)
                         elif action_type == "watch":
                             receive_watch_user(data)
 
@@ -176,7 +176,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "add":
                         if action_type == "bad":
-                            receive_bad_user(data)
+                            receive_add_bad(sender, data)
                         elif action_type == "watch":
                             receive_watch_user(data)
 
@@ -190,7 +190,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "add":
                         if action_type == "bad":
-                            receive_bad_user(data)
+                            receive_add_bad(sender, data)
                         elif action_type == "watch":
                             receive_watch_user(data)
 
@@ -204,7 +204,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "add":
                         if action_type == "bad":
-                            receive_bad_channel(data)
+                            receive_add_bad(sender, data)
                         elif action_type == "except":
                             receive_add_except(client, data)
 
@@ -224,7 +224,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "add":
                         if action_type == "bad":
-                            receive_bad_user(data)
+                            receive_add_bad(sender, data)
                         elif action_type == "watch":
                             receive_watch_user(data)
 
@@ -238,7 +238,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "add":
                         if action_type == "bad":
-                            receive_bad_user(data)
+                            receive_add_bad(sender, data)
                         elif action_type == "watch":
                             receive_watch_user(data)
 
@@ -252,7 +252,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "add":
                         if action_type == "bad":
-                            receive_bad_user(data)
+                            receive_add_bad(sender, data)
                         elif action_type == "watch":
                             receive_watch_user(data)
 
