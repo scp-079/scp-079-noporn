@@ -24,8 +24,8 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel, is_class_e
-from ..functions.filters import is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
+from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
+from ..functions.filters import is_class_e, is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id
 from ..functions.receive import receive_add_except, receive_bad_channel, receive_bad_user, receive_config_commit
