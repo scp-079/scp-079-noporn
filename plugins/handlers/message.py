@@ -19,19 +19,21 @@
 import logging
 from copy import deepcopy
 
-from pyrogram import Client, Filters, InlineKeyboardButton, InlineKeyboardMarkup, Message
+from pyrogram import Client, Filters, Message
 
 from .. import glovar
-from ..functions.channel import get_debug_text, get_content, receive_file_data, receive_text_data
+from ..functions.channel import get_debug_text, get_content
 from ..functions.etc import code, thread, user_mention
-from ..functions.file import get_new_path, save
-from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
-from ..functions.filters import is_class_e, is_declared_message, is_nsfw_user_id
+from ..functions.file import save
+from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel, is_class_e
 from ..functions.filters import is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
-from ..functions.group import get_message, leave_group, update_declared_id
-from ..functions.user import receive_watch_user, terminate_nsfw_user
-from ..functions.ids import init_group_id, init_user_id
-from ..functions.telegram import get_admins, send_message, send_report_message
+from ..functions.group import leave_group
+from ..functions.user import terminate_nsfw_user
+from ..functions.ids import init_group_id
+from ..functions.receive import receive_bad_user, receive_config_commit, receive_config_reply, receive_file_data
+from ..functions.receive import receive_preview, receive_declared_message, receive_text_data, receive_user_score
+from ..functions.receive import receive_watch_user
+from ..functions.telegram import get_admins, send_message
 from ..functions.tests import porn_test
 
 # Enable logging
@@ -145,109 +147,56 @@ def process_data(client: Client, message: Message):
 
                     if action == "update":
                         if action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["captcha"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "CLEAN":
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "user":
-                                glovar.bad_ids["users"].add(the_id)
-                                save("bad_ids")
+                            receive_bad_user(data)
                         elif action_type == "watch":
-                            receive_watch_user(the_type, the_id, data["until"])
+                            receive_watch_user(data)
 
                     elif action == "update":
                         if action_type == "declare":
-                            group_id = data["group_id"]
-                            message_id = data["message_id"]
-                            update_declared_id(group_id, message_id)
+                            receive_declared_message(data)
                         elif action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["clean"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "CONFIG":
 
                     if action == "config":
                         if action_type == "commit":
-                            gid = data["group_id"]
-                            config = data["config"]
-                            glovar.configs[gid] = config
-                            save("configs")
+                            receive_config_commit(data)
                         elif action_type == "reply":
-                            gid = data["group_id"]
-                            uid = data["user_id"]
-                            link = data["config_link"]
-                            text = (f"管理员：{user_mention(uid)}\n"
-                                    f"操作：{code('更改设置')}\n"
-                                    f"说明：{code('请点击下方按钮进行设置')}")
-                            markup = InlineKeyboardMarkup(
-                                [
-                                    [
-                                        InlineKeyboardButton(
-                                            "前往设置",
-                                            url=link
-                                        )
-                                    ]
-                                ]
-                            )
-                            thread(send_report_message, (180, client, gid, text, None, markup))
+                            receive_config_reply(client, data)
 
                 elif sender == "LANG":
 
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "user":
-                                glovar.bad_ids["users"].add(the_id)
-                                save("bad_ids")
+                            receive_bad_user(data)
                         elif action_type == "watch":
-                            receive_watch_user(the_type, the_id, data["until"])
+                            receive_watch_user(data)
 
                     elif action == "update":
                         if action_type == "declare":
-                            group_id = data["group_id"]
-                            message_id = data["message_id"]
-                            update_declared_id(group_id, message_id)
+                            receive_declared_message(data)
                         elif action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["lang"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "LONG":
 
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "user":
-                                glovar.bad_ids["users"].add(the_id)
-                                save("bad_ids")
+                            receive_bad_user(data)
                         elif action_type == "watch":
-                            receive_watch_user(the_type, the_id, data["until"])
+                            receive_watch_user(data)
 
                     elif action == "update":
                         if action_type == "declare":
-                            group_id = data["group_id"]
-                            message_id = data["message_id"]
-                            update_declared_id(group_id, message_id)
+                            receive_declared_message(data)
                         elif action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["long"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "MANAGE":
 
@@ -312,74 +261,44 @@ def process_data(client: Client, message: Message):
                 elif sender == "NOFLOOD":
 
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "user":
-                                glovar.bad_ids["users"].add(the_id)
-                                save("bad_ids")
+                            receive_bad_user(data)
                         elif action_type == "watch":
-                            receive_watch_user(the_type, the_id, data["until"])
+                            receive_watch_user(data)
 
                     elif action == "update":
                         if action_type == "declare":
-                            group_id = data["group_id"]
-                            message_id = data["message_id"]
-                            update_declared_id(group_id, message_id)
+                            receive_declared_message(data)
                         elif action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["noflood"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "NOSPAM":
 
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "user":
-                                glovar.bad_ids["users"].add(the_id)
-                                save("bad_ids")
+                            receive_bad_user(data)
                         elif action_type == "watch":
-                            receive_watch_user(the_type, the_id, data["until"])
+                            receive_watch_user(data)
 
                     elif action == "update":
                         if action_type == "declare":
-                            group_id = data["group_id"]
-                            message_id = data["message_id"]
-                            update_declared_id(group_id, message_id)
+                            receive_declared_message(data)
                         elif action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["nospam"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "RECHECK":
 
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "user":
-                                glovar.bad_ids["users"].add(the_id)
-                                save("bad_ids")
+                            receive_bad_user(data)
                         elif action_type == "watch":
-                            receive_watch_user(the_type, the_id, data["until"])
+                            receive_watch_user(data)
 
                     elif action == "update":
                         if action_type == "declare":
-                            group_id = data["group_id"]
-                            message_id = data["message_id"]
-                            update_declared_id(group_id, message_id)
+                            receive_declared_message(data)
                         elif action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["recheck"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "REGEX":
 
@@ -408,43 +327,19 @@ def process_data(client: Client, message: Message):
 
                     if action == "update":
                         if action_type == "preview":
-                            # Get the preview data
-                            gid = data["group_id"]
-                            if glovar.admin_ids.get(gid):
-                                uid = data["user_id"]
-                                mid = data["message_id"]
-                                preview = receive_file_data(client, message)
-                                if preview:
-                                    image = preview["image"]
-                                    if image:
-                                        image_path = get_new_path()
-                                        image.save(image_path, "PNG")
-                                        if (not is_declared_message(gid, mid)
-                                                and not is_nsfw_user_id(gid, uid)):
-                                            if is_nsfw_media(client, image_path):
-                                                url = preview["url"]
-                                                glovar.url_list.add(url)
-                                                the_message = get_message(client, gid, mid)
-                                                if the_message:
-                                                    terminate_nsfw_user(client, the_message, "media")
+                            receive_preview(client, message, data)
 
                 elif sender == "WARN":
 
                     if action == "update":
                         if action_type == "score":
-                            uid = data["id"]
-                            init_user_id(uid)
-                            score = data["score"]
-                            glovar.user_ids[uid]["score"]["warn"] = score
-                            save("user_ids")
+                            receive_user_score(sender, data)
 
                 elif sender == "WATCH":
 
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "watch":
-                            receive_watch_user(the_type, the_id, data["until"])
+                            receive_watch_user(data)
     except Exception as e:
         logger.warning(f"Process data error: {e}", exc_info=True)
 

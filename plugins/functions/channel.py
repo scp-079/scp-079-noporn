@@ -17,17 +17,16 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-import pickle
-from json import dumps, loads
+from json import dumps
 from time import sleep
-from typing import Any, List, Optional, Union
+from typing import List, Optional, Union
 
 from pyrogram import Chat, Client, Message
 from pyrogram.errors import FloodWait
 
 from .. import glovar
 from .etc import code, code_block, general_link, get_full_name, get_md5sum, get_text, message_link, thread
-from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
+from .file import crypt_file, data_to_file, delete_file, get_new_path, save
 from .group import get_message
 from .image import get_file_id
 from .telegram import get_group_info, send_document, send_message
@@ -206,48 +205,6 @@ def get_debug_text(client: Client, context: Union[int, Chat]) -> str:
         logger.warning(f"Get debug text error: {e}", exc_info=True)
 
     return text
-
-
-def receive_file_data(client: Client, message: Message, decrypt: bool = False) -> Any:
-    # Receive file's data from exchange channel
-    data = None
-    try:
-        if message.document:
-            file_id = message.document.file_id
-            path = get_downloaded_path(client, file_id)
-            if path:
-                if decrypt:
-                    # Decrypt the file, save to the tmp directory
-                    path_decrypted = get_new_path()
-                    crypt_file("decrypt", path, path_decrypted)
-                    path_final = path_decrypted
-                else:
-                    # Read the file directly
-                    path_decrypted = ""
-                    path_final = path
-
-                with open(path_final, "rb") as f:
-                    data = pickle.load(f)
-
-                thread(delete_file, (path,))
-                thread(delete_file, (path_decrypted,))
-    except Exception as e:
-        logger.warning(f"Receive file error: {e}", exc_info=True)
-
-    return data
-
-
-def receive_text_data(message: Message) -> dict:
-    # Receive text's data from exchange channel
-    data = {}
-    try:
-        text = get_text(message)
-        if text:
-            data = loads(text)
-    except Exception as e:
-        logger.warning(f"Receive data error: {e}")
-
-    return data
 
 
 def send_debug(client: Client, chat: Chat, action: str, uid: int, mid: int, em: Message) -> bool:

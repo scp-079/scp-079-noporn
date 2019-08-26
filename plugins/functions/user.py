@@ -93,25 +93,6 @@ def ban_user(client: Client, gid: int, uid: int) -> bool:
     return False
 
 
-def receive_watch_user(watch_type: str, uid: int, until: str) -> bool:
-    # Receive watch users that other bots shared
-    try:
-        until = crypt_str("decrypt", until, glovar.key)
-        until = int(until)
-        if watch_type == "ban":
-            glovar.watch_ids["ban"][uid] = until
-        elif watch_type == "delete":
-            glovar.watch_ids["delete"][uid] = until
-        else:
-            return False
-
-        return True
-    except Exception as e:
-        logger.warning(f"Receive watch user error: {e}", exc_info=True)
-
-    return False
-
-
 def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool:
     # Delete NSFW user's message, or ban the user
     try:

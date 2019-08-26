@@ -37,7 +37,7 @@ See [this article](https://scp-079.org/noporn/).
         - `telegram.py` : Some telegram functions
         - `tests.py` : Some test functions
         - `timers.py` : Timer functions
-        - `user.py` : Functions about user
+        - `user.py` : Functions about user and channel object
     - handlers
         - `callback.py` : Handle callbacks
         - `command` : Handle commands

@@ -24,7 +24,6 @@ from pyrogram import Client, Message
 from .. import glovar
 from .etc import thread
 from .file import save
-from .ids import init_group_id
 from .telegram import delete_messages, get_messages, leave_chat
 
 # Enable logging
@@ -73,18 +72,5 @@ def leave_group(client: Client, gid: int) -> bool:
         return True
     except Exception as e:
         logger.warning(f"Leave group error: {e}", exc_info=True)
-
-    return False
-
-
-def update_declared_id(gid: int, mid: int) -> bool:
-    # Update declared message's id
-    try:
-        if glovar.admin_ids.get(gid):
-            if init_group_id(gid):
-                glovar.declared_message_ids[gid].add(mid)
-                return True
-    except Exception as e:
-        logger.warning(f"Update declared id error: {e}", exc_info=True)
 
     return False
