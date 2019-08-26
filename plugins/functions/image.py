@@ -75,3 +75,23 @@ def get_porn(path: str) -> float:
         logger.warning(f"Get porn error: {e}", exc_info=True)
 
     return porn
+
+
+def get_color(path: str) -> bool:
+    # Get the picture's color, check if most of it is yellow
+    try:
+        image = Image.open(path).convert('YCbCr')
+        w, h = image.size
+        data = image.getdata()
+        cnt = 0
+        for i, ycbcr in enumerate(data):
+            y, cb, cr = ycbcr
+            if 86 <= cb <= 117 and 140 <= cr <= 168:
+                cnt += 1
+
+        if cnt > w * h * 0.3:
+            return True
+    except Exception as e:
+        logger.warning(f"Get color error: {e}", exc_info=True)
+
+    return False
