@@ -387,7 +387,6 @@ def is_regex_text(word_type: str, text: str) -> bool:
                 count += 1
                 eval(f"glovar.{word_type}_words")[word] = count
                 save(f"{word_type}_words")
-
                 return True
     except Exception as e:
         logger.warning(f"Is regex text error: {e}", exc_info=True)

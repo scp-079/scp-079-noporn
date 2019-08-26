@@ -297,6 +297,7 @@ def wait_flood(e: FloodWait) -> bool:
     # Wait flood secs
     try:
         sleep(e.x + uniform(0.5, 1.0))
+
         return True
     except Exception as e:
         logger.warning(f"Wait flood error: {e}", exc_info=True)
