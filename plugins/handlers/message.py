@@ -212,7 +212,7 @@ def process_data(client: Client, message: Message):
 
                     elif action == "remove":
                         if action_type == "bad":
-                            receive_remove_bad(data)
+                            receive_remove_bad(sender, data)
                         elif action_type == "except":
                             receive_remove_except(client, data)
                         elif action_type == "watch":
@@ -268,7 +268,11 @@ def process_data(client: Client, message: Message):
 
                 elif sender == "USER":
 
-                    if action == "update":
+                    if action == "remove":
+                        if action_type == "bad":
+                            receive_remove_bad(sender, data)
+
+                    elif action == "update":
                         if action_type == "preview":
                             receive_preview(client, message, data)
 

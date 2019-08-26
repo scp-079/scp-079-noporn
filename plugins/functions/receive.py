@@ -26,8 +26,7 @@ from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from .. import glovar
 from .channel import get_content, get_debug_text
-from .etc import code, crypt_str, get_text, thread
-from .etc import user_mention
+from .etc import code, crypt_str, get_text, thread, user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_declared_message, is_nsfw_media, is_nsfw_user_id
 from .group import get_message, leave_group
@@ -244,12 +243,12 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
     return False
 
 
-def receive_remove_bad(data: dict) -> bool:
+def receive_remove_bad(sender: str, data: dict) -> bool:
     # Receive removed bad objects
     try:
         the_id = data["id"]
         the_type = data["type"]
-        if the_type == "channel":
+        if sender == "MANAGE" and the_type == "channel":
             glovar.bad_ids["channels"].discard(the_id)
         elif the_type == "user":
             glovar.bad_ids["users"].discard(the_id)
