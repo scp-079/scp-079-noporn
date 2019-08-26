@@ -18,23 +18,48 @@
 
 import logging
 import pickle
+from copy import deepcopy
 from json import loads
 from typing import Any
 
 from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from .. import glovar
+from .channel import get_content, get_debug_text
 from .etc import code, crypt_str, get_text, thread
 from .etc import user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_declared_message, is_nsfw_media, is_nsfw_user_id
-from .group import get_message
+from .group import get_message, leave_group
 from .ids import init_group_id, init_user_id
-from .telegram import send_report_message
+from .telegram import send_message, send_report_message
 from .user import terminate_nsfw_user
 
 # Enable logging
 logger = logging.getLogger(__name__)
+
+
+def receive_add_except(client: Client, data: dict) -> bool:
+    # Receive a message and add it to except lists
+    try:
+        the_id = data["id"]
+        the_type = data["type"]
+        # Do not receive except channels
+        if the_type in {"long", "temp"}:
+            content = get_content(client, the_id)
+            if content:
+                if the_type == "long":
+                    glovar.except_ids["long"].add(content)
+                elif the_type == "temp":
+                    glovar.except_ids["temp"].add(content)
+
+                save("except_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive add except error: {e}", exc_info=True)
+
+    return False
 
 
 def receive_bad_user(data: dict) -> bool:
@@ -48,6 +73,21 @@ def receive_bad_user(data: dict) -> bool:
             return True
     except Exception as e:
         logger.warning(f"Receive bad user error: {e}", exc_info=True)
+
+    return False
+
+
+def receive_bad_channel(data: dict) -> bool:
+    # Receive bad channels that other bots shared
+    try:
+        uid = data["id"]
+        bad_type = data["type"]
+        if bad_type == "channel":
+            glovar.bad_ids["channels"].add(uid)
+            save("bad_ids")
+            return True
+    except Exception as e:
+        logger.warning(f"Receive bad channel error: {e}", exc_info=True)
 
     return False
 
@@ -153,6 +193,121 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
     return False
 
 
+def receive_leave_approve(client: Client, data: dict) -> bool:
+    # Receive leave approve
+    try:
+        admin_id = data["admin_id"]
+        the_id = data["group_id"]
+        reason = data["reason"]
+        text = get_debug_text(client, the_id)
+        text += (f"项目管理员：{user_mention(admin_id)}\n"
+                 f"状态：{code('已批准退出该群组')}\n")
+        if reason:
+            text += f"原因：{code(reason)}\n"
+
+        leave_group(client, the_id)
+        thread(send_message, (client, glovar.debug_channel_id, text))
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive leave approve error: {e}", exc_info=True)
+
+    return False
+
+
+def receive_regex(client: Client, message: Message, data: str) -> bool:
+    # Receive regex
+    try:
+        file_name = data
+        words_data = receive_file_data(client, message, True)
+        if words_data:
+            if glovar.lock["regex"].acquire():
+                try:
+                    pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
+                    new_set = set(words_data) - set(eval(f"glovar.{file_name}"))
+                    for word in pop_set:
+                        eval(f"glovar.{file_name}").pop(word, 0)
+
+                    for word in new_set:
+                        eval(f"glovar.{file_name}")[word] = 0
+
+                    save(file_name)
+                except Exception as e:
+                    logger.warning(f"Update download regex error: {e}", exc_info=True)
+                finally:
+                    glovar.lock["regex"].release()
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive regex error: {e}", exc_info=True)
+
+    return False
+
+
+def receive_remove_bad(data: dict) -> bool:
+    # Receive removed bad objects
+    try:
+        the_id = data["id"]
+        the_type = data["type"]
+        if the_type == "channel":
+            glovar.bad_ids["channels"].discard(the_id)
+        elif the_type == "user":
+            glovar.bad_ids["users"].discard(the_id)
+            glovar.watch_ids["ban"].pop(the_id, {})
+            glovar.watch_ids["delete"].pop(the_id, {})
+            if glovar.user_ids.get(the_id):
+                glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
+
+            save("user_ids")
+
+        save("bad_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive remove bad error: {e}", exc_info=True)
+
+    return False
+
+
+def receive_remove_except(client: Client, data: dict) -> bool:
+    # Receive a message and remove it from except lists
+    try:
+        the_id = data["id"]
+        the_type = data["type"]
+        # Do not receive except channels
+        if the_type in {"long", "temp"}:
+            content = get_content(client, the_id)
+            if content:
+                if the_type == "long":
+                    glovar.except_ids["long"].discard(content)
+                elif the_type == "temp":
+                    glovar.except_ids["temp"].discard(content)
+
+                save("except_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive remove except error: {e}", exc_info=True)
+
+    return False
+
+
+def receive_remove_watch(data: dict) -> bool:
+    # Receive removed watching users
+    try:
+        uid = data["id"]
+        watch_type = data["type"]
+        if watch_type == "all":
+            glovar.watch_ids["ban"].pop(uid, 0)
+            glovar.watch_ids["delete"].pop(uid, 0)
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive remove watch error: {e}", exc_info=True)
+
+    return False
+
+
 def receive_text_data(message: Message) -> dict:
     # Receive text's data from exchange channel
     data = {}
@@ -176,7 +331,7 @@ def receive_declared_message(data: dict) -> bool:
                 glovar.declared_message_ids[gid].add(mid)
                 return True
     except Exception as e:
-        logger.warning(f"Update declared id error: {e}", exc_info=True)
+        logger.warning(f"Receive declared message error: {e}", exc_info=True)
 
     return False
 

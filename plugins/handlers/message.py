@@ -17,12 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from copy import deepcopy
 
 from pyrogram import Client, Filters, Message
 
 from .. import glovar
-from ..functions.channel import get_debug_text, get_content
+from ..functions.channel import get_debug_text
 from ..functions.etc import code, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel, is_class_e
@@ -30,9 +29,10 @@ from ..functions.filters import is_nsfw_media, is_nsfw_url, is_restricted_channe
 from ..functions.group import leave_group
 from ..functions.user import terminate_nsfw_user
 from ..functions.ids import init_group_id
-from ..functions.receive import receive_bad_user, receive_config_commit, receive_config_reply, receive_file_data
-from ..functions.receive import receive_preview, receive_declared_message, receive_text_data, receive_user_score
-from ..functions.receive import receive_watch_user
+from ..functions.receive import receive_add_except, receive_bad_channel, receive_bad_user, receive_config_commit
+from ..functions.receive import receive_config_reply, receive_declared_message, receive_preview, receive_leave_approve
+from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except, receive_remove_watch
+from ..functions.receive import receive_text_data, receive_user_score, receive_watch_user
 from ..functions.telegram import get_admins, send_message
 from ..functions.tests import porn_test
 
@@ -201,62 +201,22 @@ def process_data(client: Client, message: Message):
                 elif sender == "MANAGE":
 
                     if action == "add":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "channel":
-                                glovar.bad_ids["channels"].add(the_id)
-                                save("bad_ids")
+                            receive_bad_channel(data)
                         elif action_type == "except":
-                            content = get_content(client, the_id)
-                            if content:
-                                if the_type == "long":
-                                    glovar.except_ids["long"].add(content)
-                                elif the_type == "temp":
-                                    glovar.except_ids["temp"].add(content)
-
-                                save("except_ids")
+                            receive_add_except(client, data)
 
                     elif action == "leave":
                         if action_type == "approve":
-                            the_id = data["group_id"]
-                            reason = data["reason"]
-                            if action_type == "group":
-                                text = get_debug_text(client, the_id)
-                                text += (f"状态：{code('已退出该群组')}\n"
-                                         f"原因：{code(reason)}")
-                                leave_group(client, the_id)
-                                thread(send_message, (client, glovar.debug_channel_id, text))
+                            receive_leave_approve(client, data)
 
                     elif action == "remove":
-                        the_id = data["id"]
-                        the_type = data["type"]
                         if action_type == "bad":
-                            if the_type == "channel":
-                                glovar.bad_ids["channels"].discard(the_id)
-                            elif the_type == "user":
-                                glovar.bad_ids["users"].discard(the_id)
-                                glovar.watch_ids["ban"].pop(the_id, {})
-                                glovar.watch_ids["delete"].pop(the_id, {})
-                                if glovar.user_ids.get(the_id):
-                                    glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
-
-                                save("user_ids")
-
-                            save("bad_ids")
+                            receive_remove_bad(data)
                         elif action_type == "except":
-                            content = get_content(client, the_id)
-                            if content:
-                                if the_type == "long":
-                                    glovar.except_ids["long"].discard(content)
-                                elif the_type == "temp":
-                                    glovar.except_ids["temp"].discard(content)
-
-                                save("except_ids")
+                            receive_remove_except(client, data)
                         elif action_type == "watch":
-                            if the_type == "all":
-                                glovar.watch_ids["ban"].pop(the_id, 0)
-                                glovar.watch_ids["delete"].pop(the_id, 0)
+                            receive_remove_watch(data)
 
                 elif sender == "NOFLOOD":
 
@@ -304,24 +264,7 @@ def process_data(client: Client, message: Message):
 
                     if action == "update":
                         if action_type == "download":
-                            file_name = data
-                            words_data = receive_file_data(client, message, True)
-                            if words_data:
-                                if glovar.lock["regex"].acquire():
-                                    try:
-                                        pop_set = set(eval(f"glovar.{file_name}")) - set(words_data)
-                                        new_set = set(words_data) - set(eval(f"glovar.{file_name}"))
-                                        for word in pop_set:
-                                            eval(f"glovar.{file_name}").pop(word, 0)
-
-                                        for word in new_set:
-                                            eval(f"glovar.{file_name}")[word] = 0
-
-                                        save(file_name)
-                                    except Exception as e:
-                                        logger.warning(f"Update download regex error: {e}", exc_info=True)
-                                    finally:
-                                        glovar.lock["regex"].release()
+                            receive_regex(client, message, data)
 
                 elif sender == "USER":
 

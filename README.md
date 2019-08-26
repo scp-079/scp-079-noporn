@@ -34,6 +34,7 @@ See [this article](https://scp-079.org/noporn/).
         - `group.py` : Functions about group
         - `ids.py` : Modify id lists
         - `image.py` : Functions about image
+        - `receive.py` : Receive data from exchange channel
         - `telegram.py` : Some telegram functions
         - `tests.py` : Some test functions
         - `timers.py` : Timer functions
