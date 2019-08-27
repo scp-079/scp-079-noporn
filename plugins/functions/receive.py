@@ -144,8 +144,8 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = False) -
                 with open(path_final, "rb") as f:
                     data = pickle.load(f)
 
-                thread(delete_file, (path,))
-                thread(delete_file, (path_decrypted,))
+                for f in {path, path_decrypted}:
+                    thread(delete_file, (f,))
     except Exception as e:
         logger.warning(f"Receive file error: {e}", exc_info=True)
 

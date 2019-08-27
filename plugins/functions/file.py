@@ -67,11 +67,10 @@ def data_to_file(data: Any) -> str:
 def delete_file(path: str) -> bool:
     # Delete a file
     try:
-        if path:
-            if exists(path):
-                remove(path)
+        if path and exists(path):
+            remove(path)
 
-            return True
+        return True
     except Exception as e:
         logger.warning(f"Delete file error: {e}", exc_info=True)
 
