@@ -327,7 +327,7 @@ def share_watch_ban_user(client: Client, uid: int, until: str) -> bool:
     try:
         share_data(
             client=client,
-            receivers=glovar.receivers["status"],
+            receivers=glovar.receivers["watch"],
             action="add",
             action_type="watch",
             data={
@@ -351,7 +351,7 @@ def update_score(client: Client, uid: int) -> bool:
         save("user_ids")
         share_data(
             client=client,
-            receivers=glovar.receivers["status"],
+            receivers=glovar.receivers["score"],
             action="update",
             action_type="score",
             data={
