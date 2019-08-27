@@ -56,6 +56,19 @@ def backup_files(client: Client) -> bool:
     return False
 
 
+def interval_min_ten() -> bool:
+    # Execute every 10 minutes
+    try:
+        for gid in list(glovar.recorded_ids):
+            glovar.recorded_ids[gid] = set()
+
+        return True
+    except Exception as e:
+        logger.warning(f"Clear recorded ids error: {e}", exc_info=True)
+
+    return False
+
+
 def reset_data() -> bool:
     # Reset user data every month
     try:

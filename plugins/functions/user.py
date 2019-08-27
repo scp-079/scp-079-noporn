@@ -26,7 +26,7 @@ from .channel import ask_for_help, declare_message, forward_evidence, send_debug
 from .channel import share_watch_ban_user, update_score
 from .file import save
 from .group import delete_message
-from .filters import is_high_score_user, is_nsfw_user, is_regex_text, is_watch_ban, is_watch_delete
+from .filters import is_class_d, is_high_score_user, is_nsfw_user, is_regex_text, is_watch_ban, is_watch_delete
 from .ids import init_user_id
 from .telegram import kick_chat_member
 
@@ -37,9 +37,10 @@ logger = logging.getLogger(__name__)
 def add_bad_user(client: Client, uid: int) -> bool:
     # Add a bad user, share it
     try:
-        glovar.bad_ids["users"].add(uid)
-        save("bad_ids")
-        share_bad_user(client, uid)
+        if uid not in glovar.bad_ids["users"]:
+            glovar.bad_ids["users"].add(uid)
+            save("bad_ids")
+            share_bad_user(client, uid)
 
         return True
     except Exception as e:
@@ -66,12 +67,13 @@ def add_nsfw_user(gid: int, uid: int) -> bool:
 def add_watch_ban_user(client: Client, uid: int) -> bool:
     # Add a watch ban user, share it
     try:
-        now = get_now()
-        until = now + glovar.time_ban
-        glovar.watch_ids["ban"][uid] = until
-        until = str(until)
-        until = crypt_str("encrypt", until, glovar.key)
-        share_watch_ban_user(client, uid, until)
+        if not glovar.watch_ids["ban"].get(uid, 0):
+            now = get_now()
+            until = now + glovar.time_ban
+            glovar.watch_ids["ban"][uid] = until
+            until = str(until)
+            until = crypt_str("encrypt", until, glovar.key)
+            share_watch_ban_user(client, uid, until)
 
         return True
     except Exception as e:
@@ -95,44 +97,44 @@ def ban_user(client: Client, gid: int, uid: int) -> bool:
 def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool:
     # Delete NSFW user's message, or ban the user
     try:
-        if message.from_user:
+        if message.from_user and not is_class_d(None, message):
             gid = message.chat.id
             uid = message.from_user.id
             mid = message.message_id
             if is_regex_text("wb", get_full_name(message.from_user)):
                 result = forward_evidence(client, message, "自动封禁", "用户昵称")
                 if result:
+                    add_bad_user(client, uid)
                     ban_user(client, gid, uid)
                     delete_message(client, gid, mid)
                     declare_message(client, gid, mid)
                     ask_for_help(client, "ban", gid, uid)
-                    add_bad_user(client, uid)
                     send_debug(client, message.chat, "昵称封禁", uid, mid, result)
             elif is_watch_ban(None, message):
                 result = forward_evidence(client, message, "自动封禁", "敏感追踪")
                 if result:
+                    add_bad_user(client, uid)
                     ban_user(client, gid, uid)
                     delete_message(client, gid, mid)
                     declare_message(client, gid, mid)
                     ask_for_help(client, "ban", gid, uid)
-                    add_bad_user(client, uid)
                     send_debug(client, message.chat, "追踪封禁", uid, mid, result)
             elif is_high_score_user(None, message):
                 result = forward_evidence(client, message, "自动封禁", "用户评分", f"{is_high_score_user(None, message)}")
                 if result:
+                    add_bad_user(client, uid)
                     ban_user(client, gid, uid)
                     delete_message(client, gid, mid)
                     declare_message(client, gid, mid)
                     ask_for_help(client, "ban", gid, uid)
-                    add_bad_user(client, uid)
                     send_debug(client, message.chat, "评分封禁", uid, mid, result)
             elif is_watch_delete(None, message):
                 result = forward_evidence(client, message, "自动删除", "敏感追踪")
                 if result:
+                    add_watch_ban_user(client, uid)
                     delete_message(client, gid, mid)
                     declare_message(client, gid, mid)
                     ask_for_help(client, "delete", gid, uid, "global")
-                    add_watch_ban_user(client, uid)
                     previous = add_nsfw_user(gid, uid)
                     if not previous:
                         update_score(client, uid)
@@ -143,22 +145,27 @@ def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool
                 add_nsfw_user(gid, uid)
                 declare_message(client, gid, mid)
             else:
-                if the_type == "channel":
-                    rule = "受限频道"
-                elif the_type == "url":
-                    rule = "预览链接"
-                else:
-                    rule = "全局规则"
-
-                result = forward_evidence(client, message, "自动删除", rule)
-                if result:
+                if uid in glovar.recorded_ids[gid]:
                     delete_message(client, gid, mid)
-                    previous = add_nsfw_user(gid, uid)
+                    add_nsfw_user(gid, uid)
                     declare_message(client, gid, mid)
-                    if not previous:
-                        update_score(client, uid)
+                else:
+                    if the_type == "channel":
+                        rule = "受限频道"
+                    elif the_type == "url":
+                        rule = "预览链接"
+                    else:
+                        rule = "全局规则"
 
-                    send_debug(client, message.chat, "自动删除", uid, mid, result)
+                    result = forward_evidence(client, message, "自动删除", rule)
+                    if result:
+                        glovar.recorded_ids[gid].add(uid)
+                        delete_message(client, gid, mid)
+                        declare_message(client, gid, mid)
+                        if not add_nsfw_user(gid, uid):
+                            update_score(client, uid)
+
+                        send_debug(client, message.chat, "自动删除", uid, mid, result)
 
             return True
     except Exception as e:

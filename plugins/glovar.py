@@ -84,6 +84,11 @@ receivers: Dict[str, List[str]] = {
                "NOFLOOD", "NOPORN", "NOSPAM", "MANAGE", "RECHECK"]
 }
 
+recorded_ids: Dict[int, Set[int]] = {}
+# recorded_ids = {
+#     -10012345678: {12345678}
+# }
+
 regex: Dict[str, str] = {
     "wb": "追踪封禁"
 }
