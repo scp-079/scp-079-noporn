@@ -26,7 +26,7 @@ from .channel import ask_for_help, declare_message, forward_evidence, send_debug
 from .channel import share_watch_ban_user, update_score
 from .file import save
 from .group import delete_message
-from .filters import is_class_d, is_high_score_user, is_nsfw_user, is_regex_text, is_watch_ban, is_watch_delete
+from .filters import is_class_d, is_detected_user, is_high_score_user, is_regex_text, is_watch_ban, is_watch_delete
 from .ids import init_user_id
 from .telegram import kick_chat_member
 
@@ -49,17 +49,17 @@ def add_bad_user(client: Client, uid: int) -> bool:
     return False
 
 
-def add_nsfw_user(gid: int, uid: int) -> bool:
-    # Add or update a NSFW user status
+def add_detected_user(gid: int, uid: int) -> bool:
+    # Add or update a detected user's status
     try:
         init_user_id(uid)
         now = get_now()
-        previous = glovar.user_ids[uid]["nsfw"].get(gid)
-        glovar.user_ids[uid]["nsfw"][gid] = now
+        previous = glovar.user_ids[uid]["detected"].get(gid)
+        glovar.user_ids[uid]["detected"][gid] = now
 
         return bool(previous)
     except Exception as e:
-        logger.warning(f"Add NSFW user error: {e}", exc_info=True)
+        logger.warning(f"Add detected user error: {e}", exc_info=True)
 
     return False
 
@@ -110,7 +110,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                     declare_message(client, gid, mid)
                     ask_for_help(client, "ban", gid, uid)
                     send_debug(client, message.chat, "昵称封禁", uid, mid, result)
-            elif is_watch_ban(None, message):
+            elif is_watch_ban(message):
                 result = forward_evidence(client, message, "自动封禁", "敏感追踪")
                 if result:
                     add_bad_user(client, uid)
@@ -119,8 +119,8 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                     declare_message(client, gid, mid)
                     ask_for_help(client, "ban", gid, uid)
                     send_debug(client, message.chat, "追踪封禁", uid, mid, result)
-            elif is_high_score_user(None, message):
-                result = forward_evidence(client, message, "自动封禁", "用户评分", f"{is_high_score_user(None, message)}")
+            elif is_high_score_user(message):
+                result = forward_evidence(client, message, "自动封禁", "用户评分", f"{is_high_score_user(message)}")
                 if result:
                     add_bad_user(client, uid)
                     ban_user(client, gid, uid)
@@ -128,26 +128,26 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                     declare_message(client, gid, mid)
                     ask_for_help(client, "ban", gid, uid)
                     send_debug(client, message.chat, "评分封禁", uid, mid, result)
-            elif is_watch_delete(None, message):
+            elif is_watch_delete(message):
                 result = forward_evidence(client, message, "自动删除", "敏感追踪")
                 if result:
                     add_watch_ban_user(client, uid)
                     delete_message(client, gid, mid)
                     declare_message(client, gid, mid)
                     ask_for_help(client, "delete", gid, uid, "global")
-                    previous = add_nsfw_user(gid, uid)
+                    previous = add_detected_user(gid, uid)
                     if not previous:
                         update_score(client, uid)
 
                     send_debug(client, message.chat, "追踪删除", uid, mid, result)
-            elif is_nsfw_user(None, message):
+            elif is_detected_user(message):
                 delete_message(client, gid, mid)
-                add_nsfw_user(gid, uid)
+                add_detected_user(gid, uid)
                 declare_message(client, gid, mid)
             else:
                 if uid in glovar.recorded_ids[gid]:
                     delete_message(client, gid, mid)
-                    add_nsfw_user(gid, uid)
+                    add_detected_user(gid, uid)
                     declare_message(client, gid, mid)
                 else:
                     if the_type == "channel":
@@ -162,7 +162,8 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                         glovar.recorded_ids[gid].add(uid)
                         delete_message(client, gid, mid)
                         declare_message(client, gid, mid)
-                        if not add_nsfw_user(gid, uid):
+                        previous = add_detected_user(gid, uid)
+                        if not previous:
                             update_score(client, uid)
 
                         send_debug(client, message.chat, "自动删除", uid, mid, result)

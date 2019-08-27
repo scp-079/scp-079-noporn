@@ -25,7 +25,8 @@ from ..functions.channel import get_debug_text
 from ..functions.etc import code, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
-from ..functions.filters import is_class_e, is_nsfw_media, is_nsfw_url, is_restricted_channel, new_group, test_group
+from ..functions.filters import is_class_e, is_declared_message, is_nsfw_media, is_nsfw_url, is_restricted_channel
+from ..functions.filters import new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id
 from ..functions.receive import receive_add_bad, receive_add_except, receive_config_commit, receive_config_reply
@@ -55,7 +56,7 @@ def check(client: Client, message: Message):
             if is_nsfw_url(message):
                 terminate_user(client, message, "url")
             # NSFW media
-            elif message.media and is_nsfw_media(client, message):
+            elif message.media and is_nsfw_media(client, message) and not is_declared_message(None, message):
                 terminate_user(client, message, "media")
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)

@@ -345,9 +345,9 @@ def share_watch_ban_user(client: Client, uid: int, until: str) -> bool:
 def update_score(client: Client, uid: int) -> bool:
     # Update a user's score, share it
     try:
-        nsfw_count = len(glovar.user_ids[uid]["nsfw"])
-        noporn_score = nsfw_count * 0.6
-        glovar.user_ids[uid]["score"]["noporn"] = noporn_score
+        count = len(glovar.user_ids[uid]["detected"])
+        score = count * 0.6
+        glovar.user_ids[uid]["score"][glovar.sender.lower()] = score
         save("user_ids")
         share_data(
             client=client,
@@ -356,7 +356,7 @@ def update_score(client: Client, uid: int) -> bool:
             action_type="score",
             data={
                 "id": uid,
-                "score": noporn_score
+                "score": score
             }
         )
 

@@ -122,7 +122,116 @@ def is_hide_channel(_, message: Message) -> bool:
     return False
 
 
-def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
+def is_new_group(_, message: Message) -> bool:
+    # Check if the bot joined a new group
+    try:
+        if message.new_chat_members:
+            new_users = message.new_chat_members
+            if new_users:
+                for user in new_users:
+                    if user.is_self:
+                        return True
+        elif message.group_chat_created or message.supergroup_chat_created:
+            return True
+    except Exception as e:
+        logger.warning(f"Is new group error: {e}", exc_info=True)
+
+    return False
+
+
+def is_test_group(_, message: Message) -> bool:
+    # Check if the message is sent from the test group
+    try:
+        if message.chat:
+            cid = message.chat.id
+            if cid == glovar.test_group_id:
+                return True
+    except Exception as e:
+        logger.warning(f"Is test group error: {e}", exc_info=True)
+
+    return False
+
+
+class_c = Filters.create(
+    func=is_class_c,
+    name="Class C"
+)
+
+class_d = Filters.create(
+    func=is_class_d,
+    name="Class D"
+)
+
+declared_message = Filters.create(
+    func=is_declared_message,
+    name="Declared message"
+)
+
+exchange_channel = Filters.create(
+    func=is_exchange_channel,
+    name="Exchange Channel"
+)
+
+hide_channel = Filters.create(
+    func=is_hide_channel,
+    name="Hide Channel"
+)
+
+new_group = Filters.create(
+    func=is_new_group,
+    name="New Group"
+)
+
+test_group = Filters.create(
+    func=is_test_group,
+    name="Test Group"
+)
+
+
+def is_class_e(message: Message):
+    # Check if the message is Class E object
+    try:
+        content = get_content(None, message)
+        if content:
+            if (content in glovar.except_ids["long"]
+                    or content in glovar.except_ids["temp"]
+                    or content in glovar.file_ids["sfw"]):
+                return True
+    except Exception as e:
+        logger.warning(f"Is class e error: {e}", exc_info=True)
+
+    return False
+
+
+def is_detected_user(message: Message) -> bool:
+    # Check if the message is sent by a detected user
+    try:
+        if message.from_user:
+            gid = message.chat.id
+            uid = message.from_user.id
+            return is_detected_user_id(gid, uid)
+    except Exception as e:
+        logger.warning(f"Is detected user error: {e}", exc_info=True)
+
+    return False
+
+
+def is_detected_user_id(gid: int, uid: int) -> bool:
+    # Check if the user_id is NSFW in the group
+    try:
+        user = glovar.user_ids.get(uid, {})
+        if user:
+            status = user["detected"].get(gid, 0)
+            now = get_now()
+            if now - status < glovar.punish_time:
+                return True
+    except Exception as e:
+        logger.warning(f"Is detected user id error: {e}", exc_info=True)
+
+    return False
+
+
+def is_high_score_user(message: Message) -> Union[bool, float, int]:
     # Check if the message is sent by a high score user
     try:
         if message.from_user:
@@ -153,173 +262,13 @@ def is_high_score_user(_, message: Message) -> Union[bool, float, int]:
     return False
 
 
-def is_new_group(_, message: Message) -> bool:
-    # Check if the bot joined a new group
-    try:
-        if message.new_chat_members:
-            new_users = message.new_chat_members
-            if new_users:
-                for user in new_users:
-                    if user.is_self:
-                        return True
-        elif message.group_chat_created or message.supergroup_chat_created:
-            return True
-    except Exception as e:
-        logger.warning(f"Is new group error: {e}", exc_info=True)
-
-    return False
-
-
-def is_nsfw_user(_, message: Message) -> bool:
-    # Check if the message is sent by a NSFW user
-    try:
-        if message.from_user:
-            gid = message.chat.id
-            uid = message.from_user.id
-            return is_nsfw_user_id(gid, uid)
-    except Exception as e:
-        logger.warning(f"Is NSFW user error: {e}", exc_info=True)
-
-    return False
-
-
-def is_nsfw_user_id(gid: int, uid: int) -> bool:
-    # Check if the user_id is NSFW in the group
-    try:
-        user = glovar.user_ids.get(uid, {})
-        if user:
-            status = user["nsfw"].get(gid, 0)
-            now = get_now()
-            if now - status < glovar.punish_time:
-                return True
-    except Exception as e:
-        logger.warning(f"Is NSFW user id error: {e}", exc_info=True)
-
-    return False
-
-
-def is_test_group(_, message: Message) -> bool:
-    # Check if the message is sent from the test group
-    try:
-        if message.chat:
-            cid = message.chat.id
-            if cid == glovar.test_group_id:
-                return True
-    except Exception as e:
-        logger.warning(f"Is test group error: {e}", exc_info=True)
-
-    return False
-
-
-def is_watch_ban(_, message: Message) -> bool:
-    # Check if the message is sent by a watch ban user
-    try:
-        if message.from_user:
-            uid = message.from_user.id
-            now = get_now()
-            until = glovar.watch_ids["ban"].get(uid, 0)
-            if now < until:
-                return True
-    except Exception as e:
-        logger.warning(f"Is watch ban error: {e}", exc_info=True)
-
-    return False
-
-
-def is_watch_delete(_, message: Message) -> bool:
-    # Check if the message is sent by a watch delete user
-    try:
-        if message.from_user:
-            uid = message.from_user.id
-            now = get_now()
-            until = glovar.watch_ids["delete"].get(uid, 0)
-            if now < until:
-                return True
-    except Exception as e:
-        logger.warning(f"Is watch delete error: {e}", exc_info=True)
-
-    return False
-
-
-class_c = Filters.create(
-    func=is_class_c,
-    name="Class C"
-)
-
-class_d = Filters.create(
-    func=is_class_d,
-    name="Class D"
-)
-
-declared_message = Filters.create(
-    func=is_declared_message,
-    name="Declared message"
-)
-
-exchange_channel = Filters.create(
-    func=is_exchange_channel,
-    name="Exchange Channel"
-)
-
-hide_channel = Filters.create(
-    func=is_hide_channel,
-    name="Hide Channel"
-)
-
-high_score_user = Filters.create(
-    func=is_high_score_user,
-    name="High score user"
-)
-
-new_group = Filters.create(
-    func=is_new_group,
-    name="New Group"
-)
-
-nsfw_user = Filters.create(
-    func=is_nsfw_user,
-    name="NSFW User"
-)
-
-test_group = Filters.create(
-    func=is_test_group,
-    name="Test Group"
-)
-
-watch_ban = Filters.create(
-    func=is_watch_ban,
-    name="Watch Ban"
-)
-
-watch_delete = Filters.create(
-    func=is_watch_delete,
-    name="Watch Delete"
-)
-
-
-def is_class_e(message: Message):
-    # Check if the message is Class E object
-    try:
-        content = get_content(None, message)
-        if content:
-            if (content in glovar.except_ids["long"]
-                    or content in glovar.except_ids["temp"]
-                    or content in glovar.file_ids["sfw"]):
-                return True
-    except Exception as e:
-        logger.warning(f"Is class e error: {e}", exc_info=True)
-
-    return False
-
-
 def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
     # Check if it is NSFW media, accept Message or file id
     need_delete = []
     if glovar.lock["image"].acquire():
         try:
             if isinstance(message, Message):
-                target_user = is_nsfw_user(None, message)
-                if target_user and (message.media or message.entities):
+                if is_detected_user(message) and (message.media or message.entities):
                     return True
 
                 file_id = get_file_id(message)
@@ -332,7 +281,7 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                 file_id = "PREVIEW"
                 image_path = message
 
-            if image_path:
+            if image_path and not is_declared_message(None, message):
                 need_delete.append(image_path)
                 porn = get_porn(image_path)
                 if porn > glovar.threshold_porn:
@@ -389,5 +338,35 @@ def is_regex_text(word_type: str, text: str) -> bool:
                 return True
     except Exception as e:
         logger.warning(f"Is regex text error: {e}", exc_info=True)
+
+    return False
+
+
+def is_watch_ban(message: Message) -> bool:
+    # Check if the message is sent by a watch ban user
+    try:
+        if message.from_user:
+            uid = message.from_user.id
+            now = get_now()
+            until = glovar.watch_ids["ban"].get(uid, 0)
+            if now < until:
+                return True
+    except Exception as e:
+        logger.warning(f"Is watch ban error: {e}", exc_info=True)
+
+    return False
+
+
+def is_watch_delete(message: Message) -> bool:
+    # Check if the message is sent by a watch delete user
+    try:
+        if message.from_user:
+            uid = message.from_user.id
+            now = get_now()
+            until = glovar.watch_ids["delete"].get(uid, 0)
+            if now < until:
+                return True
+    except Exception as e:
+        logger.warning(f"Is watch delete error: {e}", exc_info=True)
 
     return False

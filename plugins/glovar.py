@@ -50,7 +50,7 @@ default_config: Dict[str, Union[bool, int]] = {
 }
 
 default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
-    "nsfw": {},
+    "detected": {},
     "score": {
         "captcha": 0.0,
         "clean": 0.0,
@@ -275,7 +275,7 @@ except_ids: Dict[str, Set[Union[int, str]]] = {
 user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
 # user_ids = {
 #     12345678: {
-#         "nsfw": {},
+#         "detected": {},
 #         "score": {
 #             "captcha": 0.0,
 #             "clean": 0.0,
