@@ -28,7 +28,7 @@ from .. import glovar
 from .channel import get_content, get_debug_text
 from .etc import code, crypt_str, get_text, thread, user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
-from .filters import is_declared_message, is_detected_user_id, is_nsfw_media
+from .filters import is_declared_message_id, is_detected_user_id, is_nsfw_media
 from .group import get_message, leave_group
 from .ids import init_group_id, init_user_id
 from .telegram import send_message, send_report_message
@@ -165,7 +165,7 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                 if image:
                     image_path = get_new_path()
                     image.save(image_path, "PNG")
-                    if (not is_declared_message(gid, mid)
+                    if (not is_declared_message_id(gid, mid)
                             and not is_detected_user_id(gid, uid)):
                         if is_nsfw_media(client, image_path):
                             the_message = get_message(client, gid, mid)
