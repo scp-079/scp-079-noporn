@@ -43,12 +43,12 @@ def config(client: Client, message: Message):
         mid = message.message_id
         # Check permission
         if is_class_c(None, message):
-            command_type = get_command_type(message)
             # Check command format
-            if command_type and re.search("^noporn$", command_type, re.I):
+            command_type = get_command_type(message)
+            if command_type and re.search(f"^{glovar.sender}$", command_type, re.I):
                 now = get_now()
                 # Check the config lock
-                if now - glovar.configs[gid]["lock"] > 360:
+                if now - glovar.configs[gid]["lock"] > 310:
                     # Set lock
                     glovar.configs[gid]["lock"] = now
                     # Ask CONFIG generate a config session
