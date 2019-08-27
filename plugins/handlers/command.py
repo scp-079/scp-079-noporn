@@ -108,7 +108,7 @@ def config_directly(client: Client, message: Message) -> bool:
                         text += (f"操作：{code('查看设置')}\n"
                                  f"设置：{code((lambda x: '默认' if x else '自定义')(new_config.get('default')))}\n"
                                  f"过滤频道：{code((lambda x: '启用' if x else '禁用')(new_config.get('channel')))}\n")
-                        thread(send_report_message, (15, client, gid, text))
+                        thread(send_report_message, (30, client, gid, text))
                         thread(delete_message, (client, gid, mid))
                         return True
                     elif command_type == "default":
