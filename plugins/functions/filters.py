@@ -217,7 +217,7 @@ def is_detected_user(message: Message) -> bool:
 
 
 def is_detected_user_id(gid: int, uid: int) -> bool:
-    # Check if the user_id is NSFW in the group
+    # Check if the user_id is detected in the group
     try:
         user = glovar.user_ids.get(uid, {})
         if user:
