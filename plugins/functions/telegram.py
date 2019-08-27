@@ -117,7 +117,7 @@ def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
         if chat.username:
             group_link = "https://t.me/" + chat.username
     except Exception as e:
-        logger.info('Get group info error: %s', e)
+        logger.info(f"Get group info error: {e}", exc_info=True)
 
     return group_name, group_link
 
