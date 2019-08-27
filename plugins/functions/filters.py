@@ -280,11 +280,13 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                     return True
 
                 image_path = get_downloaded_path(client, file_id)
+                if is_declared_message(None, message):
+                    return False
             else:
                 file_id = "PREVIEW"
                 image_path = message
 
-            if image_path and not is_declared_message(None, message):
+            if image_path:
                 need_delete.append(image_path)
                 porn = get_porn(image_path)
                 if porn > glovar.threshold_porn:
