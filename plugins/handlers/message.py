@@ -34,7 +34,7 @@ from ..functions.receive import receive_regex, receive_remove_bad, receive_remov
 from ..functions.receive import receive_text_data, receive_user_score, receive_watch_user
 from ..functions.telegram import get_admins, send_message
 from ..functions.tests import porn_test
-from ..functions.user import terminate_nsfw_user
+from ..functions.user import terminate_user
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -48,15 +48,15 @@ def check(client: Client, message: Message):
         gid = message.chat.id
         # Restricted channel
         if glovar.configs[gid].get("channel") and is_restricted_channel(message):
-            terminate_nsfw_user(client, message, "channel")
+            terminate_user(client, message, "channel")
         # Content not in except lists
         elif not is_class_e(message):
             # NSFW url
             if is_nsfw_url(message):
-                terminate_nsfw_user(client, message, "url")
+                terminate_user(client, message, "url")
             # NSFW media
             elif message.media and is_nsfw_media(client, message):
-                terminate_nsfw_user(client, message, "media")
+                terminate_user(client, message, "media")
     except Exception as e:
         logger.warning(f"Check error: {e}", exc_info=True)
 

@@ -94,8 +94,8 @@ def ban_user(client: Client, gid: int, uid: int) -> bool:
     return False
 
 
-def terminate_nsfw_user(client: Client, message: Message, the_type: str) -> bool:
-    # Delete NSFW user's message, or ban the user
+def terminate_user(client: Client, message: Message, the_type: str) -> bool:
+    # Delete user's message, or ban the user
     try:
         if message.from_user and not is_class_d(None, message):
             gid = message.chat.id

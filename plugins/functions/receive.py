@@ -32,7 +32,7 @@ from .filters import is_declared_message, is_nsfw_media, is_nsfw_user_id
 from .group import get_message, leave_group
 from .ids import init_group_id, init_user_id
 from .telegram import send_message, send_report_message
-from .user import terminate_nsfw_user
+from .user import terminate_user
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -172,7 +172,7 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                             glovar.url_list.add(url)
                             the_message = get_message(client, gid, mid)
                             if the_message:
-                                terminate_nsfw_user(client, the_message, "media")
+                                terminate_user(client, the_message, "media")
 
         return True
     except Exception as e:
