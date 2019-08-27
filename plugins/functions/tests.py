@@ -22,7 +22,7 @@ import re
 from pyrogram import Client, Message
 
 from .. import glovar
-from .etc import code, get_text, thread, user_mention
+from .etc import code, get_int, get_text, thread, user_mention
 from .file import get_downloaded_path
 from .filters import is_class_e, is_nsfw_url, is_restricted_channel
 from .image import get_file_id, get_color, get_porn
@@ -42,7 +42,7 @@ def porn_test(client: Client, message: Message) -> bool:
                 if image_path:
                     message_text = get_text(message)
                     if re.search("^管理员：[0-9]", message_text):
-                        aid = int(message_text.split("\n")[0].split("：")[1])
+                        aid = get_int(message_text.split("\n")[0].split("：")[1])
                     else:
                         aid = message.from_user.id
 

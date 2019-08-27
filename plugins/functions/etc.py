@@ -200,6 +200,17 @@ def get_full_name(user: User) -> str:
     return text
 
 
+def get_int(text: str) -> int:
+    # Get a int from a string
+    result = None
+    try:
+        result = int(text)
+    except Exception as e:
+        logger.info(f"Get int error: {e}", exc_info=True)
+
+    return result
+
+
 def get_md5sum(the_type: str, ctx: str) -> str:
     # Get the md5sum of a string or file
     result = ""
