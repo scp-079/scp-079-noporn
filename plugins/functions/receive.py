@@ -168,10 +168,10 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                     if (not is_declared_message(gid, mid)
                             and not is_nsfw_user_id(gid, uid)):
                         if is_nsfw_media(client, image_path):
-                            url = preview["url"]
-                            glovar.url_list.add(url)
                             the_message = get_message(client, gid, mid)
                             if the_message:
+                                url = preview["url"]
+                                glovar.url_list.add(url)
                                 terminate_user(client, the_message, "media")
 
         return True
