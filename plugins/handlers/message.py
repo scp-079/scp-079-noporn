@@ -86,7 +86,7 @@ def exchange_emergency(_: Client, message: Message):
         logger.warning(f"Exchange emergency error: {e}", exc_info=True)
 
 
-@Client.on_message(Filters.incoming & Filters.group
+@Client.on_message(Filters.incoming & Filters.group & ~test_group
                    & (Filters.new_chat_members | Filters.group_chat_created | Filters.supergroup_chat_created)
                    & new_group)
 def init_group(client: Client, message: Message):
