@@ -306,7 +306,6 @@ wb_words: Dict[str, int] = {}
 #     "regex": 0
 # }
 
-
 # Load data
 file_list: List[str] = ["admin_ids", "bad_ids", "except_ids", "user_ids", "configs"]
 file_list += [f"{f}_words" for f in regex]
