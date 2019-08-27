@@ -19,14 +19,13 @@
 import logging
 import re
 from copy import deepcopy
-from time import time
 from typing import Union
 
 from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from .channel import get_content
-from .etc import get_text
+from .etc import get_now, get_text
 from .file import delete_file, get_downloaded_path, save
 from .ids import init_group_id
 from .image import get_file_id, get_porn
@@ -190,7 +189,7 @@ def is_nsfw_user_id(gid: int, uid: int) -> bool:
         user = glovar.user_ids.get(uid, {})
         if user:
             status = user["nsfw"].get(gid, 0)
-            now = int(time())
+            now = get_now()
             if now - status < glovar.punish_time:
                 return True
     except Exception as e:
@@ -217,7 +216,7 @@ def is_watch_ban(_, message: Message) -> bool:
     try:
         if message.from_user:
             uid = message.from_user.id
-            now = int(time())
+            now = get_now()
             until = glovar.watch_ids["ban"].get(uid, 0)
             if now < until:
                 return True
@@ -232,7 +231,7 @@ def is_watch_delete(_, message: Message) -> bool:
     try:
         if message.from_user:
             uid = message.from_user.id
-            now = int(time())
+            now = get_now()
             until = glovar.watch_ids["delete"].get(uid, 0)
             if now < until:
                 return True

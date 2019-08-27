@@ -17,12 +17,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from time import time
 
 from pyrogram import Client, Message
 
 from .. import glovar
-from .etc import crypt_str, get_full_name, thread
+from .etc import crypt_str, get_full_name, get_now, thread
 from .channel import ask_for_help, declare_message, forward_evidence, send_debug, share_bad_user
 from .channel import share_watch_ban_user, update_score
 from .file import save
@@ -53,7 +52,7 @@ def add_nsfw_user(gid: int, uid: int) -> bool:
     # Add or update a NSFW user status
     try:
         init_user_id(uid)
-        now = int(time())
+        now = get_now()
         previous = glovar.user_ids[uid]["nsfw"].get(gid)
         glovar.user_ids[uid]["nsfw"][gid] = now
 
@@ -67,7 +66,7 @@ def add_nsfw_user(gid: int, uid: int) -> bool:
 def add_watch_ban_user(client: Client, uid: int) -> bool:
     # Add a watch ban user, share it
     try:
-        now = int(time())
+        now = get_now()
         until = now + glovar.time_ban
         glovar.watch_ids["ban"][uid] = until
         until = str(until)
