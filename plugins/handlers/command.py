@@ -86,7 +86,7 @@ def config(client: Client, message: Message) -> bool:
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group
                    & Filters.command(["config_noporn"], glovar.prefix))
-def config_manual(client: Client, message: Message) -> bool:
+def config_directly(client: Client, message: Message) -> bool:
     # Config the bot directly
     try:
         gid = message.chat.id
@@ -152,7 +152,7 @@ def config_manual(client: Client, message: Message) -> bool:
 
         return True
     except Exception as e:
-        logger.warning(f"Config manual error: {e}", exc_info=True)
+        logger.warning(f"Config directly error: {e}", exc_info=True)
 
     return False
 
