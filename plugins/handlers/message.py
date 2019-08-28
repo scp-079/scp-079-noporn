@@ -46,6 +46,9 @@ logger = logging.getLogger(__name__)
 def check(client: Client, message: Message) -> bool:
     # Check the messages sent from groups
     try:
+        if not message.from_user:
+            return True
+
         gid = message.chat.id
         # Restricted channel
         if glovar.configs[gid].get("channel") and is_restricted_channel(message):
