@@ -72,6 +72,21 @@ def is_class_d(_, message: Message) -> bool:
     return False
 
 
+def is_class_e(_, message: Message) -> bool:
+    # Check if the message is Class E object
+    try:
+        content = get_content(None, message)
+        if content:
+            if (content in glovar.except_ids["long"]
+                    or content in glovar.except_ids["temp"]
+                    or content in glovar.file_ids["sfw"]):
+                return True
+    except Exception as e:
+        logger.warning(f"Is class e error: {e}", exc_info=True)
+
+    return False
+
+
 def is_declared_message(_, message: Message) -> bool:
     # Check if the message is declared by other bots
     try:
@@ -154,6 +169,11 @@ class_d = Filters.create(
     name="Class D"
 )
 
+class_e = Filters.create(
+    func=is_class_e,
+    name="Class E"
+)
+
 declared_message = Filters.create(
     func=is_declared_message,
     name="Declared message"
@@ -178,21 +198,6 @@ test_group = Filters.create(
     func=is_test_group,
     name="Test Group"
 )
-
-
-def is_class_e(message: Message) -> bool:
-    # Check if the message is Class E object
-    try:
-        content = get_content(None, message)
-        if content:
-            if (content in glovar.except_ids["long"]
-                    or content in glovar.except_ids["temp"]
-                    or content in glovar.file_ids["sfw"]):
-                return True
-    except Exception as e:
-        logger.warning(f"Is class e error: {e}", exc_info=True)
-
-    return False
 
 
 def is_declared_message_id(gid: int, mid: int) -> bool:

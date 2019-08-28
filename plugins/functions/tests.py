@@ -52,7 +52,7 @@ def porn_test(client: Client, message: Message) -> bool:
                             f"NSFW 得分：{code(f'{porn:.8f}')}\n"
                             f"NSFW 记录：{code(file_id in glovar.file_ids['nsfw'])}\n"
                             f"NSFW 链接：{code(is_nsfw_url(message))}\n"
-                            f"白名单：{code(is_class_e(message))}\n"
+                            f"白名单：{code(is_class_e(None, message))}\n"
                             f"受限频道：{code(is_restricted_channel(message))}\n"
                             f"敏感颜色：{code(color)}\n")
                     thread(send_message, (client, glovar.test_group_id, text, message.message_id))

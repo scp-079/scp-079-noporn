@@ -24,8 +24,8 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import class_c, class_d, declared_message, exchange_channel, hide_channel
-from ..functions.filters import is_class_e, is_declared_message, is_nsfw_media, is_nsfw_url, is_restricted_channel
+from ..functions.filters import class_c, class_d, class_e, declared_message, exchange_channel, hide_channel
+from ..functions.filters import is_declared_message, is_nsfw_media, is_nsfw_url, is_restricted_channel
 from ..functions.filters import new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id
@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group
-                   & ~class_c & ~class_d & ~declared_message)
+                   & ~class_c & ~class_d & ~class_e & ~declared_message)
 def check(client: Client, message: Message) -> bool:
     # Check the messages sent from groups
     try:
@@ -50,14 +50,12 @@ def check(client: Client, message: Message) -> bool:
         # Restricted channel
         if glovar.configs[gid].get("channel") and is_restricted_channel(message):
             terminate_user(client, message, "channel")
-        # Content not in except lists
-        elif not is_class_e(message):
-            # NSFW url
-            if is_nsfw_url(message):
-                terminate_user(client, message, "url")
-            # NSFW media
-            elif message.media and is_nsfw_media(client, message) and not is_declared_message(None, message):
-                terminate_user(client, message, "media")
+        # NSFW url
+        elif is_nsfw_url(message):
+            terminate_user(client, message, "url")
+        # NSFW media
+        elif message.media and is_nsfw_media(client, message) and not is_declared_message(None, message):
+            terminate_user(client, message, "media")
 
         return True
     except Exception as e:
