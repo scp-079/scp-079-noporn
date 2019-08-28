@@ -41,7 +41,7 @@ See [this article](https://scp-079.org/noporn/).
         - `user.py` : Functions about user and channel object
     - handlers
         - `callback.py` : Handle callbacks
-        - `command` : Handle commands
+        - `command.py` : Handle commands
         - `message.py`: Handle messages
     - `glovar.py` : Global variables
 - `.gitignore` : Ignore
