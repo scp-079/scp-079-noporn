@@ -26,7 +26,7 @@ from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from .. import glovar
 from .channel import get_content, get_debug_text
-from .etc import code, crypt_str, get_text, thread, user_mention
+from .etc import code, crypt_str, get_stripped_link, get_text, thread, user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_declared_message_id, is_detected_user_id, is_nsfw_media
 from .group import get_message, leave_group
@@ -170,9 +170,11 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                         if is_nsfw_media(client, image_path):
                             the_message = get_message(client, gid, mid)
                             if the_message:
-                                url = preview["url"]
-                                glovar.url_list.add(url)
-                                terminate_user(client, the_message, "media")
+                                url = get_stripped_link(preview["url"])
+                                if url:
+                                    glovar.contents[url] = "nsfw"
+
+                                terminate_user(client, the_message, "url")
 
         return True
     except Exception as e:

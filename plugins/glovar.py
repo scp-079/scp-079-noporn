@@ -99,9 +99,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-url_list: Set[str] = set()
-
-version: str = "0.2.7"
+version: str = "0.2.8"
 
 watch_ids: Dict[str, Dict[int, int]] = {
     "ban": {},

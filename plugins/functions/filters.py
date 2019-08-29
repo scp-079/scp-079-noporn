@@ -18,14 +18,13 @@
 
 import logging
 import re
-from copy import deepcopy
 from typing import Union
 
 from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from .channel import get_content
-from .etc import get_now, get_text
+from .etc import get_now, get_links
 from .file import delete_file, get_downloaded_path, save
 from .ids import init_group_id
 from .image import get_file_id, get_porn
@@ -317,12 +316,10 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
 def is_nsfw_url(message: Message) -> bool:
     # Check if the message include NSFW url
     try:
-        text = get_text(message)
-        if text:
-            url_list = deepcopy(glovar.url_list)
-            for url in url_list:
-                if url in text:
-                    return True
+        links = get_links(message)
+        for link in links:
+            if glovar.contents.get(link, "") == "nsfw":
+                return True
     except Exception as e:
         logger.warning(f"Is NSFW url error: {e}", exc_info=True)
 
