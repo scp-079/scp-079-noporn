@@ -54,7 +54,7 @@ default_config: Dict[str, Union[bool, int]] = {
     "channel": True
 }
 
-default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
+default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
     "detected": {},
     "score": {
         "captcha": 0.0,
@@ -272,7 +272,7 @@ except_ids: Dict[str, Set[str]] = {
 #     "temp": {"content"}
 # }
 
-user_ids: Dict[int, Dict[str, Union[float, Dict[Union[int, str], Union[float, int]], Set[int]]]] = {}
+user_ids: Dict[int, Dict[str, Dict[Union[int, str], Union[float, int]]]] = {}
 # user_ids = {
 #     12345678: {
 #         "detected": {},
