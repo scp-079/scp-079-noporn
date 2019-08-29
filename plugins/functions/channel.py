@@ -133,6 +133,8 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
                 f"用户 ID：{code(uid)}\n"
                 f"操作等级：{code(level)}\n"
                 f"规则：{code(rule)}\n")
+
+        # Detected + wb's name = ban
         if "昵称" in rule:
             name = get_full_name(message.from_user)
             if name:
