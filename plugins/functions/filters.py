@@ -269,12 +269,12 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
     return False
 
 
-def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
+def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> bool:
     # Check if it is NSFW media, accept Message or file id
     need_delete = []
     if glovar.lock["image"].acquire():
         try:
-            if isinstance(message, Message):
+            if not image_path:
                 if is_detected_user(message) and (message.media or message.entities):
                     return True
 
@@ -290,7 +290,6 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                     return False
             else:
                 file_id = "PREVIEW"
-                image_path = message
 
             if image_path:
                 need_delete.append(image_path)

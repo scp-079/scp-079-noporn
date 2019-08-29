@@ -167,7 +167,7 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                     image.save(image_path, "PNG")
                     if (not is_declared_message_id(gid, mid)
                             and not is_detected_user_id(gid, uid)):
-                        if is_nsfw_media(client, image_path):
+                        if is_nsfw_media(client, message, image_path):
                             the_message = get_message(client, gid, mid)
                             if the_message:
                                 url = get_stripped_link(preview["url"])
