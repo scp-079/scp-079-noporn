@@ -79,7 +79,7 @@ def is_class_e(_, message: Message) -> bool:
         if content:
             if (content in glovar.except_ids["long"]
                     or content in glovar.except_ids["temp"]
-                    or content in glovar.file_ids["sfw"]):
+                    or glovar.contents.get(content, "") == "sfw"):
                 return True
     except Exception as e:
         logger.warning(f"Is class e error: {e}", exc_info=True)
@@ -279,11 +279,13 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                 if is_detected_user(message) and (message.media or message.entities):
                     return True
 
-                file_id = get_file_id(message)
-                # If the file_id has been recorded as NSFW media
-                if file_id in glovar.file_ids["nsfw"]:
-                    return True
+                # If the message has been recorded as NSFW
+                content = get_content(client, message)
+                if content:
+                    if glovar.contents.get(content, "") == "nsfw":
+                        return True
 
+                file_id = get_file_id(message)
                 image_path = get_downloaded_path(client, file_id)
                 if is_declared_message(None, message):
                     return False
@@ -295,10 +297,13 @@ def is_nsfw_media(client: Client, message: Union[str, Message]) -> bool:
                 need_delete.append(image_path)
                 porn = get_porn(image_path)
                 if porn > glovar.threshold_porn:
-                    glovar.file_ids["nsfw"].add(file_id)
+                    if file_id != "PREVIEW":
+                        glovar.contents[file_id] = "nsfw"
+
                     return True
                 else:
-                    glovar.file_ids["sfw"].add(file_id)
+                    if file_id != "PREVIEW":
+                        glovar.contents[file_id] = "sfw"
         except Exception as e:
             logger.warning(f"Is NSFW media error: {e}", exc_info=True)
         finally:

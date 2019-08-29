@@ -38,6 +38,11 @@ logger = logging.getLogger(__name__)
 
 all_commands: List[str] = ["config", "config_noporn", "version"]
 
+contents: Dict[str, str] = {}
+# contents = {
+#     "content": "tgl"
+# }
+
 declared_message_ids: Dict[int, Set[int]] = {}
 # declared_message_ids = {
 #     -10012345678: {123}
@@ -62,11 +67,6 @@ default_user_status: Dict[str, Union[Dict[int, int], Dict[str, float]]] = {
         "recheck": 0.0,
         "warn": 0.0
     }
-}
-
-file_ids: Dict[str, Set[str]] = {
-    "nsfw": set(),
-    "sfw": set()
 }
 
 left_group_ids: Set[int] = set()

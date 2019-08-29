@@ -22,6 +22,7 @@ import re
 from pyrogram import Client, Message
 
 from .. import glovar
+from .channel import get_content
 from .etc import code, get_int, get_text, thread, user_mention
 from .file import get_downloaded_path
 from .filters import is_class_e, is_nsfw_url, is_restricted_channel
@@ -47,10 +48,11 @@ def porn_test(client: Client, message: Message) -> bool:
                         aid = message.from_user.id
 
                     porn = get_porn(image_path)
+                    content = get_content(client, message)
                     color = get_color(image_path)
                     text = (f"管理员：{user_mention(aid)}\n\n"
                             f"NSFW 得分：{code(f'{porn:.8f}')}\n"
-                            f"NSFW 记录：{code(file_id in glovar.file_ids['nsfw'])}\n"
+                            f"NSFW 记录：{code(glovar.contents.get(content, '') == 'nsfw')}\n"
                             f"NSFW 链接：{code(is_nsfw_url(message))}\n"
                             f"白名单：{code(is_class_e(None, message))}\n"
                             f"受限频道：{code(is_restricted_channel(message))}\n"
