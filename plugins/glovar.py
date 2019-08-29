@@ -298,6 +298,7 @@ configs: Dict[int, Dict[str, Union[bool, int]]] = {}
 #         "default": True,
 #         "lock": 0,
 #         "channel": True
+#     }
 # }
 
 # Init word variables
