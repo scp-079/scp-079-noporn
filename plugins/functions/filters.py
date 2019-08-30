@@ -355,7 +355,7 @@ def is_regex_text(word_type: str, text: str) -> bool:
             else:
                 text = re.sub(r"\s", "", text)
                 if re.search(word, text, re.I | re.S | re.M):
-                    return True
+                    result = True
 
             if result:
                 count = eval(f"glovar.{word_type}_words").get(word, 0)
