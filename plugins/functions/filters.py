@@ -272,7 +272,7 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
 def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> bool:
     # Check if it is NSFW media, accept Message or file id
     need_delete = []
-    if glovar.lock["image"].acquire():
+    if glovar.locks["message"].acquire():
         try:
             if not image_path:
                 # If the user is being punished
@@ -306,7 +306,7 @@ def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> b
         except Exception as e:
             logger.warning(f"Is NSFW media error: {e}", exc_info=True)
         finally:
-            glovar.lock["image"].release()
+            glovar.locks["message"].release()
             for file in need_delete:
                 delete_file(file)
 

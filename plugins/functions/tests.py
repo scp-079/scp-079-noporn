@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 def porn_test(client: Client, message: Message) -> bool:
     # Test image porn score in the test group
-    if glovar.lock["image"].acquire():
+    if glovar.locks["test"].acquire():
         try:
             file_id = get_file_id(message)
             if file_id:
@@ -63,6 +63,6 @@ def porn_test(client: Client, message: Message) -> bool:
         except Exception as e:
             logger.warning(f"Porn test error: {e}", exc_info=True)
         finally:
-            glovar.lock["image"].release()
+            glovar.locks["test"].release()
 
     return False

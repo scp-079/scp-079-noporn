@@ -96,18 +96,21 @@ def reset_data() -> bool:
 
 def send_count(client: Client) -> bool:
     # Send regex count to REGEX
-    try:
-        for word_type in glovar.regex:
-            share_regex_count(client, word_type)
-            word_list = list(eval(f"glovar.{word_type}_words"))
-            for word in word_list:
-                eval(f"glovar.{word_type}_words")[word] = 0
+    if glovar.locks["regex"].acquire():
+        try:
+            for word_type in glovar.regex:
+                share_regex_count(client, word_type)
+                word_list = list(eval(f"glovar.{word_type}_words"))
+                for word in word_list:
+                    eval(f"glovar.{word_type}_words")[word] = 0
 
-            save(f"{word_type}_words")
+                save(f"{word_type}_words")
 
-        return True
-    except Exception as e:
-        logger.warning(f"Send count error: {e}", exc_info=True)
+            return True
+        except Exception as e:
+            logger.warning(f"Send count error: {e}", exc_info=True)
+        finally:
+            glovar.locks["regex"].release()
 
     return False
 
