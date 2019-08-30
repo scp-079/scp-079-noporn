@@ -301,7 +301,9 @@ configs: Dict[int, Dict[str, Union[bool, int]]] = {}
 
 # Init word variables
 
-wb_words: Dict[str, int] = {}
+for word_type in regex:
+    locals()[f"{word_type}_words"]: Dict[str, Dict[str, Union[float, int]]] = {}
+
 # type_words = {
 #     "regex": 0
 # }
