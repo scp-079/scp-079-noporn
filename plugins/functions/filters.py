@@ -339,14 +339,29 @@ def is_restricted_channel(message: Message) -> bool:
 
 def is_regex_text(word_type: str, text: str) -> bool:
     # Check if the text hit the regex rules
+    result = False
     try:
+        if text:
+            text = text.replace("\n", " ")
+            text = re.sub(r"\s\s", " ", text)
+            text = re.sub(r"\s\s", " ", text)
+        else:
+            return False
+
         for word in list(eval(f"glovar.{word_type}_words")):
             if re.search(word, text, re.I | re.S | re.M):
+                result = True
+            else:
+                text = re.sub(r"\s", "", text)
+                if re.search(word, text, re.I | re.S | re.M):
+                    return True
+
+            if result:
                 count = eval(f"glovar.{word_type}_words").get(word, 0)
                 count += 1
                 eval(f"glovar.{word_type}_words")[word] = count
                 save(f"{word_type}_words")
-                return True
+                return result
     except Exception as e:
         logger.warning(f"Is regex text error: {e}", exc_info=True)
 
