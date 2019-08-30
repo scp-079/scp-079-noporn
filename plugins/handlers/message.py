@@ -49,16 +49,18 @@ def check(client: Client, message: Message) -> bool:
         if not message.from_user:
             return True
 
-        gid = message.chat.id
         # Restricted channel
+        gid = message.chat.id
         if glovar.configs[gid].get("channel") and is_restricted_channel(message):
-            terminate_user(client, message, "channel")
+            return terminate_user(client, message, "channel")
+
         # NSFW url
-        elif is_nsfw_url(message):
-            terminate_user(client, message, "url")
+        if is_nsfw_url(message):
+            return terminate_user(client, message, "url")
+
         # NSFW media
-        elif message.media and is_nsfw_media(client, message) and not is_declared_message(None, message):
-            terminate_user(client, message, "media")
+        if message.media and is_nsfw_media(client, message) and not is_declared_message(None, message):
+            return terminate_user(client, message, "media")
 
         return True
     except Exception as e:

@@ -275,6 +275,7 @@ def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> b
     if glovar.lock["image"].acquire():
         try:
             if not image_path:
+                # If the user is being punished
                 if is_detected_user(message) and (message.media or message.entities):
                     return True
 
