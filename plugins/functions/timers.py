@@ -56,7 +56,7 @@ def backup_files(client: Client) -> bool:
     return False
 
 
-def interval_min_ten() -> bool:
+def interval_min_10() -> bool:
     # Execute every 10 minutes
     try:
         for gid in list(glovar.recorded_ids):
@@ -64,7 +64,7 @@ def interval_min_ten() -> bool:
 
         return True
     except Exception as e:
-        logger.warning(f"Clear recorded ids error: {e}", exc_info=True)
+        logger.warning(f"Interval min 10 error: {e}", exc_info=True)
 
     return False
 
