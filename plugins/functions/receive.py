@@ -26,7 +26,7 @@ from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from .. import glovar
 from .channel import get_content, get_debug_text
-from .etc import code, crypt_str, get_stripped_link, get_text, thread, user_mention
+from .etc import code, crypt_str, get_int, get_stripped_link, get_text, thread, user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_declared_message_id, is_detected_user_id, is_nsfw_media
 from .group import get_message, leave_group
@@ -358,7 +358,7 @@ def receive_watch_user(data: dict) -> bool:
 
         # Decrypt the data
         until = crypt_str("decrypt", until, glovar.key)
-        until = int(until)
+        until = get_int(until)
 
         # Add to list
         if watch_type == "ban":
