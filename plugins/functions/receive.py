@@ -338,10 +338,10 @@ def receive_user_score(project: str, data: dict) -> bool:
     try:
         project = project.lower()
         uid = data["id"]
-        init_user_id(uid)
-        score = data["score"]
-        glovar.user_ids[uid][project] = score
-        save("user_ids")
+        if init_user_id(uid):
+            score = data["score"]
+            glovar.user_ids[uid][project] = score
+            save("user_ids")
 
         return True
     except Exception as e:
