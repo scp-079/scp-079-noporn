@@ -12,7 +12,6 @@ See [this article](https://scp-079.org/noporn/).
 - [x] Update user's score
 - [x] Watch ban or ban by checking user's score and status
 - [x] Managed by SCP-079-CONFIG
-- [x] Add recheck feature
 
 ## Requirements
 
@@ -40,7 +39,6 @@ See [this article](https://scp-079.org/noporn/).
         - `timers.py` : Timer functions
         - `user.py` : Functions about user and channel object
     - handlers
-        - `callback.py` : Handle callbacks
         - `command.py` : Handle commands
         - `message.py`: Handle messages
     - `glovar.py` : Global variables
