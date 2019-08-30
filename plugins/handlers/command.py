@@ -124,13 +124,13 @@ def config_directly(client: Client, message: Message) -> bool:
                                     new_config["channel"] = True
                                 else:
                                     success = False
-                                    reason = "过滤选项有误"
+                                    reason = "命令参数有误"
                             else:
                                 success = False
                                 reason = "命令类别有误"
                         else:
                             success = False
-                            reason = "命令选项缺失"
+                            reason = "命令参数缺失"
 
                         if success:
                             new_config["default"] = False
