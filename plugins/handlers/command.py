@@ -117,11 +117,11 @@ def config_directly(client: Client, message: Message) -> bool:
                             new_config = deepcopy(glovar.default_config)
                     else:
                         if command_context:
-                            if command_type == "channel":
+                            if command_type in {"channel"}:
                                 if command_context == "off":
-                                    new_config["channel"] = False
+                                    new_config[command_type] = False
                                 elif command_context == "on":
-                                    new_config["channel"] = True
+                                    new_config[command_type] = True
                                 else:
                                     success = False
                                     reason = "命令参数有误"
