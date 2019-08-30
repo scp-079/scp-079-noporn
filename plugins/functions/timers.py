@@ -59,6 +59,7 @@ def backup_files(client: Client) -> bool:
 def interval_min_10() -> bool:
     # Execute every 10 minutes
     try:
+        # Clear recorded users
         for gid in list(glovar.recorded_ids):
             glovar.recorded_ids[gid] = set()
 
