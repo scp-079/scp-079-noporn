@@ -16,7 +16,7 @@ pyaes==1.6.1
 pyAesCrypt==0.4.3
 pycparser==2.19
 pyparsing==2.4.2
-Pyrogram==0.15.1
+Pyrogram==0.16.0.dev0
 PySocks==1.7.0
 python-dateutil==2.8.0
 pytz==2019.2
