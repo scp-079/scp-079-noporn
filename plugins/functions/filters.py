@@ -369,31 +369,16 @@ def is_regex_text(word_type: str, text: str) -> bool:
     return False
 
 
-def is_watch_ban(message: Message) -> bool:
-    # Check if the message is sent by a watch ban user
+def is_watch_user(message: Message, the_type: str) -> bool:
+    # Check if the message is sent by a watch user
     try:
         if message.from_user:
             uid = message.from_user.id
             now = get_now()
-            until = glovar.watch_ids["ban"].get(uid, 0)
+            until = glovar.watch_ids[the_type].get(uid, 0)
             if now < until:
                 return True
     except Exception as e:
-        logger.warning(f"Is watch ban error: {e}", exc_info=True)
-
-    return False
-
-
-def is_watch_delete(message: Message) -> bool:
-    # Check if the message is sent by a watch delete user
-    try:
-        if message.from_user:
-            uid = message.from_user.id
-            now = get_now()
-            until = glovar.watch_ids["delete"].get(uid, 0)
-            if now < until:
-                return True
-    except Exception as e:
-        logger.warning(f"Is watch delete error: {e}", exc_info=True)
+        logger.warning(f"Is watch user error: {e}", exc_info=True)
 
     return False
