@@ -39,11 +39,11 @@ logger = logging.getLogger(__name__)
 
 
 def receive_add_except(client: Client, data: dict) -> bool:
-    # Receive a message and add it to except lists
+    # Receive a object and add it to except list
     try:
         the_id = data["id"]
         the_type = data["type"]
-        # Do not receive except channels
+        # Receive except contents
         if the_type in {"long", "temp"}:
             content = get_content(client, the_id)
             if content:
@@ -271,11 +271,11 @@ def receive_remove_bad(sender: str, data: dict) -> bool:
 
 
 def receive_remove_except(client: Client, data: dict) -> bool:
-    # Receive a message and remove it from except lists
+    # Receive a object and remove it from except list
     try:
         the_id = data["id"]
         the_type = data["type"]
-        # Do not receive except channels
+        # Receive except contents
         if the_type in {"long", "temp"}:
             content = get_content(client, the_id)
             if content:
