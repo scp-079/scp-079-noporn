@@ -216,6 +216,10 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
     # Receive regex
     try:
         file_name = data
+        word_type = file_name.split("_")[0]
+        if not glovar.regex.get(word_type, ""):
+            return True
+
         words_data = receive_file_data(client, message, True)
         if words_data:
             if glovar.locks["regex"].acquire():
