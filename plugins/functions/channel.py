@@ -312,7 +312,7 @@ def share_regex_count(client: Client, word_tye: str) -> bool:
             client=client,
             receivers=["REGEX"],
             action="update",
-            action_type="download",
+            action_type="count",
             data=f"{word_tye}_words",
             file=file
         )
