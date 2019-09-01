@@ -56,9 +56,10 @@ def get_file_id(message: Message) -> str:
                 or (message.sticker and not message.sticker.is_animated)
                 or (message.document and message.document.thumbs)
                 or (message.animation and message.animation.thumbs)
+                or (message.audio and message.audio.thumbs)
+                or (message.game and message.game.photo)
                 or (message.video and message.video.thumbs)
-                or (message.video_note and message.video_note.thumbs)
-                or (message.audio and message.audio.thumbs)):
+                or (message.video_note and message.video_note.thumbs)):
             if message.photo:
                 file_id = message.photo.file_id
             elif message.sticker:
@@ -74,12 +75,14 @@ def get_file_id(message: Message) -> str:
                     file_id = message.document.thumbs[-1].file_id
             elif message.animation:
                 file_id = message.animation.thumbs[-1].file_id
+            elif message.audio:
+                file_id = message.audio.thumbs[-1].file_id
+            elif message.game:
+                file_id = message.game.photo.file_id
             elif message.video:
                 file_id = message.video.thumbs[-1].file_id
             elif message.video_note:
                 file_id = message.video_note.thumbs[-1].file_id
-            elif message.audio:
-                file_id = message.audio.thumbs[-1].file_id
     except Exception as e:
         logger.warning(f"Get file id error: {e}", exc_info=True)
 

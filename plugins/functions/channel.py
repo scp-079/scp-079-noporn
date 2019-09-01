@@ -140,8 +140,17 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
             if name:
                 text += f"用户昵称：{code(name)}\n"
 
-        if more:
+        if message.video_note:
+            text += f"附加信息：{code('可能涉及隐私而未转发')}\n"
+        elif message.game:
+            text += f"附加信息：{code('此类消息无法转发至频道')}\n"
+        elif more:
             text += f"附加信息：{code(more)}\n"
+
+        # DO NOT try to forward these types of message
+        if message.video_note or message.game:
+            result = send_message(client, glovar.logging_channel_id, text)
+            return result
 
         flood_wait = True
         while flood_wait:
