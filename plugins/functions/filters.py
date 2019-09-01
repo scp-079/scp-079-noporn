@@ -199,6 +199,20 @@ test_group = Filters.create(
 )
 
 
+def is_ban_text(text: str) -> bool:
+    # Check if the text is ban text
+    try:
+        if is_regex_text("ban", text):
+            return True
+
+        if is_regex_text("ad", text) and is_regex_text("con", text):
+            return True
+    except Exception as e:
+        logger.warning(f"Is ban text error: {e}", exc_info=True)
+
+    return False
+
+
 def is_declared_message_id(gid: int, mid: int) -> bool:
     # Check if the message's ID is declared by other bots
     try:
@@ -338,35 +352,38 @@ def is_restricted_channel(message: Message) -> bool:
     return False
 
 
-def is_regex_text(word_type: str, text: str) -> bool:
+def is_regex_text(word_type: str, text: str, again: bool = False) -> bool:
     # Check if the text hit the regex rules
     result = False
     try:
         if text:
-            text = text.replace("\n", " ")
-            text = re.sub(r"\s\s", " ", text)
-            text = re.sub(r"\s\s", " ", text)
+            if not again:
+                text = re.sub(r"\s{2,}", " ", text)
+            elif " " in text:
+                text = re.sub(r"\s", "", text)
+            else:
+                return False
         else:
             return False
 
         for word in list(eval(f"glovar.{word_type}_words")):
             if re.search(word, text, re.I | re.S | re.M):
                 result = True
-            else:
-                text = re.sub(r"\s", "", text)
-                if re.search(word, text, re.I | re.S | re.M):
-                    result = True
 
+            # Match, count and return
             if result:
                 count = eval(f"glovar.{word_type}_words").get(word, 0)
                 count += 1
                 eval(f"glovar.{word_type}_words")[word] = count
                 save(f"{word_type}_words")
                 return result
+
+        # Try again
+        return is_regex_text(word_type, text, True)
     except Exception as e:
         logger.warning(f"Is regex text error: {e}", exc_info=True)
 
-    return False
+    return result
 
 
 def is_watch_user(message: Message, the_type: str) -> bool:

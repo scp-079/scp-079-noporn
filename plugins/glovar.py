@@ -92,8 +92,11 @@ recorded_ids: Dict[int, Set[int]] = {}
 #     -10012345678: {12345678}
 # }
 
-regex: Dict[str, str] = {
-    "wb": "追踪封禁"
+regex: Dict[str, bool] = {
+    "ad": False,
+    "ban": False,
+    "con": False,
+    "wb": True
 }
 
 sender: str = "NOPORN"

@@ -215,7 +215,7 @@ def receive_regex(client: Client, message: Message, data: str) -> bool:
     try:
         file_name = data
         word_type = file_name.split("_")[0]
-        if not glovar.regex.get(word_type, ""):
+        if word_type not in glovar.regex:
             return True
 
         words_data = receive_file_data(client, message, True)

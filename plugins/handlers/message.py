@@ -22,10 +22,10 @@ from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from ..functions.channel import get_debug_text
-from ..functions.etc import code, thread, user_mention
+from ..functions.etc import code, get_text, thread, user_mention
 from ..functions.file import save
 from ..functions.filters import class_c, class_d, class_e, declared_message, exchange_channel, hide_channel
-from ..functions.filters import is_declared_message, is_nsfw_media, is_nsfw_url, is_restricted_channel
+from ..functions.filters import is_ban_text, is_declared_message, is_nsfw_media, is_nsfw_url, is_restricted_channel
 from ..functions.filters import new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id
@@ -48,6 +48,12 @@ def check(client: Client, message: Message) -> bool:
     try:
         if not message.from_user:
             return True
+
+        # Work with NOSPAM
+        gid = message.chat.id
+        if glovar.nospam_id in glovar.admin_ids[gid]:
+            if is_ban_text(get_text(message)):
+                return False
 
         # Restricted channel
         gid = message.chat.id
