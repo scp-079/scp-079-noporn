@@ -49,7 +49,7 @@ def porn_test(client: Client, message: Message) -> bool:
 
                     porn = get_porn(image_path)
                     content = get_content(client, message)
-                    excepted = content in glovar.except_ids['long'] or content in glovar.except_ids['temp']
+                    excepted = content in glovar.except_ids["long"] or content in glovar.except_ids["temp"]
                     color = get_color(image_path)
                     text = (f"管理员：{user_mention(aid)}\n\n"
                             f"NSFW 得分：{code(f'{porn:.8f}')}\n"
