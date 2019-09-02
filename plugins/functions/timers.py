@@ -88,6 +88,12 @@ def reset_data() -> bool:
         glovar.user_ids = {}
         save("user_ids")
 
+        glovar.watch_ids = {
+            "ban": {},
+            "delete": {}
+        }
+        save("watch_ids")
+
         return True
     except Exception as e:
         logger.warning(f"Reset data error: {e}", exc_info=True)
