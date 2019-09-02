@@ -257,6 +257,7 @@ def receive_remove_bad(sender: str, data: dict) -> bool:
             if glovar.user_ids.get(the_id):
                 glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
 
+            save("watch_ids")
             save("user_ids")
 
         save("bad_ids")
@@ -299,6 +300,8 @@ def receive_remove_watch(data: dict) -> bool:
         if watch_type == "all":
             glovar.watch_ids["ban"].pop(uid, 0)
             glovar.watch_ids["delete"].pop(uid, 0)
+
+        save("watch_ids")
 
         return True
     except Exception as e:
@@ -370,6 +373,8 @@ def receive_watch_user(data: dict) -> bool:
             glovar.watch_ids["delete"][uid] = until
         else:
             return False
+
+        save("watch_ids")
 
         return True
     except Exception as e:

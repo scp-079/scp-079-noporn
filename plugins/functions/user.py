@@ -73,6 +73,7 @@ def add_watch_user(client: Client, the_type: str, uid: int) -> bool:
         until = str(until)
         until = crypt_str("encrypt", until, glovar.key)
         share_watch_user(client, the_type, uid, until)
+        save("watch_ids")
 
         return True
     except Exception as e:
