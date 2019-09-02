@@ -340,18 +340,6 @@ def is_nsfw_url(message: Message) -> bool:
     return False
 
 
-def is_restricted_channel(message: Message) -> bool:
-    # Check if the message is forwarded form restricted channel
-    try:
-        if message.forward_from_chat:
-            if message.forward_from_chat.restriction_reason:
-                return True
-    except Exception as e:
-        logger.warning(f"Is restricted channel error: {e}", exc_info=True)
-
-    return False
-
-
 def is_regex_text(word_type: str, text: str, again: bool = False) -> bool:
     # Check if the text hit the regex rules
     result = False
@@ -384,6 +372,18 @@ def is_regex_text(word_type: str, text: str, again: bool = False) -> bool:
         logger.warning(f"Is regex text error: {e}", exc_info=True)
 
     return result
+
+
+def is_restricted_channel(message: Message) -> bool:
+    # Check if the message is forwarded form restricted channel
+    try:
+        if message.forward_from_chat:
+            if message.forward_from_chat.restriction_reason:
+                return True
+    except Exception as e:
+        logger.warning(f"Is restricted channel error: {e}", exc_info=True)
+
+    return False
 
 
 def is_watch_user(message: Message, the_type: str) -> bool:
