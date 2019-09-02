@@ -25,7 +25,7 @@ from .. import glovar
 from .channel import get_content
 from .etc import code, get_int, get_text, thread, user_mention
 from .file import get_downloaded_path
-from .filters import is_class_e, is_nsfw_url, is_restricted_channel
+from .filters import is_nsfw_url, is_restricted_channel
 from .image import get_file_id, get_color, get_porn
 from .telegram import send_message
 
@@ -49,12 +49,13 @@ def porn_test(client: Client, message: Message) -> bool:
 
                     porn = get_porn(image_path)
                     content = get_content(client, message)
+                    excepted = content in glovar.except_ids['long'] or content in glovar.except_ids['temp']
                     color = get_color(image_path)
                     text = (f"管理员：{user_mention(aid)}\n\n"
                             f"NSFW 得分：{code(f'{porn:.8f}')}\n"
                             f"NSFW 记录：{code(glovar.contents.get(content, '') == 'nsfw')}\n"
                             f"NSFW 链接：{code(is_nsfw_url(message))}\n"
-                            f"白名单：{code(is_class_e(None, message))}\n"
+                            f"白名单：{code(excepted)}\n"
                             f"受限频道：{code(is_restricted_channel(message))}\n"
                             f"敏感颜色：{code(color)}\n")
                     thread(send_message, (client, glovar.test_group_id, text, message.message_id))
