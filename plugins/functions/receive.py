@@ -123,6 +123,21 @@ def receive_config_reply(client: Client, data: dict) -> bool:
     return False
 
 
+def receive_declared_message(data: dict) -> bool:
+    # Update declared message's id
+    try:
+        gid = data["group_id"]
+        mid = data["message_id"]
+        if glovar.admin_ids.get(gid):
+            if init_group_id(gid):
+                glovar.declared_message_ids[gid].add(mid)
+                return True
+    except Exception as e:
+        logger.warning(f"Receive declared message error: {e}", exc_info=True)
+
+    return False
+
+
 def receive_file_data(client: Client, message: Message, decrypt: bool = False) -> Any:
     # Receive file's data from exchange channel
     data = None
@@ -321,21 +336,6 @@ def receive_text_data(message: Message) -> dict:
         logger.warning(f"Receive data error: {e}")
 
     return data
-
-
-def receive_declared_message(data: dict) -> bool:
-    # Update declared message's id
-    try:
-        gid = data["group_id"]
-        mid = data["message_id"]
-        if glovar.admin_ids.get(gid):
-            if init_group_id(gid):
-                glovar.declared_message_ids[gid].add(mid)
-                return True
-    except Exception as e:
-        logger.warning(f"Receive declared message error: {e}", exc_info=True)
-
-    return False
 
 
 def receive_user_score(project: str, data: dict) -> bool:
