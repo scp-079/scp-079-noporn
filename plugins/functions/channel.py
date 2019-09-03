@@ -187,7 +187,7 @@ def get_content(client: Optional[Client], mid: Union[int, Message]) -> str:
             message = mid
 
         if message:
-            file_id = get_file_id(message)
+            file_id, _ = get_file_id(message)
             text = get_text(message)
             if file_id:
                 result += file_id

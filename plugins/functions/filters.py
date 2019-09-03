@@ -299,7 +299,7 @@ def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> b
                     if glovar.contents.get(content, "") == "nsfw":
                         return True
 
-                file_id = get_file_id(message)
+                file_id, _ = get_file_id(message)
                 image_path = get_downloaded_path(client, file_id)
                 if is_declared_message(None, message):
                     return False

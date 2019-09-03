@@ -37,7 +37,7 @@ def porn_test(client: Client, message: Message) -> bool:
     # Test image porn score in the test group
     if glovar.locks["test"].acquire():
         try:
-            file_id = get_file_id(message)
+            file_id, _ = get_file_id(message)
             if file_id:
                 image_path = get_downloaded_path(client, file_id)
                 if image_path:
