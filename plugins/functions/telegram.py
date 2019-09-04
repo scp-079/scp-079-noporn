@@ -140,7 +140,7 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[List
     return result
 
 
-def kick_chat_member(client: Client, cid: int, uid: int) -> Optional[Union[bool, Message]]:
+def kick_chat_member(client: Client, cid: int, uid: Union[int, str]) -> Optional[Union[bool, Message]]:
     # Kick a chat member in a group
     result = None
     try:

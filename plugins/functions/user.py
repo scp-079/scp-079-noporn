@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import Union
 
 from pyrogram import Client, Message
 
@@ -82,7 +83,7 @@ def add_watch_user(client: Client, the_type: str, uid: int) -> bool:
     return False
 
 
-def ban_user(client: Client, gid: int, uid: int) -> bool:
+def ban_user(client: Client, gid: int, uid: Union[int, str]) -> bool:
     # Ban a user
     try:
         thread(kick_chat_member, (client, gid, uid))
