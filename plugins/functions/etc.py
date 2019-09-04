@@ -199,6 +199,27 @@ def get_entity_text(message: Message, entity: MessageEntity) -> str:
     return result
 
 
+def get_forward_name(message: Message) -> str:
+    # Get forwarded message's origin sender's name
+    text = ""
+    try:
+        if message.forward_from:
+            user = message.forward_from
+            text = get_full_name(user)
+        elif message.forward_sender_name:
+            text = message.forward_sender_name
+        elif message.forward_from_chat:
+            chat = message.forward_from_chat
+            text = chat.title
+
+        if text:
+            text = t2s(text)
+    except Exception as e:
+        logger.warning(f"Get forward name error: {e}", exc_info=True)
+
+    return text
+
+
 def get_full_name(user: User) -> str:
     # Get user's full name
     text = ""
