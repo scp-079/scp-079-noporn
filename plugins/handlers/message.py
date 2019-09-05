@@ -46,32 +46,39 @@ logger = logging.getLogger(__name__)
                    & ~class_c & ~class_d & ~class_e & ~declared_message)
 def check(client: Client, message: Message) -> bool:
     # Check the messages sent from groups
-    try:
-        if not message.from_user:
+    if glovar.locks["message"].acquire():
+        try:
+            if not message.from_user:
+                return True
+
+            # Check declare status
+            if is_declared_message(None, message):
+                return True
+
+            # Work with NOSPAM
+            gid = message.chat.id
+            if glovar.nospam_id in glovar.admin_ids[gid]:
+                if is_ban_text(get_text(message)):
+                    return False
+
+            # Restricted channel
+            gid = message.chat.id
+            if glovar.configs[gid].get("channel") and is_restricted_channel(message):
+                return terminate_user(client, message, "channel")
+
+            # NSFW url
+            if is_nsfw_url(message):
+                return terminate_user(client, message, "url")
+
+            # NSFW media
+            if message.media and is_nsfw_media(client, message) and not is_declared_message(None, message):
+                return terminate_user(client, message, "media")
+
             return True
-
-        # Work with NOSPAM
-        gid = message.chat.id
-        if glovar.nospam_id in glovar.admin_ids[gid]:
-            if is_ban_text(get_text(message)):
-                return False
-
-        # Restricted channel
-        gid = message.chat.id
-        if glovar.configs[gid].get("channel") and is_restricted_channel(message):
-            return terminate_user(client, message, "channel")
-
-        # NSFW url
-        if is_nsfw_url(message):
-            return terminate_user(client, message, "url")
-
-        # NSFW media
-        if message.media and is_nsfw_media(client, message) and not is_declared_message(None, message):
-            return terminate_user(client, message, "media")
-
-        return True
-    except Exception as e:
-        logger.warning(f"Check error: {e}", exc_info=True)
+        except Exception as e:
+            logger.warning(f"Check error: {e}", exc_info=True)
+        finally:
+            glovar.locks["message"].release()
 
     return False
 
@@ -327,11 +334,14 @@ def process_data(client: Client, message: Message) -> bool:
                    & ~Filters.command(glovar.all_commands, glovar.prefix))
 def test(client: Client, message: Message) -> bool:
     # Show test results in TEST group
-    try:
-        porn_test(client, message)
+    if glovar.locks["test"].acquire():
+        try:
+            porn_test(client, message)
 
-        return True
-    except Exception as e:
-        logger.warning(f"Test error: {e}", exc_info=True)
+            return True
+        except Exception as e:
+            logger.warning(f"Test error: {e}", exc_info=True)
+        finally:
+            glovar.locks["test"].release()
 
     return False

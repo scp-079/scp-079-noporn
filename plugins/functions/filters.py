@@ -286,43 +286,41 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
 def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> bool:
     # Check if it is NSFW media, accept Message or file id
     need_delete = []
-    if glovar.locks["message"].acquire():
-        try:
-            if not image_path:
-                # If the user is being punished
-                if is_detected_user(message) and (message.media or message.entities):
+    try:
+        if not image_path:
+            # If the user is being punished
+            if is_detected_user(message) and (message.media or message.entities):
+                return True
+
+            # If the message has been recorded as NSFW
+            content = get_content(client, message)
+            if content:
+                if glovar.contents.get(content, "") == "nsfw":
                     return True
 
-                # If the message has been recorded as NSFW
-                content = get_content(client, message)
-                if content:
-                    if glovar.contents.get(content, "") == "nsfw":
-                        return True
+            file_id, _ = get_file_id(message)
+            image_path = get_downloaded_path(client, file_id)
+            if is_declared_message(None, message):
+                return False
+        else:
+            file_id = "PREVIEW"
 
-                file_id, _ = get_file_id(message)
-                image_path = get_downloaded_path(client, file_id)
-                if is_declared_message(None, message):
-                    return False
+        if image_path:
+            need_delete.append(image_path)
+            porn = get_porn(image_path)
+            if porn > glovar.threshold_porn:
+                if file_id != "PREVIEW":
+                    glovar.contents[file_id] = "nsfw"
+
+                return True
             else:
-                file_id = "PREVIEW"
-
-            if image_path:
-                need_delete.append(image_path)
-                porn = get_porn(image_path)
-                if porn > glovar.threshold_porn:
-                    if file_id != "PREVIEW":
-                        glovar.contents[file_id] = "nsfw"
-
-                    return True
-                else:
-                    if file_id != "PREVIEW":
-                        glovar.contents[file_id] = "sfw"
-        except Exception as e:
-            logger.warning(f"Is NSFW media error: {e}", exc_info=True)
-        finally:
-            glovar.locks["message"].release()
-            for file in need_delete:
-                delete_file(file)
+                if file_id != "PREVIEW":
+                    glovar.contents[file_id] = "sfw"
+    except Exception as e:
+        logger.warning(f"Is NSFW media error: {e}", exc_info=True)
+    finally:
+        for file in need_delete:
+            delete_file(file)
 
     return False
 

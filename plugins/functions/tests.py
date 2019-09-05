@@ -35,35 +35,32 @@ logger = logging.getLogger(__name__)
 
 def porn_test(client: Client, message: Message) -> bool:
     # Test image porn score in the test group
-    if glovar.locks["test"].acquire():
-        try:
-            file_id, _ = get_file_id(message)
-            if file_id:
-                image_path = get_downloaded_path(client, file_id)
-                if image_path:
-                    message_text = get_text(message)
-                    if re.search("^管理员：[0-9]", message_text):
-                        aid = get_int(message_text.split("\n")[0].split("：")[1])
-                    else:
-                        aid = message.from_user.id
+    try:
+        file_id, _ = get_file_id(message)
+        if file_id:
+            image_path = get_downloaded_path(client, file_id)
+            if image_path:
+                message_text = get_text(message)
+                if re.search("^管理员：[0-9]", message_text):
+                    aid = get_int(message_text.split("\n")[0].split("：")[1])
+                else:
+                    aid = message.from_user.id
 
-                    porn = get_porn(image_path)
-                    content = get_content(client, message)
-                    excepted = content in glovar.except_ids["long"] or content in glovar.except_ids["temp"]
-                    color = get_color(image_path)
-                    text = (f"管理员：{user_mention(aid)}\n\n"
-                            f"NSFW 得分：{code(f'{porn:.8f}')}\n"
-                            f"NSFW 记录：{code(glovar.contents.get(content, '') == 'nsfw')}\n"
-                            f"NSFW 链接：{code(is_nsfw_url(message))}\n"
-                            f"白名单：{code(excepted)}\n"
-                            f"受限频道：{code(is_restricted_channel(message))}\n"
-                            f"敏感颜色：{code(color)}\n")
-                    thread(send_message, (client, glovar.test_group_id, text, message.message_id))
-            
-                    return True
-        except Exception as e:
-            logger.warning(f"Porn test error: {e}", exc_info=True)
-        finally:
-            glovar.locks["test"].release()
+                porn = get_porn(image_path)
+                content = get_content(client, message)
+                excepted = content in glovar.except_ids["long"] or content in glovar.except_ids["temp"]
+                color = get_color(image_path)
+                text = (f"管理员：{user_mention(aid)}\n\n"
+                        f"NSFW 得分：{code(f'{porn:.8f}')}\n"
+                        f"NSFW 记录：{code(glovar.contents.get(content, '') == 'nsfw')}\n"
+                        f"NSFW 链接：{code(is_nsfw_url(message))}\n"
+                        f"白名单：{code(excepted)}\n"
+                        f"受限频道：{code(is_restricted_channel(message))}\n"
+                        f"敏感颜色：{code(color)}\n")
+                thread(send_message, (client, glovar.test_group_id, text, message.message_id))
+
+                return True
+    except Exception as e:
+        logger.warning(f"Porn test error: {e}", exc_info=True)
 
     return False
