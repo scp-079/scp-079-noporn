@@ -28,7 +28,7 @@ from .. import glovar
 from .channel import get_content, get_debug_text
 from .etc import code, crypt_str, get_int, get_stripped_link, get_text, thread, user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
-from .filters import is_declared_message_id, is_detected_user_id, is_nsfw_media
+from .filters import is_class_e, is_declared_message_id, is_detected_user_id, is_nsfw_media
 from .group import get_message, leave_group
 from .ids import init_group_id, init_user_id
 from .telegram import send_message, send_report_message
@@ -185,7 +185,7 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                         detection = is_nsfw_media(client, message, image_path)
                         if detection:
                             the_message = get_message(client, gid, mid)
-                            if the_message:
+                            if the_message and not is_class_e(None, message):
                                 url = get_stripped_link(preview["url"])
                                 glovar.contents[url] = "nsfw"
                                 terminate_user(client, the_message, "url")
