@@ -103,7 +103,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.2.8"
+version: str = "0.2.9"
 
 # Read data from config.ini
 
@@ -325,11 +325,11 @@ for file in file_list:
                 with open(f"data/{file}", "wb") as f:
                     pickle.dump(eval(f"{file}"), f)
         except Exception as e:
-            logger.error(f"Load data {file} error: {e}")
+            logger.error(f"Load data {file} error: {e}", exc_info=True)
             with open(f"data/.{file}", "rb") as f:
                 locals()[f"{file}"] = pickle.load(f)
     except Exception as e:
-        logger.critical(f"Load data {file} backup error: {e}")
+        logger.critical(f"Load data {file} backup error: {e}", exc_info=True)
         raise SystemExit("[DATA CORRUPTION]")
 
 # Start program
