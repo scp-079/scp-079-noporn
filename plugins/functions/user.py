@@ -167,7 +167,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
 
                 send_debug(client, message.chat, "自动删除", uid, mid, result)
 
-            return True
+        return True
     except Exception as e:
         logger.warning(f"Terminate user error: {e}", exc_info=True)
 
