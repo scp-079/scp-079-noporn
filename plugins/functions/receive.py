@@ -182,10 +182,13 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                     image.save(image_path, "PNG")
                     if (not is_declared_message_id(gid, mid)
                             and not is_detected_user_id(gid, uid)):
+                        the_message = get_message(client, gid, mid)
+                        if not the_message:
+                            return True
+
                         detection = is_nsfw_media(client, message, image_path)
                         if detection:
-                            the_message = get_message(client, gid, mid)
-                            if the_message and not is_class_e(None, message):
+                            if not is_class_e(None, message):
                                 url = get_stripped_link(preview["url"])
                                 glovar.contents[url] = "nsfw"
                                 terminate_user(client, the_message, "url")
