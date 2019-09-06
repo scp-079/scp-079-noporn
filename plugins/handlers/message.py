@@ -24,7 +24,7 @@ from .. import glovar
 from ..functions.channel import get_debug_text
 from ..functions.etc import code, get_text, thread, user_mention
 from ..functions.file import save
-from ..functions.filters import class_c, class_d, class_e, declared_message, exchange_channel, hide_channel
+from ..functions.filters import class_c, class_d, class_e, declared_message, exchange_channel, from_user, hide_channel
 from ..functions.filters import is_ban_text, is_declared_message, is_nsfw_media, is_nsfw_url, is_restricted_channel
 from ..functions.filters import new_group, test_group
 from ..functions.group import leave_group
@@ -42,15 +42,12 @@ from ..functions.user import terminate_user
 logger = logging.getLogger(__name__)
 
 
-@Client.on_message(Filters.incoming & Filters.group & ~test_group & ~Filters.service
+@Client.on_message(Filters.incoming & Filters.group & ~test_group & from_user & ~Filters.service
                    & ~class_c & ~class_d & ~class_e & ~declared_message)
 def check(client: Client, message: Message) -> bool:
     # Check the messages sent from groups
     if glovar.locks["message"].acquire():
         try:
-            if not message.from_user:
-                return True
-
             # Check declare status
             if is_declared_message(None, message):
                 return True
@@ -111,7 +108,7 @@ def exchange_emergency(_: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.incoming & Filters.group & ~test_group
+@Client.on_message(Filters.incoming & Filters.group & ~test_group & from_user
                    & (Filters.new_chat_members | Filters.group_chat_created | Filters.supergroup_chat_created)
                    & new_group)
 def init_group(client: Client, message: Message) -> bool:
@@ -333,7 +330,7 @@ def process_data(client: Client, message: Message) -> bool:
     return False
 
 
-@Client.on_message(Filters.incoming & Filters.group & test_group & Filters.media
+@Client.on_message(Filters.incoming & Filters.group & test_group & from_user & Filters.media
                    & ~Filters.command(glovar.all_commands, glovar.prefix))
 def test(client: Client, message: Message) -> bool:
     # Show test results in TEST group
