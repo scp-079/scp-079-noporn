@@ -124,7 +124,8 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 ask_for_help(client, "ban", gid, uid)
                 send_debug(client, message.chat, "追踪封禁", uid, mid, result)
         elif is_high_score_user(message):
-            result = forward_evidence(client, message, "自动封禁", "用户评分", f"{is_high_score_user(message)}")
+            score = is_high_score_user(message)
+            result = forward_evidence(client, message, "自动封禁", "用户评分", score)
             if result:
                 add_bad_user(client, uid)
                 ban_user(client, gid, uid)

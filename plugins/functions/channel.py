@@ -124,7 +124,7 @@ def format_data(sender: str, receivers: List[str], action: str, action_type: str
     return text
 
 
-def forward_evidence(client: Client, message: Message, level: str, rule: str,
+def forward_evidence(client: Client, message: Message, level: str, rule: str, score: float = 0.0,
                      more: str = None) -> Optional[Union[bool, Message]]:
     # Forward the message to the logging channel as evidence
     result = None
@@ -139,6 +139,9 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str,
             text += f"消息类别：{code('游戏')}\n"
         elif message.service:
             text += f"消息类别：{code('服务消息')}\n"
+
+        if "评分" in rule:
+            text += f"用户得分：{code(score)}\n"
 
         if "名称" in rule:
             name = get_full_name(message.from_user)
