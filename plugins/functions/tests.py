@@ -47,7 +47,7 @@ def porn_test(client: Client, message: Message) -> bool:
                     aid = message.from_user.id
 
                 porn = get_porn(image_path)
-                content = get_content(client, message)
+                content = get_content(message)
                 excepted = content in glovar.except_ids["long"] or content in glovar.except_ids["temp"]
                 color = get_color(image_path)
                 text = (f"管理员：{user_mention(aid)}\n\n"

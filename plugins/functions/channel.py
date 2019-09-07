@@ -27,7 +27,6 @@ from .. import glovar
 from .etc import code, code_block, general_link, get_forward_name, get_full_name, get_md5sum, get_text, message_link
 from .etc import thread, wait_flood
 from .file import crypt_file, data_to_file, delete_file, get_new_path, save
-from .group import get_message
 from .image import get_file_id
 from .telegram import get_group_info, send_document, send_message
 
@@ -192,17 +191,10 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, sc
     return result
 
 
-def get_content(client: Optional[Client], mid: Union[int, Message]) -> str:
+def get_content(message: Message) -> str:
     # Get the message that will be added to except_ids, return the file_id or text's hash
     result = ""
     try:
-        if client and isinstance(mid, int):
-            message = get_message(client, glovar.logging_channel_id, mid)
-            if message:
-                message = message.reply_to_message
-        else:
-            message = mid
-
         if message:
             file_id, _ = get_file_id(message)
             text = get_text(message)

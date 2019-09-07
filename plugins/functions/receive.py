@@ -26,12 +26,14 @@ from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from .. import glovar
 from .channel import get_content, get_debug_text
-from .etc import code, crypt_str, get_int, get_stripped_link, get_text, thread, user_mention
+from .etc import code, crypt_str, general_link, get_int, get_report_record, get_stripped_link, get_text
+from .etc import thread, user_mention
 from .file import crypt_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_class_e, is_declared_message_id, is_detected_user_id, is_nsfw_media
 from .group import get_message, leave_group
 from .ids import init_group_id, init_user_id
 from .telegram import send_message, send_report_message
+from .timers import update_admins
 from .user import terminate_user
 
 # Enable logging
@@ -45,14 +47,28 @@ def receive_add_except(client: Client, data: dict) -> bool:
         the_type = data["type"]
         # Receive except contents
         if the_type in {"long", "temp"}:
-            content = get_content(client, the_id)
-            if content:
-                if the_type == "long":
-                    glovar.except_ids["long"].add(content)
-                elif the_type == "temp":
-                    glovar.except_ids["temp"].add(content)
+            message = get_message(client, glovar.logging_channel_id, the_id)
+            if not message:
+                return True
 
-                save("except_ids")
+            record = get_report_record(message)
+            if "名称" in record["rule"]:
+                if record["name"]:
+                    glovar.except_ids["long"].add(record["name"])
+
+                if record["from"]:
+                    glovar.except_ids["long"].add(record["from"])
+
+            if message.reply_to_message:
+                message = message.reply_to_message
+            else:
+                return True
+
+            content = get_content(message)
+            if content:
+                glovar.except_ids[the_type].add(content)
+
+            save("except_ids")
 
         return True
     except Exception as e:
@@ -228,6 +244,23 @@ def receive_leave_approve(client: Client, data: dict) -> bool:
     return False
 
 
+def receive_refresh(client: Client, data: int) -> bool:
+    # Receive refresh
+    try:
+        aid = data
+        update_admins(client)
+        text = (f"项目编号：{general_link(glovar.project_name, glovar.project_link)}\n"
+                f"项目管理员：{user_mention(aid)}\n"
+                f"执行操作：{code('刷新群管列表')}\n")
+        thread(send_message, (client, glovar.debug_channel_id, text))
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive refresh error: {e}", exc_info=True)
+
+    return False
+
+
 def receive_regex(client: Client, message: Message, data: str) -> bool:
     # Receive regex
     if glovar.locks["regex"].acquire():
@@ -291,14 +324,28 @@ def receive_remove_except(client: Client, data: dict) -> bool:
         the_type = data["type"]
         # Receive except contents
         if the_type in {"long", "temp"}:
-            content = get_content(client, the_id)
-            if content:
-                if the_type == "long":
-                    glovar.except_ids["long"].discard(content)
-                elif the_type == "temp":
-                    glovar.except_ids["temp"].discard(content)
+            message = get_message(client, glovar.logging_channel_id, the_id)
+            if not message:
+                return True
 
-                save("except_ids")
+            record = get_report_record(message)
+            if "名称" in record["rule"]:
+                if record["name"]:
+                    glovar.except_ids["long"].discard(record["name"])
+
+                if record["from"]:
+                    glovar.except_ids["long"].discard(record["from"])
+
+            if message.reply_to_message:
+                message = message.reply_to_message
+            else:
+                return True
+
+            content = get_content(message)
+            if content:
+                glovar.except_ids[the_type].discard(content)
+
+            save("except_ids")
 
         return True
     except Exception as e:

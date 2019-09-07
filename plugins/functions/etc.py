@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import re
 from hashlib import md5
 from html import escape
 from json import dumps
@@ -24,7 +25,7 @@ from random import choice, uniform
 from string import ascii_letters, digits
 from threading import Thread, Timer
 from time import sleep, time
-from typing import Any, Callable, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from cryptography.fernet import Fernet
 from opencc import convert
@@ -311,6 +312,60 @@ def get_now() -> int:
         logger.warning(f"Get now error: {e}", exc_info=True)
 
     return result
+
+
+def get_report_record(message: Message) -> Dict[str, str]:
+    # Get report message's full record
+    record = {
+        "project": "",
+        "origin": "",
+        "status": "",
+        "uid": "",
+        "level": "",
+        "rule": "",
+        "type": "",
+        "lang": "",
+        "freq": "",
+        "score": "",
+        "name": "",
+        "from": "",
+        "more": ""
+    }
+    try:
+        record_list = message.text.split("\n")
+        for r in record_list:
+            if re.search("^项目编号：", r):
+                record_type = "project"
+            elif re.search("^原始项目：", r):
+                record_type = "origin"
+            elif re.search("^状态：", r):
+                record_type = "status"
+            elif re.search("^用户 ID：", r):
+                record_type = "uid"
+            elif re.search("^操作等级：", r):
+                record_type = "level"
+            elif re.search("^规则：", r):
+                record_type = "rule"
+            elif re.search("^消息类别", r):
+                record_type = "type"
+            elif re.search("^消息语言", r):
+                record_type = "lang"
+            elif re.search("^消息频率", r):
+                record_type = "freq"
+            elif re.search("^用户得分", r):
+                record_type = "score"
+            elif re.search("^用户昵称", r):
+                record_type = "name"
+            elif re.search("^来源名称", r):
+                record_type = "from"
+            else:
+                record_type = "more"
+
+            record[record_type] = r.split("：")[-1]
+    except Exception as e:
+        logger.warning(f"Get report record error: {e}", exc_info=True)
+
+    return record
 
 
 def get_stripped_link(link: str) -> str:

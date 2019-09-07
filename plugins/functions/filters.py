@@ -74,7 +74,7 @@ def is_class_d(_, message: Message) -> bool:
 def is_class_e(_, message: Message) -> bool:
     # Check if the message is Class E object
     try:
-        content = get_content(None, message)
+        content = get_content(message)
         if content:
             if (content in glovar.except_ids["long"]
                     or content in glovar.except_ids["temp"]
@@ -309,7 +309,7 @@ def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> b
                 return True
 
             # If the message has been recorded as NSFW
-            content = get_content(client, message)
+            content = get_content(message)
             if content:
                 if glovar.contents.get(content, "") == "nsfw":
                     return True

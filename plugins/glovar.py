@@ -72,6 +72,7 @@ default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
 left_group_ids: Set[int] = set()
 
 locks: Dict[str, Lock] = {
+    "admin": Lock(),
     "message": Lock(),
     "regex": Lock(),
     "test": Lock()
@@ -103,7 +104,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.2.9"
+version: str = "0.3.0"
 
 # Read data from config.ini
 
