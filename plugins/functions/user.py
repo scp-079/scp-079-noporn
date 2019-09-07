@@ -27,7 +27,7 @@ from .channel import ask_for_help, declare_message, forward_evidence, send_debug
 from .channel import share_watch_user, update_score
 from .file import save
 from .group import delete_message
-from .filters import is_class_d, is_detected_user, is_high_score_user, is_regex_text, is_watch_user
+from .filters import is_class_d, is_declared_message, is_detected_user, is_high_score_user, is_regex_text, is_watch_user
 from .ids import init_user_id
 from .telegram import kick_chat_member
 
@@ -98,7 +98,7 @@ def ban_user(client: Client, gid: int, uid: Union[int, str]) -> bool:
 def terminate_user(client: Client, message: Message, the_type: str) -> bool:
     # Delete user's message, or ban the user
     try:
-        if not message.from_user or is_class_d(None, message):
+        if is_class_d(None, message) or is_declared_message(None, message):
             return True
 
         gid = message.chat.id
