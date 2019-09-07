@@ -186,9 +186,9 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
                         if not the_message:
                             return True
 
-                        detection = is_nsfw_media(client, message, image_path)
+                        detection = is_nsfw_media(client, the_message, image_path)
                         if detection:
-                            if not is_class_e(None, message):
+                            if not is_class_e(None, the_message):
                                 url = get_stripped_link(preview["url"])
                                 glovar.contents[url] = "nsfw"
                                 terminate_user(client, the_message, "url")
