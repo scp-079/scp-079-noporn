@@ -81,11 +81,11 @@ def receive_add_bad(sender: str, data: dict) -> bool:
     # Receive bad users or channels that other bots shared
     try:
         uid = data["id"]
-        bad_type = data["type"]
-        if bad_type == "user":
+        the_type = data["type"]
+        if the_type == "user":
             glovar.bad_ids["users"].add(uid)
             save("bad_ids")
-        elif sender == "MANAGE" and bad_type == "channel":
+        elif sender == "MANAGE" and the_type == "channel":
             glovar.bad_ids["channels"].add(uid)
             save("bad_ids")
 
