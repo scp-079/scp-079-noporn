@@ -327,6 +327,7 @@ def get_report_record(message: Message) -> Dict[str, str]:
         "lang": "",
         "freq": "",
         "score": "",
+        "bio": "",
         "name": "",
         "from": "",
         "more": ""
@@ -354,6 +355,8 @@ def get_report_record(message: Message) -> Dict[str, str]:
                 record_type = "freq"
             elif re.search("^用户得分", r):
                 record_type = "score"
+            elif re.search("^用户简介", r):
+                record_type = "bio"
             elif re.search("^用户昵称", r):
                 record_type = "name"
             elif re.search("^来源名称", r):
