@@ -275,22 +275,7 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
             uid = message.from_user.id
             user = glovar.user_ids.get(uid, {})
             if user:
-                score = 0.0
-                try:
-                    user = glovar.user_ids.get(uid, {})
-                    if user:
-                        score = (user["score"].get("captcha", 0.0)
-                                 + user["score"].get("clean", 0.0)
-                                 + user["score"].get("lang", 0.0)
-                                 + user["score"].get("long", 0.0)
-                                 + user["score"].get("noflood", 0.0)
-                                 + user["score"].get("noporn", 0.0)
-                                 + user["score"].get("nospam", 0.0)
-                                 + user["score"].get("recheck", 0.0)
-                                 + user["score"].get("warn", 0.0))
-                except Exception as e:
-                    logger.warning(f"Get score error: {e}", exc_info=True)
-
+                score = sum(user["score"].values())
                 if score >= 3.0:
                     return score
     except Exception as e:
