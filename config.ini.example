@@ -18,6 +18,7 @@ bot_token = [DATA EXPUNGED]
 prefix = /!
 
 [bots]
+avatar_id = [DATA EXPUNGED]
 clean_id = [DATA EXPUNGED]
 captcha_id = [DATA EXPUNGED]
 lang_id = [DATA EXPUNGED]
