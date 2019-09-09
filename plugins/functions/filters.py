@@ -244,21 +244,23 @@ def is_detected_user(message: Message) -> bool:
     # Check if the message is sent by a detected user
     try:
         if message.from_user:
+            gid = message.chat.id
             uid = message.from_user.id
-            return is_detected_user_id(uid)
+            return is_detected_user_id(gid, uid)
     except Exception as e:
         logger.warning(f"Is detected user error: {e}", exc_info=True)
 
     return False
 
 
-def is_detected_user_id(uid: int) -> bool:
+def is_detected_user_id(gid: int, uid: int) -> bool:
     # Check if the user_id is detected in the group
     try:
         user = glovar.user_ids.get(uid, {})
         if user:
+            status = user["detected"].get(gid, 0)
             now = get_now()
-            if any([now - user["detected"][gid] < glovar.punish_time for gid in list(user["detected"])]):
+            if now - status < glovar.punish_time:
                 return True
     except Exception as e:
         logger.warning(f"Is detected user id error: {e}", exc_info=True)
