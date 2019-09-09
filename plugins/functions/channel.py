@@ -310,7 +310,7 @@ def share_data(client: Client, receivers: List[str], action: str, action_type: s
                 result = send_message(client, channel_id, text)
 
             # Sending failed due to channel issue
-            if result is False:
+            if result is False and not glovar.should_hide:
                 # Use hide channel instead
                 exchange_to_hide(client)
                 thread(share_data, (client, receivers, action, action_type, data, file, encrypt))
@@ -330,7 +330,7 @@ def share_regex_count(client: Client, word_type: str) -> bool:
             share_data(
                 client=client,
                 receivers=["REGEX"],
-                action="update",
+                action="regex",
                 action_type="count",
                 data=f"{word_type}_words",
                 file=file

@@ -298,8 +298,8 @@ def process_data(client: Client, message: Message) -> bool:
 
                 elif sender == "REGEX":
 
-                    if action == "update":
-                        if action_type == "download":
+                    if action == "regex":
+                        if action_type == "update":
                             receive_regex(client, message, data)
                         elif action_type == "count":
                             if data == "ask":
