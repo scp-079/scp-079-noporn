@@ -192,7 +192,7 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, sc
 
 
 def get_content(message: Message) -> str:
-    # Get the message that will be added to except_ids, return the file_id or text's hash
+    # Get the message that will be added to lists, return the file_id or text's hash
     result = ""
     try:
         if message:
