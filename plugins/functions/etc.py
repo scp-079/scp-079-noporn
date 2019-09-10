@@ -391,12 +391,9 @@ def get_text(message: Message) -> str:
     # Get message's text, including link and mentioned user's name
     text = ""
     try:
-        if message.text or message.caption:
-            if message.text:
-                text += message.text
-            else:
-                text += message.caption
-
+        the_text = message.text or message.caption
+        if the_text:
+            text += the_text
             entities = message.entities or message.caption_entities
             if entities:
                 for en in entities:
