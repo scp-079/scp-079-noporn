@@ -354,6 +354,21 @@ def receive_remove_except(client: Client, data: dict) -> bool:
     return False
 
 
+def receive_remove_score(data: int) -> bool:
+    # Receive remove user's score
+    try:
+        uid = data
+        if glovar.user_ids.get(uid, {}):
+            glovar.user_ids[uid] = glovar.default_user_status
+            save("user_ids")
+
+        return True
+    except Exception as e:
+        logger.warning(f"Receive remove score error: {e}", exc_info=True)
+
+    return False
+
+
 def receive_remove_watch(data: dict) -> bool:
     # Receive removed watching users
     try:
