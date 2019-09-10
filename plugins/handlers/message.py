@@ -250,7 +250,7 @@ def process_data(client: Client, message: Message) -> bool:
                         elif action_type == "watch":
                             receive_remove_watch(data)
 
-                    elif action_type == "update":
+                    elif action == "update":
                         if action_type == "refresh":
                             receive_refresh(client, data)
 
