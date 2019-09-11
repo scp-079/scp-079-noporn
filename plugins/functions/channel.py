@@ -140,7 +140,7 @@ def forward_evidence(client: Client, message: Message, level: str, rule: str, sc
             text += f"消息类别：{code('服务消息')}\n"
 
         if "评分" in rule:
-            text += f"用户得分：{code(score)}\n"
+            text += f"用户得分：{code(f'{score:.1f}')}\n"
 
         if "名称" in rule:
             name = get_full_name(message.from_user)
