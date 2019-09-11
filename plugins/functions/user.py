@@ -117,7 +117,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 delete_message(client, gid, mid)
                 declare_message(client, gid, mid)
                 ask_for_help(client, "ban", gid, uid)
-                send_debug(client, message.chat, "昵称封禁", uid, mid, result)
+                send_debug(client, message.chat, "名称封禁", uid, mid, result)
         elif is_watch_user(message, "ban"):
             result = forward_evidence(client, message, "自动封禁", "敏感追踪")
             if result:
