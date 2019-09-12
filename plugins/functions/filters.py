@@ -345,9 +345,9 @@ def is_regex_text(word_type: str, text: str, again: bool = False) -> bool:
     try:
         if text:
             if not again:
-                text = re.sub(r"\s{2,}", " ", text, re.M)
+                text = re.sub(r"\s{2,}", " ", text)
             elif " " in text:
-                text = re.sub(r"\s", "", text, re.M)
+                text = re.sub(r"\s", "", text)
             else:
                 return False
         else:
