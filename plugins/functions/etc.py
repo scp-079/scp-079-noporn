@@ -331,7 +331,8 @@ def get_report_record(message: Message) -> Dict[str, str]:
         "bio": "",
         "name": "",
         "from": "",
-        "more": ""
+        "more": "",
+        "unknown": ""
     }
     try:
         record_list = message.text.split("\n")
@@ -362,8 +363,10 @@ def get_report_record(message: Message) -> Dict[str, str]:
                 record_type = "name"
             elif re.search("^来源名称", r):
                 record_type = "from"
-            else:
+            elif re.search("^附加信息", r):
                 record_type = "more"
+            else:
+                record_type = "unknown"
 
             record[record_type] = r.split("：")[-1]
     except Exception as e:
