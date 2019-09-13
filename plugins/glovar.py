@@ -248,7 +248,7 @@ admin_ids: Dict[int, Set[int]] = {}
 #     -10012345678: {12345678}
 # }
 
-bad_ids: Dict[str, Set[Union[int, str]]] = {
+bad_ids: Dict[str, Set[int]] = {
     "channels": set(),
     "users": set()
 }
