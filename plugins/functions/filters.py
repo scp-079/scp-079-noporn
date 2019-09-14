@@ -377,7 +377,7 @@ def is_restricted_channel(message: Message) -> bool:
     # Check if the message is forwarded form restricted channel
     try:
         if message.forward_from_chat:
-            if message.forward_from_chat.restriction_reason:
+            if message.forward_from_chat.restrictions:
                 return True
     except Exception as e:
         logger.warning(f"Is restricted channel error: {e}", exc_info=True)
