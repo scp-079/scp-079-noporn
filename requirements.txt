@@ -9,7 +9,7 @@ kiwisolver==1.1.0
 matplotlib==3.1.1
 networkx==2.3
 nsfw==0.3.2
-numpy==1.17.1
+numpy==1.17.2
 OpenCC==0.2
 Pillow==6.1.0
 pyaes==1.6.1
