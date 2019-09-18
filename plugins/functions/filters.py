@@ -286,7 +286,11 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
 
 def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> bool:
     # Check if it is NSFW media, accept Message or file id
-    need_delete = []
+    if image_path:
+        need_delete = [image_path]
+    else:
+        need_delete = []
+
     try:
         if not image_path:
             # If the user is being punished
@@ -301,13 +305,13 @@ def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> b
 
             file_id, _ = get_file_id(message)
             image_path = get_downloaded_path(client, file_id)
+            need_delete.append(image_path)
             if is_declared_message(None, message):
                 return False
         else:
             file_id = "PREVIEW"
 
         if image_path:
-            need_delete.append(image_path)
             porn = get_porn(image_path)
             if porn > glovar.threshold_porn:
                 if file_id != "PREVIEW":
