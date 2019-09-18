@@ -22,7 +22,7 @@ import skimage.io
 
 # You should change the file /usr/lib/python3/dist-packages/caffe/io.py
 # To fix "ValueError: Could not find a format to write the specified file in mode 'i'"
-# Find the "load_image" function and modify like this:
+# Find the "load_image" function and modify it like this:
 def load_image(filename, color=True):
     # MODIFY START
     img = skimage.img_as_float(skimage.io.imread(filename, as_gray=not color, plugin="pil")).astype(np.float32)
