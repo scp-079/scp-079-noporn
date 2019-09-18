@@ -79,9 +79,7 @@ def reset_data() -> bool:
         }
         save("bad_ids")
 
-        glovar.except_ids = {
-            "temp": set()
-        }
+        glovar.except_ids["temp"] = set()
         save("except_ids")
 
         glovar.user_ids = {}
