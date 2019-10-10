@@ -25,7 +25,7 @@ from .. import glovar
 from .channel import get_content
 from .etc import code, get_int, get_md5sum, get_text, lang, thread, user_mention
 from .file import get_downloaded_path
-from .filters import is_class_e, is_detected_url, is_restricted_channel
+from .filters import is_detected_url, is_restricted_channel
 from .image import get_file_id, get_color, get_porn
 from .telegram import send_message
 
@@ -47,7 +47,7 @@ def porn_test(client: Client, message: Message) -> bool:
         # Detected record
         content = get_content(message)
         detection = glovar.contents.get(content, "")
-        if detection:
+        if detection == "nsfw":
             text += f"{lang('record_content')}{lang('colon')}{code('True')}\n"
 
         # Detected url
@@ -75,7 +75,8 @@ def porn_test(client: Client, message: Message) -> bool:
             text += f"{lang(lang('color'))}{lang('colon')}{code(color)}\n"
 
         if text:
-            whitelisted = is_class_e(None, message) or image_hash in glovar.except_ids["temp"]
+            whitelisted = ((content and (content in glovar.except_ids["long"] or content in glovar.except_ids["temp"]))
+                           or image_hash in glovar.except_ids["temp"])
             text += f"{lang('white_listed')}{lang('colon')}{code(whitelisted)}\n"
             text = f"{lang('admin')}{lang('colon')}{user_mention(aid)}\n\n" + text
             thread(send_message, (client, glovar.test_group_id, text, message.message_id))
