@@ -276,7 +276,7 @@ bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_
 
 contents: Dict[str, str] = {}
 # contents = {
-#     "content": "tgl"
+#     "content": "nsfw"
 # }
 
 declared_message_ids: Dict[int, Set[int]] = {}
