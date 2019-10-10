@@ -24,7 +24,7 @@ from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from .channel import get_content
-from .etc import get_now, get_links
+from .etc import get_now, get_links, get_md5sum
 from .file import delete_file, get_downloaded_path, save
 from .ids import init_group_id
 from .image import get_file_id, get_porn
@@ -37,11 +37,17 @@ def is_class_c(_, message: Message) -> bool:
     # Check if the message is Class C object
     try:
         if message.from_user:
+            # Basic data
             uid = message.from_user.id
             gid = message.chat.id
-            if init_group_id(gid):
-                if uid in glovar.admin_ids[gid] or uid in glovar.bot_ids or message.from_user.is_self:
-                    return True
+
+            # Init the group
+            if not init_group_id(gid):
+                return False
+
+            # Check permission
+            if uid in glovar.admin_ids[gid] or uid in glovar.bot_ids or message.from_user.is_self:
+                return True
     except Exception as e:
         logger.warning(f"Is class c error: {e}", exc_info=True)
 
@@ -142,12 +148,11 @@ def is_hide_channel(_, message: Message) -> bool:
 def is_new_group(_, message: Message) -> bool:
     # Check if the bot joined a new group
     try:
-        if message.new_chat_members:
-            new_users = message.new_chat_members
-            if new_users:
-                for user in new_users:
-                    if user.is_self:
-                        return True
+        new_users = message.new_chat_members
+        if new_users:
+            for user in new_users:
+                if user.is_self:
+                    return True
         elif message.group_chat_created or message.supergroup_chat_created:
             return True
     except Exception as e:
@@ -221,7 +226,7 @@ def is_ban_text(text: str) -> bool:
         if is_regex_text("ban", text):
             return True
 
-        if is_regex_text("ad", text) and is_regex_text("con", text):
+        if is_regex_text("ad", text) and (is_regex_text("con", text) or is_regex_text("iml", text)):
             return True
     except Exception as e:
         logger.warning(f"Is ban text error: {e}", exc_info=True)
@@ -240,27 +245,40 @@ def is_declared_message_id(gid: int, mid: int) -> bool:
     return False
 
 
+def is_detected_url(message: Message) -> str:
+    # Check if the message include detected url
+    try:
+        links = get_links(message)
+        for link in links:
+            if glovar.contents.get(link, "") == "nsfw":
+                return "nsfw"
+    except Exception as e:
+        logger.warning(f"Is detected url error: {e}", exc_info=True)
+
+    return ""
+
+
 def is_detected_user(message: Message) -> bool:
     # Check if the message is sent by a detected user
     try:
         if message.from_user:
             gid = message.chat.id
             uid = message.from_user.id
-            return is_detected_user_id(gid, uid)
+            now = message.date or get_now()
+            return is_detected_user_id(gid, uid, now)
     except Exception as e:
         logger.warning(f"Is detected user error: {e}", exc_info=True)
 
     return False
 
 
-def is_detected_user_id(gid: int, uid: int) -> bool:
+def is_detected_user_id(gid: int, uid: int, now: int) -> bool:
     # Check if the user_id is detected in the group
     try:
         user = glovar.user_ids.get(uid, {})
         if user:
             status = user["detected"].get(gid, 0)
-            now = get_now()
-            if now - status < glovar.punish_time:
+            if now - status < glovar.time_punish:
                 return True
     except Exception as e:
         logger.warning(f"Is detected user id error: {e}", exc_info=True)
@@ -284,63 +302,78 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
     return False
 
 
-def is_nsfw_media(client: Client, message: Message, image_path: str = None) -> bool:
-    # Check if it is NSFW media, accept Message or file id
+def is_nm_text(text: str) -> bool:
+    # Check if the text is nm text
+    try:
+        if (is_regex_text("nm", text)
+                or is_ban_text(text)
+                or is_regex_text("bio", text)):
+            return True
+    except Exception as e:
+        logger.warning(f"Is nm text error: {e}", exc_info=True)
+
+    return False
+
+
+def is_not_allowed(client: Client, message: Message, image_path: str = None) -> str:
+    # Check if the message is not allowed in the group
     if image_path:
         need_delete = [image_path]
     else:
         need_delete = []
 
     try:
+        # Basic data
+        gid = message.chat.id
+
+        # Regular message
         if not image_path:
             # If the user is being punished
-            if is_detected_user(message) and (message.media or message.entities):
-                return True
+            if is_detected_user(message) and (message.forward_date or message.media or message.entities):
+                return "true"
 
-            # If the message has been recorded as NSFW
-            content = get_content(message)
-            if content:
-                if glovar.contents.get(content, "") == "nsfw":
-                    return True
+            # If the message has been detected
+            message_content = get_content(message)
+            if message_content:
+                detection = glovar.contents.get(message_content, "")
+                if detection == "nsfw":
+                    return "nsfw"
 
-            file_id, _ = get_file_id(message)
-            image_path = get_downloaded_path(client, file_id)
-            need_delete.append(image_path)
-            if is_declared_message(None, message):
-                return False
-        else:
-            file_id = "PREVIEW"
+            # Restricted channel
+            if glovar.configs[gid].get("channel"):
+                if is_restricted_channel(message):
+                    return "channel"
 
-        if image_path:
+            # Get the image
+            file_id, file_ref, _ = get_file_id(message)
+            image_path = get_downloaded_path(client, file_id, file_ref)
+            image_path and need_delete.append(image_path)
+
+            # Check hash
+            image_hash = image_path and get_md5sum("file", image_path)
+            if image_path and image_hash and image_hash not in glovar.except_ids["temp"]:
+                # Check declare status
+                if is_declared_message(None, message):
+                    return ""
+
+                # Get porn score
+                porn = get_porn(image_path)
+                if porn > glovar.threshold_porn:
+                    return "nsfw"
+
+        # Preview message
+        elif image_path:
+            # Get porn score
             porn = get_porn(image_path)
             if porn > glovar.threshold_porn:
-                if file_id != "PREVIEW":
-                    glovar.contents[file_id] = "nsfw"
-
-                return True
-            else:
-                if file_id != "PREVIEW":
-                    glovar.contents[file_id] = "sfw"
+                return "nsfw"
     except Exception as e:
         logger.warning(f"Is NSFW media error: {e}", exc_info=True)
     finally:
         for file in need_delete:
             delete_file(file)
 
-    return False
-
-
-def is_nsfw_url(message: Message) -> bool:
-    # Check if the message include NSFW url
-    try:
-        links = get_links(message)
-        for link in links:
-            if glovar.contents.get(link, "") == "nsfw":
-                return True
-    except Exception as e:
-        logger.warning(f"Is NSFW url error: {e}", exc_info=True)
-
-    return False
+    return ""
 
 
 def is_regex_text(word_type: str, text: str, again: bool = False) -> bool:
@@ -394,7 +427,7 @@ def is_watch_user(message: Message, the_type: str) -> bool:
     try:
         if message.from_user:
             uid = message.from_user.id
-            now = get_now()
+            now = message.date or get_now()
             until = glovar.watch_ids[the_type].get(uid, 0)
             if now < until:
                 return True

@@ -21,7 +21,7 @@ from os import remove
 from os.path import exists
 from pickle import dump
 from shutil import copyfile
-from typing import Any, Optional
+from typing import Any
 
 from pyAesCrypt import decryptFile, encryptFile
 from pyrogram import Client
@@ -77,13 +77,15 @@ def delete_file(path: str) -> bool:
     return False
 
 
-def get_downloaded_path(client: Client, file_id: str) -> Optional[str]:
+def get_downloaded_path(client: Client, file_id: str, file_ref: str) -> str:
     # Download file, get it's path on local machine
-    final_path = None
+    final_path = ""
     try:
-        if file_id:
-            file_path = get_new_path()
-            final_path = download_media(client, file_id, file_path)
+        if not file_id:
+            return ""
+
+        file_path = get_new_path()
+        final_path = download_media(client, file_id, file_ref, file_path)
     except Exception as e:
         logger.warning(f"Get downloaded path error: {e}", exc_info=True)
 
@@ -120,11 +122,13 @@ def save(file: str) -> bool:
 def save_thread(file: str) -> bool:
     # Save function's thread
     try:
-        if glovar:
-            with open(f"data/.{file}", "wb") as f:
-                dump(eval(f"glovar.{file}"), f)
+        if not glovar:
+            return True
 
-            copyfile(f"data/.{file}", f"data/{file}")
+        with open(f"data/.{file}", "wb") as f:
+            dump(eval(f"glovar.{file}"), f)
+
+        copyfile(f"data/.{file}", f"data/{file}")
 
         return True
     except Exception as e:

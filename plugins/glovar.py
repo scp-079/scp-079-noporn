@@ -34,79 +34,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Init
-
-all_commands: List[str] = ["config", "config_noporn", "version"]
-
-contents: Dict[str, str] = {}
-# contents = {
-#     "content": "tgl"
-# }
-
-declared_message_ids: Dict[int, Set[int]] = {}
-# declared_message_ids = {
-#     -10012345678: {123}
-# }
-
-default_config: Dict[str, Union[bool, int]] = {
-    "default": True,
-    "lock": 0,
-    "channel": True
-}
-
-default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
-    "detected": {},
-    "score": {
-        "captcha": 0.0,
-        "clean": 0.0,
-        "lang": 0.0,
-        "long": 0.0,
-        "noflood": 0.0,
-        "noporn": 0.0,
-        "nospam": 0.0,
-        "recheck": 0.0,
-        "warn": 0.0
-    }
-}
-
-left_group_ids: Set[int] = set()
-
-locks: Dict[str, Lock] = {
-    "admin": Lock(),
-    "message": Lock(),
-    "regex": Lock(),
-    "test": Lock()
-}
-
-receivers: Dict[str, List[str]] = {
-    "bad": ["ANALYZE", "APPLY", "APPEAL", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
-            "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WATCH"],
-    "declare": ["ANALYZE", "AVATAR", "CLEAN", "LANG", "LONG",
-                "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER", "WATCH"],
-    "score": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
-              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK"],
-    "watch": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
-              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "WATCH"]
-}
-
-recorded_ids: Dict[int, Set[int]] = {}
-# recorded_ids = {
-#     -10012345678: {12345678}
-# }
-
-regex: Dict[str, bool] = {
-    "ad": False,
-    "ban": False,
-    "con": False,
-    "wb": True
-}
-
-sender: str = "NOPORN"
-
-should_hide: bool = False
-
-version: str = "0.3.0"
-
 # Read data from config.ini
 
 # [basic]
@@ -137,14 +64,16 @@ logging_channel_id: int = 0
 test_group_id: int = 0
 
 # [custom]
+backup: Union[bool, str] = ""
+date_reset: str = ""
 default_group_link: str = ""
 image_size: int = 0
 project_link: str = ""
 project_name: str = ""
-punish_time: int = 0
-reset_day: str = ""
 threshold_porn: float = 0
 time_ban: int = 0
+time_punish: int = 0
+zh_cn: Union[bool, str] = ""
 
 # [encrypt]
 key: Union[str, bytes] = ""
@@ -177,14 +106,18 @@ try:
     logging_channel_id = int(config["channels"].get("logging_channel_id", logging_channel_id))
     test_group_id = int(config["channels"].get("test_group_id", test_group_id))
     # [custom]
+    backup = config["custom"].get("backup", backup)
+    backup = eval(backup)
+    date_reset = config["custom"].get("date_reset", date_reset)
     default_group_link = config["custom"].get("default_group_link", default_group_link)
     image_size = int(config["custom"].get("image_size", image_size))
     project_link = config["custom"].get("project_link", project_link)
     project_name = config["custom"].get("project_name", project_name)
-    punish_time = int(config["custom"].get("punish_time", punish_time))
-    reset_day = config["custom"].get("reset_day", reset_day)
     threshold_porn = float(config["custom"].get("threshold_porn", threshold_porn))
     time_ban = int(config["custom"].get("time_ban", time_ban))
+    time_punish = int(config["custom"].get("time_punish", time_punish))
+    zh_cn = config["custom"].get("zh_cn", zh_cn)
+    zh_cn = eval(zh_cn)
     # [encrypt]
     key = config["encrypt"].get("key", key)
     key = key.encode("utf-8")
@@ -213,21 +146,211 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or hide_channel_id == 0
         or logging_channel_id == 0
         or test_group_id == 0
+        or backup not in {False, True}
+        or date_reset in {"", "[DATA EXPUNGED]"}
         or default_group_link in {"", "[DATA EXPUNGED]"}
         or image_size == 0
         or project_link in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}
-        or punish_time == 0
-        or reset_day in {"", "[DATA EXPUNGED]"}
         or threshold_porn == 0
         or time_ban == 0
-        or key in {b"", b"[DATA EXPUNGED]"}
+        or time_punish == 0
+        or zh_cn not in {False, True}
+        or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
     logger.critical("No proper settings")
     raise SystemExit("No proper settings")
 
-bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id,
-                     noflood_id, noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+# Languages
+lang: Dict[str, str] = {
+    # Admin
+    "admin": (zh_cn and "管理员") or "Admin",
+    "admin_group": (zh_cn and "群管理") or "Group Admin",
+    "admin_project": (zh_cn and "项目管理员") or "Project Admin",
+    # Basic
+    "action": (zh_cn and "执行操作") or "Action",
+    "clear": (zh_cn and "清空数据") or "Clear Data",
+    "colon": (zh_cn and "：") or ": ",
+    "description": (zh_cn and "说明") or "Description",
+    "disabled": (zh_cn and "禁用") or "Disabled",
+    "enabled": (zh_cn and "启用") or "Enabled",
+    "name": (zh_cn and "名称") or "Name",
+    "reason": (zh_cn and "原因") or "Reason",
+    "reset": (zh_cn and "重置数据") or "Reset Data",
+    "rollback": (zh_cn and "数据回滚") or "Rollback",
+    "score": (zh_cn and "评分") or "Score",
+    "status_failed": (zh_cn and "未执行") or "Failed",
+    "version": (zh_cn and "版本") or "Version",
+    # Command
+    "command_lack": (zh_cn and "命令参数缺失") or "Lack of Parameter",
+    "command_para": (zh_cn and "命令参数有误") or "Incorrect Command Parameter",
+    "command_type": (zh_cn and "命令类别有误") or "Incorrect Command Type",
+    "command_usage": (zh_cn and "用法有误") or "Incorrect Usage",
+    # Config
+    "config": (zh_cn and "设置") or "Settings",
+    "config_button": (zh_cn and "请点击下方按钮进行设置") or "Press the Button to Config",
+    "config_change": (zh_cn and "更改设置") or "Change Config",
+    "config_create": (zh_cn and "创建设置会话") or "Create Config Session",
+    "config_go": (zh_cn and "前往设置") or "Go to Config",
+    "config_locked": (zh_cn and "设置当前被锁定") or "Config is Locked",
+    "config_show": (zh_cn and "查看设置") or "Show Config",
+    "config_updated": (zh_cn and "已更新") or "Updated",
+    "custom": (zh_cn and "自定义") or "Custom",
+    "default": (zh_cn and "默认") or "Default",
+    "delete": (zh_cn and "协助删除") or "Help Delete",
+    "noporn_channel": (zh_cn and "过滤频道") or "Filter Restricted Channel Message",
+    # Debug
+    "triggered_by": (zh_cn and "触发消息") or "Triggered By",
+    # Emergency
+    "issue": (zh_cn and "发现状况") or "Issue",
+    "exchange_invalid": (zh_cn and "数据交换频道失效") or "Exchange Channel Invalid",
+    "auto_fix": (zh_cn and "自动处理") or "Auto Fix",
+    "protocol_1": (zh_cn and "启动 1 号协议") or "Initiate Protocol 1",
+    "transfer_channel": (zh_cn and "频道转移") or "Transfer Channel",
+    "emergency_channel": (zh_cn and "应急频道") or "Emergency Channel",
+    # Group
+    "group_id": (zh_cn and "群组 ID") or "Group ID",
+    "group_name": (zh_cn and "群组名称") or "Group Name",
+    "inviter": (zh_cn and "邀请人") or "Inviter",
+    "leave_auto": (zh_cn and "自动退出并清空数据") or "Leave automatically",
+    "leave_approve": (zh_cn and "已批准退出群组") or "Approve to Leave the Group",
+    "reason_admin": (zh_cn and "获取管理员列表失败") or "Failed to Fetch Admin List",
+    "reason_leave": (zh_cn and "非管理员或已不在群组中") or "Not Admin in Group",
+    "reason_none": (zh_cn and "无数据") or "No Data",
+    "reason_permissions": (zh_cn and "权限缺失") or "Missing Permissions",
+    "reason_unauthorized": (zh_cn and "未授权使用") or "Unauthorized",
+    "reason_user": (zh_cn and "缺失 USER") or "Missing USER",
+    "refresh": (zh_cn and "刷新群管列表") or "Refresh Admin Lists",
+    "status_joined": (zh_cn and "已加入群组") or "Joined the Group",
+    "status_left": (zh_cn and "已退出群组") or "Left the Group",
+    # More
+    "privacy": (zh_cn and "可能涉及隐私而未转发") or "Not Forwarded Due to Privacy Reason",
+    "cannot_forward": (zh_cn and "此类消息无法转发至频道") or "The Message Cannot be Forwarded to Channel",
+    # Message Types
+    "gam": (zh_cn and "游戏") or "Game",
+    "ser": (zh_cn and "服务消息") or "Service",
+    # Record
+    "project": (zh_cn and "项目编号") or "Project",
+    "project_origin": (zh_cn and "原始项目") or "Original Project",
+    "status": (zh_cn and "状态") or "Status",
+    "user_id": (zh_cn and "用户 ID") or "User ID",
+    "level": (zh_cn and "操作等级") or "Level",
+    "rule": (zh_cn and "规则") or "Rule",
+    "message_type": (zh_cn and "消息类别") or "Message Type",
+    "message_game": (zh_cn and "游戏标识") or "Game Short Name",
+    "message_lang": (zh_cn and "消息语言") or "Message Language",
+    "message_len": (zh_cn and "消息长度") or "Message Length",
+    "message_freq": (zh_cn and "消息频率") or "Message Frequency",
+    "user_score": (zh_cn and "用户得分") or "User Score",
+    "user_bio": (zh_cn and "用户简介") or "User Bio",
+    "user_name": (zh_cn and "用户昵称") or "User Name",
+    "from_name": (zh_cn and "来源名称") or "Forward Name",
+    "more": (zh_cn and "附加信息") or "Extra Info",
+    # Terminate
+    "auto_ban": (zh_cn and "自动封禁") or "Auto Ban",
+    "auto_delete": (zh_cn and "自动删除") or "Auto Delete",
+    "name_ban": (zh_cn and "名称封禁") or "Ban by Name",
+    "name_examine": (zh_cn and "名称检查") or "Name Examination",
+    "rule_custom": (zh_cn and "群组自定义") or "Custom Rule",
+    "rule_global": (zh_cn and "全局规则") or "Global Rule",
+    "score_ban": (zh_cn and "评分封禁") or "Ban by Score",
+    "score_user": (zh_cn and "用户评分") or "High Score",
+    "watch_ban": (zh_cn and "追踪封禁") or "Watch Ban",
+    "watch_delete": (zh_cn and "追踪删除") or "Watch Delete",
+    "watch_user": (zh_cn and "敏感追踪") or "Watched User",
+    # Test
+    "record_content": (zh_cn and "过滤记录") or "Recorded content",
+    "record_link": (zh_cn and "过滤链接") or "Recorded link",
+    "white_listed": (zh_cn and "白名单") or "White Listed",
+    "restricted_channel": (zh_cn and "受限频道") or "Restricted Channel",
+    "porn_score": (zh_cn and "NSFW 得分") or "NSFW Score",
+    "color": (zh_cn and "敏感颜色") or "Sensitive Color",
+}
+
+# Init
+
+all_commands: List[str] = ["config", "config_noporn", "version"]
+
+bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
+                     noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+
+contents: Dict[str, str] = {}
+# contents = {
+#     "content": "tgl"
+# }
+
+declared_message_ids: Dict[int, Set[int]] = {}
+# declared_message_ids = {
+#     -10012345678: {123}
+# }
+
+default_config: Dict[str, Union[bool, int]] = {
+    "default": True,
+    "lock": 0,
+    "delete": True,
+    "channel": True
+}
+
+default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
+    "detected": {},
+    "score": {
+        "captcha": 0.0,
+        "clean": 0.0,
+        "lang": 0.0,
+        "long": 0.0,
+        "noflood": 0.0,
+        "noporn": 0.0,
+        "nospam": 0.0,
+        "recheck": 0.0,
+        "warn": 0.0
+    }
+}
+
+left_group_ids: Set[int] = set()
+
+locks: Dict[str, Lock] = {
+    "admin": Lock(),
+    "message": Lock(),
+    "regex": Lock(),
+    "test": Lock(),
+    "text": Lock()
+}
+
+receivers: Dict[str, List[str]] = {
+    "bad": ["ANALYZE", "APPLY", "APPEAL", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
+            "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WATCH"],
+    "declare": ["ANALYZE", "AVATAR", "CLEAN", "LANG", "LONG",
+                "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER", "WATCH"],
+    "score": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
+              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK"],
+    "watch": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
+              "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "WATCH"]
+}
+
+recorded_ids: Dict[int, Set[int]] = {}
+# recorded_ids = {
+#     -10012345678: {12345678}
+# }
+
+regex: Dict[str, bool] = {
+    "ad": False,
+    "ban": False,
+    "bio": False,
+    "con": False,
+    "fil": False,
+    "iml": False,
+    "nm": False,
+    "spc": False,
+    "spe": False,
+    "sti": False,
+    "wb": True
+}
+
+sender: str = "NOPORN"
+
+should_hide: bool = False
+
+version: str = "0.3.1"
 
 # Load data from pickle
 
@@ -306,6 +429,7 @@ configs: Dict[int, Dict[str, Union[bool, int]]] = {}
 #     -10012345678: {
 #         "default": True,
 #         "lock": 0,
+#         "delete": True,
 #         "channel": True
 #     }
 # }
@@ -338,6 +462,23 @@ for file in file_list:
     except Exception as e:
         logger.critical(f"Load data {file} backup error: {e}", exc_info=True)
         raise SystemExit("[DATA CORRUPTION]")
+
+# Generate special characters dictionary
+for special in ["spc", "spe"]:
+    locals()[f"{special}_dict"]: Dict[str, str] = {}
+    for rule in locals()[f"{special}_words"]:
+        # Check keys
+        if "[" not in rule:
+            continue
+
+        # Check value
+        if "?#" not in rule:
+            continue
+
+        keys = rule.split("]")[0][1:]
+        value = rule.split("?#")[1][1]
+        for k in keys:
+            locals()[f"{special}_dict"][k] = value
 
 # Start program
 copyright_text = (f"SCP-079-{sender} v{version}, Copyright (C) 2019 SCP-079 <https://scp-079.org>\n"

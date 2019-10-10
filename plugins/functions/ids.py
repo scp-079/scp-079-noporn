@@ -29,22 +29,24 @@ logger = logging.getLogger(__name__)
 def init_group_id(gid: int) -> bool:
     # Init group data
     try:
-        if gid not in glovar.left_group_ids:
-            if glovar.admin_ids.get(gid) is None:
-                glovar.admin_ids[gid] = set()
-                save("admin_ids")
+        if gid in glovar.left_group_ids:
+            return False
 
-            if glovar.configs.get(gid) is None:
-                glovar.configs[gid] = deepcopy(glovar.default_config)
-                save("configs")
+        if glovar.admin_ids.get(gid) is None:
+            glovar.admin_ids[gid] = set()
+            save("admin_ids")
 
-            if glovar.declared_message_ids.get(gid) is None:
-                glovar.declared_message_ids[gid] = set()
+        if glovar.configs.get(gid) is None:
+            glovar.configs[gid] = deepcopy(glovar.default_config)
+            save("configs")
 
-            if glovar.recorded_ids.get(gid) is None:
-                glovar.recorded_ids[gid] = set()
+        if glovar.declared_message_ids.get(gid) is None:
+            glovar.declared_message_ids[gid] = set()
 
-            return True
+        if glovar.recorded_ids.get(gid) is None:
+            glovar.recorded_ids[gid] = set()
+
+        return True
     except Exception as e:
         logger.warning(f"Init group id {gid} error: {e}", exc_info=True)
 
