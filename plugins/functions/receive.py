@@ -358,6 +358,7 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
         if not preview:
             return True
 
+        # Read the data
         image = preview["image"]
         if image:
             image_path = get_new_path()
