@@ -105,7 +105,7 @@ def check(client: Client, message: Message) -> bool:
         # Not allowed message
         content = get_content(message)
         detection = is_not_allowed(client, message)
-        if detection != "sfw":
+        if detection in {"channel", "nsfw", "true"}:
             result = terminate_user(client, message, detection)
             if result and content and detection not in {"channel", "true"}:
                 glovar.contents[content] = detection

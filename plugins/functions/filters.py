@@ -361,12 +361,16 @@ def is_not_allowed(client: Client, message: Message, image_path: str = None) -> 
                 if porn > glovar.threshold_porn:
                     return "nsfw"
 
+            if image_path:
+                return "sfw"
         # Preview message
         elif image_path:
             # Get porn score
             porn = get_porn(image_path)
             if porn > glovar.threshold_porn:
                 return "nsfw"
+
+            return "sfw"
     except Exception as e:
         logger.warning(f"Is NSFW media error: {e}", exc_info=True)
     finally:
