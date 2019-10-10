@@ -363,6 +363,7 @@ def is_not_allowed(client: Client, message: Message, image_path: str = None) -> 
 
             if image_path:
                 return "sfw"
+
         # Preview message
         elif image_path:
             # Get porn score

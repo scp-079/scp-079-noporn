@@ -109,7 +109,7 @@ def check(client: Client, message: Message) -> bool:
             result = terminate_user(client, message, detection)
             if result and content and detection not in {"channel", "true"}:
                 glovar.contents[content] = detection
-        else:
+        elif detection == "sfw":
             if content:
                 glovar.contents[content] = detection
 
