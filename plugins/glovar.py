@@ -351,6 +351,7 @@ regex: Dict[str, bool] = {
     "spc": False,
     "spe": False,
     "sti": False,
+    "tgl": False,
     "wb": True
 }
 
