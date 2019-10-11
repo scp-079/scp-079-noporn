@@ -24,10 +24,12 @@ from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from .channel import get_content
-from .etc import get_now, get_links, get_md5sum
+from .etc import get_now, get_links, get_mentions, get_md5sum, get_text
 from .file import delete_file, get_downloaded_path, save
+from .group import get_description, get_group_sticker, get_pinned
 from .ids import init_group_id
 from .image import get_file_id, get_porn
+from .telegram import get_chat_member, get_sticker_title, resolve_username
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -379,6 +381,76 @@ def is_not_allowed(client: Client, message: Message, image_path: str = None) -> 
             delete_file(file)
 
     return ""
+
+
+def is_promote_sticker(client: Client, message: Message, sticker_title: str = "") -> bool:
+    # Check if the message is promote sticker
+    try:
+        # Basic data
+        gid = message.chat.id
+
+        # Bypass
+        group_sticker = get_group_sticker(client, gid)
+        if message.sticker:
+            sticker_name = message.sticker.set_name
+            if sticker_name and sticker_name == group_sticker:
+                return False
+        else:
+            sticker_name = ""
+
+        # Get sticker title
+        if not sticker_title:
+            sticker_title = sticker_name and get_sticker_title(client, sticker_name)
+
+        # Check sticker title
+        if sticker_title and sticker_title not in glovar.except_ids["long"]:
+            # Bypass prepare
+            gid = message.chat.id
+            description = get_description(client, gid)
+            pinned_message = get_pinned(client, gid)
+            pinned_text = get_text(pinned_message)
+
+            # Check mentions
+            usernames = get_mentions(sticker_title)
+            link_usernames = re.findall(r"t\.me/(.+?)/", sticker_title)
+            if link_usernames:
+                usernames += link_usernames
+
+            usernames = set(usernames)
+            usernames = [u for u in usernames if u and u != "joinchat"]
+            for username in usernames:
+                try:
+                    if message.chat.username and username == message.chat.username:
+                        continue
+
+                    if username in description:
+                        continue
+
+                    if username in pinned_text:
+                        continue
+
+                    peer_type, peer_id = resolve_username(client, username)
+                    if peer_type == "channel":
+                        if peer_id not in glovar.except_ids["channels"] and not glovar.admin_ids.get(peer_id, {}):
+                            return True
+
+                    if peer_type == "user":
+                        member = get_chat_member(client, message.chat.id, peer_id)
+                        if member is False:
+                            return True
+
+                        if member and member.status not in {"creator", "administrator", "member"}:
+                            return True
+                finally:
+                    sticker_title = sticker_title.replace(f"/{username}", "")
+
+            # Check text
+            if is_regex_text("tgl", sticker_title):
+                return True
+    except Exception as e:
+        logger.warning(f"Is promote sticker error: {e}", exc_info=True)
+
+    return False
 
 
 def is_regex_text(word_type: str, text: str, again: bool = False) -> bool:

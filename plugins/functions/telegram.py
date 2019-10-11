@@ -19,11 +19,15 @@
 import logging
 from typing import Iterable, List, Optional, Union
 
-from pyrogram import Chat, ChatMember, Client, InlineKeyboardMarkup, Message
+from pyrogram import Chat, ChatMember, ChatPreview, Client, InlineKeyboardMarkup, Message
+from pyrogram.api.functions.messages import GetStickerSet
+from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet
+from pyrogram.api.types.messages import StickerSet as messages_StickerSet
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
+from pyrogram.errors import UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
 from .. import glovar
-from .etc import delay, wait_flood
+from .etc import delay, get_int, t2t, wait_flood
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -91,6 +95,44 @@ def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember
     return result
 
 
+def get_chat(client: Client, cid: Union[int, str]) -> Optional[Union[Chat, ChatPreview]]:
+    # Get a chat
+    result = None
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.get_chat(chat_id=cid)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+    except Exception as e:
+        logger.warning(f"Get chat error: {e}", exc_info=True)
+
+    return result
+
+
+def get_chat_member(client: Client, cid: int, uid: int) -> Optional[ChatMember]:
+    # Get information about one member of a chat
+    result = None
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.get_chat_member(chat_id=cid, user_id=uid)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+            except UserNotParticipant:
+                result = False
+    except Exception as e:
+        logger.warning(f"Get chat member error: {e}", exc_info=True)
+
+    return result
+
+
 def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
     # Get a group's name and link
     group_name = "Unknown Group"
@@ -140,6 +182,29 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[List
     return result
 
 
+def get_sticker_title(client: Client, short_name: str, normal: bool = False) -> Optional[str]:
+    # Get sticker set's title
+    result = None
+    try:
+        sticker_set = InputStickerSetShortName(short_name=short_name)
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                the_set = client.send(GetStickerSet(stickerset=sticker_set))
+                if isinstance(the_set, messages_StickerSet):
+                    inner_set = the_set.set
+                    if isinstance(inner_set, StickerSet):
+                        result = t2t(inner_set.title, normal)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+    except Exception as e:
+        logger.warning(f"Get sticker title error: {e}", exc_info=True)
+
+    return result
+
+
 def kick_chat_member(client: Client, cid: int, uid: Union[int, str]) -> Optional[Union[bool, Message]]:
     # Kick a chat member in a group
     result = None
@@ -175,6 +240,49 @@ def leave_chat(client: Client, cid: int) -> bool:
         logger.warning(f"Leave chat {cid} error: {e}", exc_info=True)
 
     return False
+
+
+def resolve_peer(client: Client, pid: Union[int, str]) -> Optional[Union[bool, InputPeerChannel, InputPeerUser]]:
+    # Get an input peer by id
+    result = None
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.resolve_peer(pid)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+            except (PeerIdInvalid, UsernameInvalid, UsernameNotOccupied):
+                return False
+    except Exception as e:
+        logger.warning(f"Resolve peer error: {e}", exc_info=True)
+
+    return result
+
+
+def resolve_username(client: Client, username: str) -> (str, int):
+    # Resolve peer by username
+    peer_type = ""
+    peer_id = 0
+    try:
+        if not username:
+            return "", 0
+
+        result = resolve_peer(client, username)
+        if result:
+            if isinstance(result, InputPeerChannel):
+                peer_type = "channel"
+                peer_id = result.channel_id
+                peer_id = get_int(f"-100{peer_id}")
+            elif isinstance(result, InputPeerUser):
+                peer_type = "user"
+                peer_id = result.user_id
+    except Exception as e:
+        logger.warning(f"Resolve username error: {e}", exc_info=True)
+
+    return peer_type, peer_id
 
 
 def send_document(client: Client, cid: int, document: str, file_ref: str = None, caption: str = "", mid: int = None,

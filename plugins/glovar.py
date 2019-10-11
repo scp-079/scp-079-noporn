@@ -25,6 +25,8 @@ from shutil import rmtree
 from threading import Lock
 from typing import Dict, List, Set, Union
 
+from pyrogram import Chat
+
 # Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -273,6 +275,11 @@ all_commands: List[str] = ["config", "config_noporn", "version"]
 
 bot_ids: Set[int] = {avatar_id, captcha_id, clean_id, lang_id, long_id, noflood_id,
                      noporn_id, nospam_id, recheck_id, tip_id, user_id, warn_id}
+
+chats: Dict[int, Chat] = {}
+# chats = {
+#     -10012345678: Chat
+# }
 
 contents: Dict[str, str] = {}
 # contents = {

@@ -325,6 +325,21 @@ def get_links(message: Message) -> List[str]:
     return result
 
 
+def get_mentions(text: str) -> List[str]:
+    result = []
+    try:
+        result = re.findall(r"\B@([a-z][0-9a-z_]{4,31})", text)
+        if not result:
+            return []
+
+        invalid = {"admin", "admins"}
+        result = [r for r in result if r and r not in invalid]
+    except Exception as e:
+        logger.warning(f"Get mentions error: {e}", exc_info=True)
+
+    return result
+
+
 def get_md5sum(the_type: str, ctx: str) -> str:
     # Get the md5sum of a string or file
     result = ""
