@@ -21,7 +21,8 @@ from typing import Iterable, List, Optional, Union
 
 from pyrogram import Chat, ChatMember, ChatPreview, Client, InlineKeyboardMarkup, Message
 from pyrogram.api.functions.messages import GetStickerSet
-from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet
+from pyrogram.api.functions.users import GetFullUser
+from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet, UserFull
 from pyrogram.api.types.messages import StickerSet as messages_StickerSet
 from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 from pyrogram.errors import UsernameInvalid, UsernameNotOccupied, UserNotParticipant
@@ -178,6 +179,30 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[List
                 wait_flood(e)
     except Exception as e:
         logger.warning(f"Get messages error: {e}", exc_info=True)
+
+    return result
+
+
+def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str]:
+    # Get user's bio
+    result = None
+    try:
+        user_id = resolve_peer(client, uid)
+        if not user_id:
+            return None
+
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                user: UserFull = client.send(GetFullUser(id=user_id))
+                if user and user.about:
+                    result = t2t(user.about, normal)
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+    except Exception as e:
+        logger.warning(f"Get user bio error: {e}", exc_info=True)
 
     return result
 

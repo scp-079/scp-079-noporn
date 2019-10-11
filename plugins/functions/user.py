@@ -27,8 +27,8 @@ from .channel import ask_for_help, declare_message, forward_evidence, send_debug
 from .channel import share_watch_user, update_score
 from .file import save
 from .group import delete_message
-from .filters import is_class_d, is_declared_message, is_detected_user, is_high_score_user, is_promote_sticker
-from .filters import is_regex_text, is_watch_user
+from .filters import is_class_d, is_declared_message, is_detected_user, is_high_score_user, is_new_user
+from .filters import is_promote_sticker, is_regex_text, is_watch_user
 from .ids import init_user_id
 from .telegram import kick_chat_member
 
@@ -203,7 +203,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                     mid=mid,
                     em=result
                 )
-        elif is_promote_sticker(client, message):
+        elif is_new_user(message.from_user, now, True) and is_promote_sticker(client, message):
             result = forward_evidence(
                 client=client,
                 message=message,

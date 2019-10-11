@@ -142,6 +142,9 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
         elif data_type == "user":
             if the_type == "all":
                 glovar.user_ids = {}
+            elif the_type == "new":
+                for uid in list(glovar.user_ids):
+                    glovar.user_ids[uid]["join"] = {}
 
             save("user_ids")
         # Clear watch data

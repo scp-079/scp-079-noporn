@@ -20,7 +20,7 @@ import logging
 import re
 from typing import Union
 
-from pyrogram import Client, Filters, Message
+from pyrogram import Client, Filters, Message, User
 
 from .. import glovar
 from .channel import get_content
@@ -236,6 +236,20 @@ def is_ban_text(text: str) -> bool:
     return False
 
 
+def is_bio_text(text: str) -> bool:
+    # Check if the text is bio text
+    try:
+        if is_regex_text("bio", text):
+            return True
+
+        if is_ban_text(text):
+            return True
+    except Exception as e:
+        logger.warning(f"Is bio text error: {e}", exc_info=True)
+
+    return False
+
+
 def is_declared_message_id(gid: int, mid: int) -> bool:
     # Check if the message's ID is declared by other bots
     try:
@@ -300,6 +314,30 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
                     return score
     except Exception as e:
         logger.warning(f"Is high score user error: {e}", exc_info=True)
+
+    return False
+
+
+def is_new_user(user: User, now: int, joined: bool = False) -> bool:
+    # Check if the message is sent from a new joined member
+    try:
+        uid = user.id
+
+        if not glovar.user_ids.get(uid, {}):
+            return False
+
+        if not glovar.user_ids[uid].get("join", {}):
+            return False
+
+        if joined:
+            return True
+
+        for gid in list(glovar.user_ids[uid]["join"]):
+            join = glovar.user_ids[uid]["join"].get(gid, 0)
+            if now - join < glovar.time_new:
+                return True
+    except Exception as e:
+        logger.warning(f"Is new user error: {e}", exc_info=True)
 
     return False
 

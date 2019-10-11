@@ -74,6 +74,7 @@ project_link: str = ""
 project_name: str = ""
 threshold_porn: float = 0
 time_ban: int = 0
+time_new: int = 0
 time_punish: int = 0
 zh_cn: Union[bool, str] = ""
 
@@ -117,6 +118,7 @@ try:
     project_name = config["custom"].get("project_name", project_name)
     threshold_porn = float(config["custom"].get("threshold_porn", threshold_porn))
     time_ban = int(config["custom"].get("time_ban", time_ban))
+    time_new = int(config["custom"].get("time_new", time_new))
     time_punish = int(config["custom"].get("time_punish", time_punish))
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
@@ -156,6 +158,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}
         or threshold_porn == 0
         or time_ban == 0
+        or time_new == 0
         or time_punish == 0
         or zh_cn not in {False, True}
         or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
@@ -301,6 +304,7 @@ default_config: Dict[str, Union[bool, int]] = {
 
 default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
     "detected": {},
+    "join": {},
     "score": {
         "captcha": 0.0,
         "clean": 0.0,
@@ -405,6 +409,9 @@ user_ids: Dict[int, Dict[str, Dict[Union[int, str], Union[float, int]]]] = {}
 #     12345678: {
 #         "detected": {
 #               -10012345678: 1512345678
+#         },
+#         "join": {
+#             -10012345678: 1512345678
 #         },
 #         "score": {
 #             "captcha": 0.0,
