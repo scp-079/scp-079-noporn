@@ -359,6 +359,7 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
             return True
 
         # Read the data
+        url = get_stripped_link(preview["url"])
         image = preview["image"]
         if image:
             image_path = get_new_path()
@@ -376,7 +377,6 @@ def receive_preview(client: Client, message: Message, data: dict) -> bool:
             return True
 
         # Detect
-        url = get_stripped_link(preview["url"])
         detection = is_not_allowed(client, the_message, image_path)
         if detection == "nsfw":
             result = terminate_user(client, the_message, detection)
