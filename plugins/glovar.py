@@ -389,6 +389,7 @@ bad_ids: Dict[str, Set[int]] = {
 # }
 
 except_ids: Dict[str, Set[str]] = {
+    "channels": set(),
     "long": set(),
     "temp": set()
 }

@@ -48,8 +48,11 @@ def receive_add_except(client: Client, data: dict) -> bool:
         the_id = data["id"]
         the_type = data["type"]
 
+        # Receive except channel
+        if the_type == "channel":
+            glovar.except_ids["channels"].add(the_id)
         # Receive except content
-        if the_type in {"long", "temp"}:
+        elif the_type in {"long", "temp"}:
             message = get_message(client, glovar.logging_channel_id, the_id)
             if not message:
                 return True
@@ -127,7 +130,9 @@ def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
             save("bad_ids")
         # Clear except data
         elif data_type == "except":
-            if the_type == "long":
+            if the_type == "channels":
+                glovar.except_ids["channels"] = set()
+            elif the_type == "long":
                 glovar.except_ids["long"] = set()
             elif the_type == "temp":
                 glovar.except_ids["temp"] = set()
@@ -501,7 +506,10 @@ def receive_remove_except(client: Client, data: dict) -> bool:
         the_type = data["type"]
 
         # Remove except content
-        if the_type in {"long", "temp"}:
+        if the_type == "channel":
+            glovar.except_ids["channels"].discard(the_id)
+        # Remove except content
+        elif the_type in {"long", "temp"}:
             message = get_message(client, glovar.logging_channel_id, the_id)
             if not message:
                 return True
