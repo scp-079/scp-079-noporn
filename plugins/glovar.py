@@ -364,7 +364,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.3.2"
+version: str = "0.3.3"
 
 # Load data from pickle
 
