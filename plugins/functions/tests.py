@@ -24,7 +24,7 @@ from pyrogram import Client, Message
 from .. import glovar
 from .channel import get_content
 from .etc import code, get_int, get_md5sum, get_text, lang, thread, user_mention
-from .file import get_downloaded_path
+from .file import delete_file, get_downloaded_path
 from .filters import is_detected_url, is_promote_sticker, is_restricted_channel
 from .image import get_file_id, get_color, get_porn
 from .telegram import send_message
@@ -86,6 +86,9 @@ def porn_test(client: Client, message: Message) -> bool:
             text += f"{lang('white_listed')}{lang('colon')}{code(whitelisted)}\n"
             text = f"{lang('admin')}{lang('colon')}{user_mention(aid)}\n\n" + text
             thread(send_message, (client, glovar.test_group_id, text, message.message_id))
+
+        # Delete the image file
+        image_path and delete_file(image_path)
 
         return True
     except Exception as e:
