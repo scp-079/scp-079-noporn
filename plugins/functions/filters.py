@@ -431,15 +431,20 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
 
                     peer_type, peer_id = resolve_username(client, username)
                     if peer_type == "channel":
-                        if peer_id not in glovar.except_ids["channels"] and not glovar.admin_ids.get(peer_id, {}):
-                            return True
+                        if peer_id in glovar.except_ids["channels"] or glovar.admin_ids.get(peer_id, {}):
+                            continue
+
+                        return True
 
                     if peer_type == "user":
                         member = get_chat_member(client, message.chat.id, peer_id)
                         if member is False:
                             return True
 
-                        if member and member.status not in {"creator", "administrator", "member"}:
+                        if member:
+                            if member.status in {"creator", "administrator", "member"}:
+                                continue
+
                             return True
                 finally:
                     sticker_title = sticker_title.replace(f"/{username}", "")
