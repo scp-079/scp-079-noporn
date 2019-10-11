@@ -253,6 +253,7 @@ lang: Dict[str, str] = {
     "auto_delete": (zh_cn and "自动删除") or "Auto Delete",
     "name_ban": (zh_cn and "名称封禁") or "Ban by Name",
     "name_examine": (zh_cn and "名称检查") or "Name Examination",
+    "op_upgrade": (zh_cn and "操作升级") or "Operation Upgrade",
     "rule_custom": (zh_cn and "群组自定义") or "Custom Rule",
     "rule_global": (zh_cn and "全局规则") or "Global Rule",
     "score_ban": (zh_cn and "评分封禁") or "Ban by Score",
@@ -359,7 +360,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.3.1"
+version: str = "0.3.2"
 
 # Load data from pickle
 

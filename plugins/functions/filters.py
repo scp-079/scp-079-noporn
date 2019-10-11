@@ -386,6 +386,9 @@ def is_not_allowed(client: Client, message: Message, image_path: str = None) -> 
 def is_promote_sticker(client: Client, message: Message, sticker_title: str = "") -> bool:
     # Check if the message is promote sticker
     try:
+        if not message.sticker:
+            return False
+
         # Basic data
         gid = message.chat.id
 
@@ -403,55 +406,57 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
             sticker_title = sticker_name and get_sticker_title(client, sticker_name)
 
         # Check sticker title
-        if sticker_title and sticker_title not in glovar.except_ids["long"]:
-            # Bypass prepare
-            gid = message.chat.id
-            description = get_description(client, gid)
-            pinned_message = get_pinned(client, gid)
-            pinned_text = get_text(pinned_message)
+        if not sticker_title or sticker_title in glovar.except_ids["long"]:
+            return False
 
-            # Check mentions
-            usernames = get_mentions(sticker_title)
-            link_usernames = re.findall(r"t\.me/(.+?)/", sticker_title)
-            if link_usernames:
-                usernames += link_usernames
+        # Bypass prepare
+        gid = message.chat.id
+        description = get_description(client, gid)
+        pinned_message = get_pinned(client, gid)
+        pinned_text = get_text(pinned_message)
 
-            usernames = set(usernames)
-            usernames = [u for u in usernames if u and u != "joinchat"]
-            for username in usernames:
-                try:
-                    if message.chat.username and username == message.chat.username:
+        # Check mentions
+        usernames = get_mentions(sticker_title)
+        link_usernames = re.findall(r"t\.me/(.+?)/", sticker_title)
+        if link_usernames:
+            usernames += link_usernames
+
+        usernames = set(usernames)
+        usernames = [u for u in usernames if u and u != "joinchat"]
+        for username in usernames:
+            try:
+                if message.chat.username and username == message.chat.username:
+                    continue
+
+                if username in description:
+                    continue
+
+                if username in pinned_text:
+                    continue
+
+                peer_type, peer_id = resolve_username(client, username)
+                if peer_type == "channel":
+                    if peer_id in glovar.except_ids["channels"] or glovar.admin_ids.get(peer_id, {}):
                         continue
 
-                    if username in description:
-                        continue
+                    return True
 
-                    if username in pinned_text:
-                        continue
+                if peer_type == "user":
+                    member = get_chat_member(client, message.chat.id, peer_id)
+                    if member is False:
+                        return True
 
-                    peer_type, peer_id = resolve_username(client, username)
-                    if peer_type == "channel":
-                        if peer_id in glovar.except_ids["channels"] or glovar.admin_ids.get(peer_id, {}):
+                    if member:
+                        if member.status in {"creator", "administrator", "member"}:
                             continue
 
                         return True
+            finally:
+                sticker_title = sticker_title.replace(f"/{username}", "")
 
-                    if peer_type == "user":
-                        member = get_chat_member(client, message.chat.id, peer_id)
-                        if member is False:
-                            return True
-
-                        if member:
-                            if member.status in {"creator", "administrator", "member"}:
-                                continue
-
-                            return True
-                finally:
-                    sticker_title = sticker_title.replace(f"/{username}", "")
-
-            # Check text
-            if is_regex_text("tgl", sticker_title):
-                return True
+        # Check text
+        if is_regex_text("tgl", sticker_title):
+            return True
     except Exception as e:
         logger.warning(f"Is promote sticker error: {e}", exc_info=True)
 
