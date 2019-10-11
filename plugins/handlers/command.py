@@ -164,7 +164,7 @@ def config_directly(client: Client, message: Message) -> bool:
                         new_config["default"] = False
             else:
                 success = False
-                reason = lang("command_usage")
+                reason = lang("config_locked")
         else:
             success = False
             reason = lang("command_usage")
