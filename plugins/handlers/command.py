@@ -105,7 +105,7 @@ def config(client: Client, message: Message) -> bool:
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~test_group & from_user
-                   & Filters.command(["config_noporn"], glovar.prefix))
+                   & Filters.command([f"config_{glovar.sender.lower()}"], glovar.prefix))
 def config_directly(client: Client, message: Message) -> bool:
     # Config the bot directly
 
@@ -167,7 +167,7 @@ def config_directly(client: Client, message: Message) -> bool:
                 reason = lang("command_usage")
         else:
             success = False
-            reason = "格式有误"
+            reason = lang("command_usage")
 
         if success and new_config != glovar.configs[gid]:
             # Save new config
