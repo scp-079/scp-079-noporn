@@ -261,6 +261,9 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
                 flood_wait = True
                 wait_flood(e)
 
+        if not result:
+            return None
+
         mid = result.message_id
         mids = [mid]
         delay(secs, delete_messages, [client, cid, mids])
