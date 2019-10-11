@@ -74,6 +74,7 @@ def porn_test(client: Client, message: Message) -> bool:
         if color:
             text += f"{lang(lang('color'))}{lang('colon')}{code(color)}\n"
 
+        # Send the result
         if text:
             whitelisted = ((content and (content in glovar.except_ids["long"] or content in glovar.except_ids["temp"]))
                            or image_hash in glovar.except_ids["temp"])
