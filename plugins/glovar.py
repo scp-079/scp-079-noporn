@@ -271,6 +271,7 @@ lang: Dict[str, str] = {
     "restricted_channel": (zh_cn and "受限频道") or "Restricted Channel",
     "porn_score": (zh_cn and "NSFW 得分") or "NSFW Score",
     "color": (zh_cn and "敏感颜色") or "Sensitive Color",
+    "promote_sticker": (zh_cn and "推广贴纸") or "Promote Sticker"
 }
 
 # Init

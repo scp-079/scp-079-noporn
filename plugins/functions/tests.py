@@ -72,12 +72,12 @@ def porn_test(client: Client, message: Message) -> bool:
         # Get color
         color = image_path and get_color(image_path)
         if color:
-            text += f"{lang(lang('color'))}{lang('colon')}{code(color)}\n"
+            text += f"{lang('color')}{lang('colon')}{code(color)}\n"
 
         # Get promote sticker
         sticker = is_promote_sticker(client, message)
         if sticker:
-            text += f"Promote Sticker: {code('True')}\n"
+            text += f"{lang('promote_sticker')}{lang('colon')}{code('True')}\n"
 
         # Send the result
         if text:
