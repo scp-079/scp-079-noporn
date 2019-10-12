@@ -226,6 +226,29 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                     mid=mid,
                     em=result
                 )
+        elif is_new_user(message.from_user, now):
+            result = forward_evidence(
+                client=client,
+                message=message,
+                level=lang("auto_delete"),
+                rule=lang("watch_user"),
+                more=lang("op_upgrade")
+            )
+            if result:
+                add_watch_user(client, "ban", uid, now)
+                delete_message(client, gid, mid)
+                declare_message(client, gid, mid)
+                ask_for_help(client, "delete", gid, uid, "global")
+                previous = add_detected_user(gid, uid, now)
+                not previous and update_score(client, uid)
+                send_debug(
+                    client=client,
+                    chat=message.chat,
+                    action=lang("watch_delete"),
+                    uid=uid,
+                    mid=mid,
+                    em=result
+                )
         elif is_detected_user(message) or uid in glovar.recorded_ids[gid] or the_type == "true":
             delete_message(client, gid, mid)
             add_detected_user(gid, uid, now)

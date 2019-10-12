@@ -250,6 +250,20 @@ def is_bio_text(text: str) -> bool:
     return False
 
 
+def is_class_e_user(user: User) -> bool:
+    # Check if the user is a Class E personnel
+    try:
+        uid = user.id
+        group_list = list(glovar.admin_ids)
+        for gid in group_list:
+            if uid in glovar.admin_ids.get(gid, set()):
+                return True
+    except Exception as e:
+        logger.warning(f"Is class e user error: {e}", exc_info=True)
+
+    return False
+
+
 def is_declared_message_id(gid: int, mid: int) -> bool:
     # Check if the message's ID is declared by other bots
     try:
@@ -321,6 +335,9 @@ def is_high_score_user(message: Message) -> Union[bool, float]:
 def is_new_user(user: User, now: int, joined: bool = False) -> bool:
     # Check if the message is sent from a new joined member
     try:
+        if is_class_e_user(user):
+            return False
+
         uid = user.id
 
         if not glovar.user_ids.get(uid, {}):
