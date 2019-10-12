@@ -392,6 +392,9 @@ def is_not_allowed(client: Client, message: Message, image_path: str = None) -> 
         need_delete = []
 
     try:
+        if not message.chat:
+            return ""
+
         # Basic data
         gid = message.chat.id
 
