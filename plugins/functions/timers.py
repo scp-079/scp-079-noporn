@@ -36,6 +36,11 @@ def backup_files(client: Client) -> bool:
     # Backup data files to BACKUP
     try:
         for file in glovar.file_list:
+            # Check
+            if not eval(f"glovar.{file}"):
+                continue
+
+            # Share
             share_data(
                 client=client,
                 receivers=["BACKUP"],

@@ -345,6 +345,9 @@ def share_regex_count(client: Client, word_type: str) -> bool:
         if not glovar.regex.get(word_type):
             return True
 
+        if not eval(f"glovar.{word_type}_words"):
+            return True
+
         file = data_to_file(eval(f"glovar.{word_type}_words"))
         share_data(
             client=client,
