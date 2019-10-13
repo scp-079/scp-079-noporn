@@ -262,6 +262,20 @@ def is_ban_text(text: str) -> bool:
     return False
 
 
+def is_bio_text(text: str) -> bool:
+    # Check if the text is bio text
+    try:
+        if is_regex_text("bio", text):
+            return True
+
+        if is_ban_text(text):
+            return True
+    except Exception as e:
+        logger.warning(f"Is bio text error: {e}", exc_info=True)
+
+    return False
+
+
 def is_class_e_user(user: User) -> bool:
     # Check if the user is a Class E personnel
     try:
