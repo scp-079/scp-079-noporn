@@ -19,12 +19,12 @@
 import logging
 from typing import Optional
 
-from pyrogram import Chat, Client, Message
+from pyrogram import Chat, ChatMember, Client, Message
 
 from .. import glovar
-from .etc import thread
+from .etc import code, lang, thread
 from .file import save
-from .telegram import delete_messages, get_chat, get_messages, leave_chat
+from .telegram import delete_messages, get_chat, get_chat_member, get_messages, leave_chat
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -44,6 +44,27 @@ def delete_message(client: Client, gid: int, mid: int) -> bool:
         logger.warning(f"Delete message error: {e}", exc_info=True)
 
     return False
+
+
+def get_config_text(config: dict) -> str:
+    # Get config text
+    result = ""
+    try:
+        # Basic
+        default_text = (lambda x: lang("default") if x else lang("custom"))(config.get("default"))
+        delete_text = (lambda x: lang("enabled") if x else lang("disabled"))(config.get("delete"))
+        restrict_text = (lambda x: lang("enabled") if x else lang("disabled"))(config.get("restrict"))
+        result += (f"{lang('config')}{lang('colon')}{code(default_text)}\n"
+                   f"{lang('delete')}{lang('colon')}{code(delete_text)}\n"
+                   f"{lang('restrict')}{lang('colon')}{code(restrict_text)}\n")
+
+        # Restricted Channel
+        channel_text = (lambda x: lang("enabled") if x else lang("disabled"))(config.get("channel"))
+        result += f"{lang('noporn_channel')}{lang('colon')}{code(channel_text)}\n"
+    except Exception as e:
+        logger.warning(f"Get config text error: {e}", exc_info=True)
+
+    return result
 
 
 def get_description(client: Client, gid: int) -> str:
@@ -83,6 +104,21 @@ def get_group_sticker(client: Client, gid: int) -> str:
             result = group.sticker_set_name
     except Exception as e:
         logger.warning(f"Get group sticker error: {e}", exc_info=True)
+
+    return result
+
+
+def get_member(client: Client, gid: int, uid: int) -> Optional[ChatMember]:
+    # Get a member in the group
+    result = None
+    try:
+        cache = glovar.members[gid].get(uid)
+        if cache:
+            result = cache
+        else:
+            result = get_chat_member(client, gid, uid)
+    except Exception as e:
+        logger.warning(f"Get member error: {e}", exc_info=True)
 
     return result
 

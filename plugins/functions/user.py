@@ -19,7 +19,7 @@
 import logging
 from typing import Union
 
-from pyrogram import Client, Message
+from pyrogram import ChatPermissions, Client, Message
 
 from .. import glovar
 from .etc import crypt_str, get_forward_name, get_full_name, get_now, lang, thread
@@ -27,10 +27,10 @@ from .channel import ask_for_help, declare_message, forward_evidence, send_debug
 from .channel import share_watch_user, update_score
 from .file import save
 from .group import delete_message
-from .filters import is_class_d, is_declared_message, is_detected_user, is_high_score_user, is_new_user
-from .filters import is_promote_sticker, is_regex_text, is_watch_user
+from .filters import is_class_d, is_declared_message, is_detected_user, is_high_score_user, is_limited_user
+from .filters import is_new_user, is_promote_sticker, is_regex_text, is_watch_user
 from .ids import init_user_id
-from .telegram import kick_chat_member
+from .telegram import kick_chat_member, restrict_chat_member
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -89,7 +89,10 @@ def add_watch_user(client: Client, the_type: str, uid: int, now: int) -> bool:
 def ban_user(client: Client, gid: int, uid: Union[int, str]) -> bool:
     # Ban a user
     try:
-        thread(kick_chat_member, (client, gid, uid))
+        if glovar.configs[gid].get("restrict"):
+            thread(restrict_chat_member, (client, gid, uid, ChatPermissions()))
+        else:
+            thread(kick_chat_member, (client, gid, uid))
 
         return True
     except Exception as e:
@@ -203,30 +206,9 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                     mid=mid,
                     em=result
                 )
-        elif is_new_user(message.from_user, now, True) and is_promote_sticker(client, message):
-            result = forward_evidence(
-                client=client,
-                message=message,
-                level=lang("auto_delete"),
-                rule=lang("watch_user"),
-                more=lang("op_upgrade")
-            )
-            if result:
-                add_watch_user(client, "ban", uid, now)
-                delete_message(client, gid, mid)
-                declare_message(client, gid, mid)
-                ask_for_help(client, "delete", gid, uid, "global")
-                previous = add_detected_user(gid, uid, now)
-                not previous and update_score(client, uid)
-                send_debug(
-                    client=client,
-                    chat=message.chat,
-                    action=lang("watch_delete"),
-                    uid=uid,
-                    mid=mid,
-                    em=result
-                )
-        elif is_new_user(message.from_user, now):
+        elif ((is_new_user(message.from_user, now) and is_promote_sticker(client, message))
+              or is_new_user(message.from_user, now, gid)
+              or is_limited_user(gid, message.from_user, now)):
             result = forward_evidence(
                 client=client,
                 message=message,

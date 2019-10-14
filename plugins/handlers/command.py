@@ -24,11 +24,11 @@ from pyrogram import Client, Filters, Message
 
 from .. import glovar
 from ..functions.channel import get_debug_text, share_data
-from ..functions.etc import bold, code, delay, get_command_context, get_command_type, get_config_text, get_now, lang
+from ..functions.etc import bold, code, delay, get_command_context, get_command_type, get_now, lang
 from ..functions.etc import thread, user_mention
 from ..functions.file import save
 from ..functions.filters import from_user, is_class_c, test_group
-from ..functions.group import delete_message
+from ..functions.group import delete_message, get_config_text
 from ..functions.telegram import get_group_info, send_message, send_report_message
 
 # Enable logging
@@ -145,7 +145,7 @@ def config_directly(client: Client, message: Message) -> bool:
                         new_config = deepcopy(glovar.default_config)
                 else:
                     if command_context:
-                        if command_type in {"delete", "channel"}:
+                        if command_type in {"delete", "restrict", "channel"}:
                             if command_context == "off":
                                 new_config[command_type] = False
                             elif command_context == "on":

@@ -187,25 +187,6 @@ def get_command_type(message: Message) -> str:
     return result
 
 
-def get_config_text(config: dict) -> str:
-    # Get config text
-    result = ""
-    try:
-        # Basic
-        default_text = (lambda x: lang("default") if x else lang("custom"))(config.get("default"))
-        delete_text = (lambda x: lang("enabled") if x else lang("disabled"))(config.get("delete"))
-        result += (f"{lang('config')}{lang('colon')}{code(default_text)}\n"
-                   f"{lang('delete')}{lang('colon')}{code(delete_text)}\n")
-
-        # Restricted Channel
-        channel_text = (lambda x: lang("enabled") if x else lang("disabled"))(config.get("channel"))
-        result += f"{lang('noporn_channel')}{lang('colon')}{code(channel_text)}\n"
-    except Exception as e:
-        logger.warning(f"Get config text error: {e}", exc_info=True)
-
-    return result
-
-
 def get_entity_text(message: Message, entity: MessageEntity) -> str:
     # Get a message's entity text
     result = ""

@@ -26,7 +26,7 @@ from string import ascii_lowercase
 from threading import Lock
 from typing import Dict, List, Set, Union
 
-from pyrogram import Chat
+from pyrogram import Chat, ChatMember
 
 # Enable logging
 logging.basicConfig(
@@ -71,12 +71,15 @@ backup: Union[bool, str] = ""
 date_reset: str = ""
 default_group_link: str = ""
 image_size: int = 0
+limit_track: int = 0
 project_link: str = ""
 project_name: str = ""
 threshold_porn: float = 0
 time_ban: int = 0
 time_new: int = 0
 time_punish: int = 0
+time_short: int = 0
+time_track: int = 0
 zh_cn: Union[bool, str] = ""
 
 # [encrypt]
@@ -115,12 +118,15 @@ try:
     date_reset = config["custom"].get("date_reset", date_reset)
     default_group_link = config["custom"].get("default_group_link", default_group_link)
     image_size = int(config["custom"].get("image_size", image_size))
+    limit_track = int(config["custom"].get("limit_track", limit_track))
     project_link = config["custom"].get("project_link", project_link)
     project_name = config["custom"].get("project_name", project_name)
     threshold_porn = float(config["custom"].get("threshold_porn", threshold_porn))
     time_ban = int(config["custom"].get("time_ban", time_ban))
     time_new = int(config["custom"].get("time_new", time_new))
     time_punish = int(config["custom"].get("time_punish", time_punish))
+    time_short = int(config["custom"].get("time_short", time_short))
+    time_track = int(config["custom"].get("time_track", time_track))
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
     # [encrypt]
@@ -155,12 +161,15 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or date_reset in {"", "[DATA EXPUNGED]"}
         or default_group_link in {"", "[DATA EXPUNGED]"}
         or image_size == 0
+        or limit_track == 0
         or project_link in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}
         or threshold_porn == 0
         or time_ban == 0
         or time_new == 0
         or time_punish == 0
+        or time_short == 0
+        or time_track == 0
         or zh_cn not in {False, True}
         or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
@@ -204,6 +213,7 @@ lang: Dict[str, str] = {
     "custom": (zh_cn and "自定义") or "Custom",
     "default": (zh_cn and "默认") or "Default",
     "delete": (zh_cn and "协助删除") or "Help Delete",
+    "restrict": (zh_cn and "禁言模式") or "Restriction Mode",
     "noporn_channel": (zh_cn and "过滤频道") or "Filter Restricted Channel Message",
     # Debug
     "triggered_by": (zh_cn and "触发消息") or "Triggered By",
@@ -301,6 +311,7 @@ default_config: Dict[str, Union[bool, int]] = {
     "default": True,
     "lock": 0,
     "delete": True,
+    "restrict": False,
     "channel": True
 }
 
@@ -368,7 +379,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.3.3"
+version: str = "0.3.4"
 
 # Load data from pickle
 
@@ -406,6 +417,13 @@ except_ids: Dict[str, Set[str]] = {
 # except_ids = {
 #     "long": {"content"},
 #     "temp": {"content"}
+# }
+
+members: Dict[int, Dict[int, ChatMember]] = {}
+# members = {
+#     -10012345678: {
+#         12345678: ChatMember
+#     }
 # }
 
 user_ids: Dict[int, Dict[str, Dict[Union[int, str], Union[float, int]]]] = {}
@@ -452,6 +470,7 @@ configs: Dict[int, Dict[str, Union[bool, int]]] = {}
 #         "default": True,
 #         "lock": 0,
 #         "delete": True,
+#         "restrict": False,
 #         "channel": True
 #     }
 # }

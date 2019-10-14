@@ -26,11 +26,11 @@ from pyrogram import Client, InlineKeyboardButton, InlineKeyboardMarkup, Message
 
 from .. import glovar
 from .channel import get_content, get_debug_text, share_data
-from .etc import code, crypt_str, general_link, get_config_text, get_int, get_now, get_report_record, get_stripped_link
-from .etc import get_text, lang, thread, user_mention
+from .etc import code, crypt_str, general_link, get_int, get_now, get_report_record, get_stripped_link, get_text, lang
+from .etc import thread, user_mention
 from .file import crypt_file, data_to_file, delete_file, get_new_path, get_downloaded_path, save
 from .filters import is_class_e, is_declared_message_id, is_detected_user_id, is_not_allowed
-from .group import get_message, leave_group
+from .group import get_config_text, get_message, leave_group
 from .ids import init_group_id, init_user_id
 from .image import get_image_hash
 from .telegram import send_message, send_report_message

@@ -19,7 +19,7 @@
 import logging
 from typing import Iterable, List, Optional, Union
 
-from pyrogram import Chat, ChatMember, ChatPreview, Client, InlineKeyboardMarkup, Message
+from pyrogram import Chat, ChatMember, ChatPermissions, ChatPreview, Client, InlineKeyboardMarkup, Message
 from pyrogram.api.functions.messages import GetStickerSet
 from pyrogram.api.functions.users import GetFullUser
 from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet, UserFull
@@ -308,6 +308,30 @@ def resolve_username(client: Client, username: str) -> (str, int):
         logger.warning(f"Resolve username error: {e}", exc_info=True)
 
     return peer_type, peer_id
+
+
+def restrict_chat_member(client: Client, cid: int, uid: int, permissions: ChatPermissions,
+                         until_date: int = 0) -> Optional[Chat]:
+    # Restrict a user in a supergroup
+    result = None
+    try:
+        flood_wait = True
+        while flood_wait:
+            flood_wait = False
+            try:
+                result = client.restrict_chat_member(
+                    chat_id=cid,
+                    user_id=uid,
+                    permissions=permissions,
+                    until_date=until_date
+                )
+            except FloodWait as e:
+                flood_wait = True
+                wait_flood(e)
+    except Exception as e:
+        logger.warning(f"Restrict chat member error: {e}", exc_info=True)
+
+    return result
 
 
 def send_document(client: Client, cid: int, document: str, file_ref: str = None, caption: str = "", mid: int = None,

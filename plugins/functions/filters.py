@@ -27,10 +27,10 @@ from .. import glovar
 from .channel import get_content
 from .etc import get_now, get_links, get_mentions, get_md5sum, get_text
 from .file import delete_file, get_downloaded_path, save
-from .group import get_description, get_group_sticker, get_pinned
+from .group import get_description, get_group_sticker, get_member, get_pinned
 from .ids import init_group_id
 from .image import get_file_id, get_porn
-from .telegram import get_chat_member, get_sticker_title, resolve_username
+from .telegram import get_sticker_title, resolve_username
 
 # Enable logging
 logger = logging.getLogger(__name__)
@@ -342,23 +342,65 @@ def is_detected_user_id(gid: int, uid: int, now: int) -> bool:
     return False
 
 
-def is_high_score_user(message: Message) -> Union[bool, float]:
+def is_high_score_user(message: Union[Message, User]) -> float:
     # Check if the message is sent by a high score user
     try:
-        if message.from_user:
-            uid = message.from_user.id
-            user = glovar.user_ids.get(uid, {})
-            if user:
-                score = sum(user["score"].values())
-                if score >= 3.0:
-                    return score
+        if isinstance(message, Message):
+            user = message.from_user
+        else:
+            user = message
+
+        if not user:
+            return 0.0
+
+        uid = user.id
+        user_status = glovar.user_ids.get(uid, {})
+        if user_status:
+            score = sum(user_status["score"].values())
+            if score >= 3.0:
+                return score
     except Exception as e:
         logger.warning(f"Is high score user error: {e}", exc_info=True)
+
+    return 0.0
+
+
+def is_limited_user(gid: int, user: User, now: int) -> bool:
+    # Check the user is limited
+    try:
+        if is_class_e_user(user):
+            return False
+
+        if glovar.configs[gid].get("new"):
+            if is_new_user(user, now, gid):
+                return True
+
+        uid = user.id
+
+        if not glovar.user_ids.get(uid, {}):
+            return False
+
+        if not glovar.user_ids[uid].get("join", {}):
+            return False
+
+        if is_high_score_user(user) >= 1.8:
+            return True
+
+        join = glovar.user_ids[uid]["join"].get(gid, 0)
+        if now - join < glovar.time_short:
+            return True
+
+        track = [gid for gid in glovar.user_ids[uid]["join"]
+                 if now - glovar.user_ids[uid]["join"][gid] < glovar.time_track]
+        if len(track) >= glovar.limit_track:
+            return True
+    except Exception as e:
+        logger.warning(f"Is limited user error: {e}", exc_info=True)
 
     return False
 
 
-def is_new_user(user: User, now: int, joined: bool = False) -> bool:
+def is_new_user(user: User, now: int, gid: int = 0, joined: bool = False) -> bool:
     # Check if the message is sent from a new joined member
     try:
         if is_class_e_user(user):
@@ -375,10 +417,15 @@ def is_new_user(user: User, now: int, joined: bool = False) -> bool:
         if joined:
             return True
 
-        for gid in list(glovar.user_ids[uid]["join"]):
+        if gid:
             join = glovar.user_ids[uid]["join"].get(gid, 0)
             if now - join < glovar.time_new:
                 return True
+        else:
+            for gid in list(glovar.user_ids[uid]["join"]):
+                join = glovar.user_ids[uid]["join"].get(gid, 0)
+                if now - join < glovar.time_new:
+                    return True
     except Exception as e:
         logger.warning(f"Is new user error: {e}", exc_info=True)
 
@@ -476,7 +523,7 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
         # Basic data
         gid = message.chat.id
 
-        # Bypass
+        # Bypass sticker
         group_sticker = get_group_sticker(client, gid)
         if message.sticker:
             sticker_name = message.sticker.set_name
@@ -485,15 +532,13 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
         else:
             sticker_name = ""
 
-        # Get sticker title
         if not sticker_title:
             sticker_title = sticker_name and get_sticker_title(client, sticker_name)
 
-        # Check sticker title
         if not sticker_title or sticker_title in glovar.except_ids["long"]:
             return False
 
-        # Bypass prepare
+        # Bypass link
         gid = message.chat.id
         description = get_description(client, gid)
         pinned_message = get_pinned(client, gid)
@@ -507,6 +552,7 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
 
         usernames = set(usernames)
         usernames = [u for u in usernames if u and u != "joinchat"]
+
         for username in usernames:
             try:
                 if message.chat.username and username == message.chat.username:
@@ -522,18 +568,14 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
                 if peer_type == "channel":
                     if peer_id in glovar.except_ids["channels"] or glovar.admin_ids.get(peer_id, {}):
                         continue
-
                     return True
 
                 if peer_type == "user":
-                    member = get_chat_member(client, message.chat.id, peer_id)
+                    member = get_member(client, gid, peer_id)
                     if member is False:
                         return True
 
-                    if member:
-                        if member.status in {"creator", "administrator", "member"}:
-                            continue
-
+                    if member and member.status not in {"creator", "administrator", "member"}:
                         return True
             finally:
                 sticker_title = sticker_title.replace(f"/{username}", "")
