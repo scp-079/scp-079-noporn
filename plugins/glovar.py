@@ -341,6 +341,13 @@ locks: Dict[str, Lock] = {
     "text": Lock()
 }
 
+members: Dict[int, Dict[int, ChatMember]] = {}
+# members = {
+#     -10012345678: {
+#         12345678: ChatMember
+#     }
+# }
+
 receivers: Dict[str, List[str]] = {
     "bad": ["ANALYZE", "APPLY", "APPEAL", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
             "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WATCH"],
@@ -417,13 +424,6 @@ except_ids: Dict[str, Set[str]] = {
 # except_ids = {
 #     "long": {"content"},
 #     "temp": {"content"}
-# }
-
-members: Dict[int, Dict[int, ChatMember]] = {}
-# members = {
-#     -10012345678: {
-#         12345678: ChatMember
-#     }
 # }
 
 user_ids: Dict[int, Dict[str, Dict[Union[int, str], Union[float, int]]]] = {}
