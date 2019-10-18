@@ -44,7 +44,7 @@ def bold(text: Any) -> str:
     try:
         text = str(text)
         if text.strip():
-            return f"<b>{escape(str(text))}</b>"
+            return f"<b>{escape(text)}</b>"
     except Exception as e:
         logger.warning(f"Bold error: {e}", exc_info=True)
 
@@ -72,7 +72,7 @@ def code(text: Any) -> str:
     try:
         text = str(text)
         if text.strip():
-            return f"<code>{escape(str(text))}</code>"
+            return f"<code>{escape(text)}</code>"
     except Exception as e:
         logger.warning(f"Code error: {e}", exc_info=True)
 
@@ -84,7 +84,7 @@ def code_block(text: Any) -> str:
     try:
         text = str(text)
         if text.strip():
-            return f"<pre>{escape(str(text))}</pre>"
+            return f"<pre>{escape(text.rstrip())}</pre>"
     except Exception as e:
         logger.warning(f"Code block error: {e}", exc_info=True)
 
@@ -124,10 +124,12 @@ def delay(secs: int, target: Callable, args: list) -> bool:
 
 
 def general_link(text: Union[int, str], link: str) -> str:
-    # Get a general markdown link
+    # Get a general link
     result = ""
     try:
-        result = f'<a href="{link}">{escape(str(text))}</a>'
+        text = str(text)
+        if text.strip() and link.strip():
+            result = f'<a href="{link}">{escape(str(text))}</a>'
     except Exception as e:
         logger.warning(f"General link error: {e}", exc_info=True)
 
