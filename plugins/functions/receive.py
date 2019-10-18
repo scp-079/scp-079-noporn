@@ -495,9 +495,8 @@ def receive_remove_bad(sender: str, data: dict) -> bool:
             glovar.watch_ids["ban"].pop(the_id, {})
             glovar.watch_ids["delete"].pop(the_id, {})
             save("watch_ids")
-            if glovar.user_ids.get(the_id):
-                glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
-                save("user_ids")
+            glovar.user_ids[the_id] = deepcopy(glovar.default_user_status)
+            save("user_ids")
 
         save("bad_ids")
 
