@@ -288,6 +288,8 @@ lang: Dict[str, str] = {
     # Terminate
     "auto_ban": (zh_cn and "自动封禁") or "Auto Ban",
     "auto_delete": (zh_cn and "自动删除") or "Auto Delete",
+    "avatar_examine": (zh_cn and "头像分析") or "Avatar Examination",
+    "avatar_recheck": (zh_cn and "头像复查") or "Avatar Recheck",
     "bio_ban": (zh_cn and "简介封禁") or "Bio Ban",
     "bio_examine": (zh_cn and "简介检查") or "Bio Examination",
     "global_delete": (zh_cn and "全局删除") or "Global Delete",
