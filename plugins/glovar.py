@@ -18,6 +18,7 @@
 
 import logging
 import pickle
+from codecs import getdecoder
 from configparser import RawConfigParser
 from os import mkdir
 from os.path import exists
@@ -26,6 +27,7 @@ from string import ascii_lowercase
 from threading import Lock
 from typing import Dict, List, Set, Union
 
+from emoji import UNICODE_EMOJI
 from pyrogram import Chat, ChatMember
 
 # Enable logging
@@ -82,6 +84,14 @@ time_short: int = 0
 time_track: int = 0
 zh_cn: Union[bool, str] = ""
 
+# [emoji]
+emoji_ad_single: int = 0
+emoji_ad_total: int = 0
+emoji_many: int = 0
+emoji_protect: str = ""
+emoji_wb_single: int = 0
+emoji_wb_total: int = 0
+
 # [encrypt]
 key: Union[str, bytes] = ""
 password: str = ""
@@ -129,6 +139,13 @@ try:
     time_track = int(config["custom"].get("time_track", time_track))
     zh_cn = config["custom"].get("zh_cn", zh_cn)
     zh_cn = eval(zh_cn)
+    # [emoji]
+    emoji_ad_single = int(config["emoji"].get("emoji_ad_single", emoji_ad_single))
+    emoji_ad_total = int(config["emoji"].get("emoji_ad_total", emoji_ad_total))
+    emoji_many = int(config["emoji"].get("emoji_many", emoji_many))
+    emoji_protect = getdecoder("unicode_escape")(config["emoji"].get("emoji_protect", emoji_protect))[0]
+    emoji_wb_single = int(config["emoji"].get("emoji_wb_single", emoji_wb_single))
+    emoji_wb_total = int(config["emoji"].get("emoji_wb_total", emoji_wb_total))
     # [encrypt]
     key = config["encrypt"].get("key", key)
     key = key.encode("utf-8")
@@ -171,6 +188,12 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or time_short == 0
         or time_track == 0
         or zh_cn not in {False, True}
+        or emoji_ad_single == 0
+        or emoji_ad_total == 0
+        or emoji_many == 0
+        or emoji_protect in {"", "[DATA EXPUNGED]"}
+        or emoji_wb_single == 0
+        or emoji_wb_total == 0
         or key in {b"", b"[DATA EXPUNGED]", "", "[DATA EXPUNGED]"}
         or password in {"", "[DATA EXPUNGED]"}):
     logger.critical("No proper settings")
@@ -331,6 +354,8 @@ default_user_status: Dict[str, Dict[Union[int, str], Union[float, int]]] = {
     }
 }
 
+emoji_set: Set[str] = set(UNICODE_EMOJI)
+
 left_group_ids: Set[int] = set()
 
 locks: Dict[str, Lock] = {
@@ -372,6 +397,7 @@ regex: Dict[str, bool] = {
     "del": False,
     "fil": False,
     "iml": False,
+    "pho": False,
     "nm": False,
     "spc": False,
     "spe": False,
@@ -386,7 +412,7 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.3.4"
+version: str = "0.3.5"
 
 # Load data from pickle
 

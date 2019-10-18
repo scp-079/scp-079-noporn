@@ -18,6 +18,7 @@
 
 import logging
 import re
+from copy import deepcopy
 from string import ascii_lowercase
 from typing import Union
 
@@ -244,8 +245,8 @@ def is_ban_text(text: str) -> bool:
         if is_regex_text("ban", text):
             return True
 
-        ad = is_regex_text("ad", text)
-        con = is_regex_text("con", text) or is_regex_text("iml", text)
+        ad = is_regex_text("ad", text) or is_emoji("ad", text)
+        con = is_regex_text("con", text) or is_regex_text("iml", text) or is_regex_text("pho", text)
         if ad and con:
             return True
 
@@ -338,6 +339,46 @@ def is_detected_user_id(gid: int, uid: int, now: int) -> bool:
                 return True
     except Exception as e:
         logger.warning(f"Is detected user id error: {e}", exc_info=True)
+
+    return False
+
+
+def is_emoji(the_type: str, text: str) -> bool:
+    # Check the emoji type
+    try:
+        emoji_dict = {}
+        emoji_set = {emoji for emoji in glovar.emoji_set if emoji in text and emoji not in glovar.emoji_protect}
+        emoji_old_set = deepcopy(emoji_set)
+
+        for emoji in emoji_old_set:
+            if any(emoji in emoji_old and emoji != emoji_old for emoji_old in emoji_old_set):
+                emoji_set.discard(emoji)
+
+        for emoji in emoji_set:
+            emoji_dict[emoji] = text.count(emoji)
+
+        # Check ad
+        if the_type == "ad":
+            if any(emoji_dict[emoji] >= glovar.emoji_ad_single for emoji in emoji_dict):
+                return True
+
+            if sum(emoji_dict.values()) >= glovar.emoji_ad_total:
+                return True
+
+        # Check many
+        elif the_type == "many":
+            if sum(emoji_dict.values()) >= glovar.emoji_many:
+                return True
+
+        # Check wb
+        elif the_type == "wb":
+            if any(emoji_dict[emoji] >= glovar.emoji_wb_single for emoji in emoji_dict):
+                return True
+
+            if sum(emoji_dict.values()) >= glovar.emoji_wb_total:
+                return True
+    except Exception as e:
+        logger.warning(f"Is emoji error: {e}", exc_info=True)
 
     return False
 
@@ -436,8 +477,8 @@ def is_nm_text(text: str) -> bool:
     # Check if the text is nm text
     try:
         if (is_regex_text("nm", text)
-                or is_ban_text(text)
-                or is_regex_text("bio", text)):
+                or is_regex_text("bio", text)
+                or is_ban_text(text)):
             return True
     except Exception as e:
         logger.warning(f"Is nm text error: {e}", exc_info=True)

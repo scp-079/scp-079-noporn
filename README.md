@@ -19,7 +19,7 @@ See [this article](https://scp-079.org/noporn/).
 - Debian 10: `sudo apt update && sudo apt install caffe-cpu opencc -y`
 - Follow the file `fix.py` to fix a error
 - venv: `python3 -m venv --system-site-packages ~/scp-079/venv`
-- pip: `pip install -r requirements.txt` or `pip install -U APScheduler OpenCC Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
+- pip: `pip install -r requirements.txt` or `pip install -U APScheduler emoji OpenCC Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
 
 ## Files
 
