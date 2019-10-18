@@ -443,7 +443,7 @@ def get_stripped_link(link: str) -> str:
 
 
 def get_text(message: Message, normal: bool = False) -> str:
-    # Get message's text, including link and mentioned user's name
+    # Get message's text, including links and buttons
     text = ""
     try:
         if not message:
