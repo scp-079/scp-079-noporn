@@ -412,7 +412,15 @@ sender: str = "NOPORN"
 
 should_hide: bool = False
 
-version: str = "0.3.5"
+usernames: Dict[str, Dict[str, Union[int, str]]] = {}
+# usernames = {
+#     "SCP_079": {
+#         "peer_type": "channel",
+#         "peer_id": -1001196128009
+#     }
+# }
+
+version: str = "0.3.6"
 
 # Load data from pickle
 
