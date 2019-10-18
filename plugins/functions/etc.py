@@ -442,7 +442,7 @@ def get_stripped_link(link: str) -> str:
     return result
 
 
-def get_text(message: Message, normal: bool = False) -> str:
+def get_text(message: Message, normal: bool = False, printable: bool = True) -> str:
     # Get message's text, including links and buttons
     text = ""
     try:
@@ -473,7 +473,7 @@ def get_text(message: Message, normal: bool = False) -> str:
                                     text += f"\n{button.url}"
 
         if text:
-            text = t2t(text, normal)
+            text = t2t(text, normal, printable)
     except Exception as e:
         logger.warning(f"Get text error: {e}", exc_info=True)
 
