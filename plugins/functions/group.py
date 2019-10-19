@@ -24,6 +24,7 @@ from pyrogram import Chat, ChatMember, Client, Message
 from .. import glovar
 from .etc import code, lang, thread
 from .file import save
+from .ids import init_group_id
 from .telegram import delete_messages, get_chat, get_chat_member, get_messages, leave_chat
 
 # Enable logging
@@ -80,15 +81,18 @@ def get_description(client: Client, gid: int) -> str:
     return result
 
 
-def get_group(client: Client, gid: int) -> Optional[Chat]:
+def get_group(client: Client, gid: int, cache: bool = True) -> Optional[Chat]:
     # Get the group
     result = None
     try:
-        cache = glovar.chats.get(gid)
-        if cache:
-            result = cache
+        the_cache = glovar.chats.get(gid)
+        if the_cache:
+            result = the_cache
         else:
             result = get_chat(client, gid)
+
+        if cache and result:
+            glovar.chats[gid] = result
     except Exception as e:
         logger.warning(f"Get group error: {e}", exc_info=True)
 
@@ -108,15 +112,21 @@ def get_group_sticker(client: Client, gid: int) -> str:
     return result
 
 
-def get_member(client: Client, gid: int, uid: int) -> Optional[ChatMember]:
+def get_member(client: Client, gid: int, uid: int, cache: bool = True) -> Optional[ChatMember]:
     # Get a member in the group
     result = None
     try:
-        cache = glovar.members[gid].get(uid)
-        if cache:
-            result = cache
+        if not init_group_id(gid):
+            return None
+
+        the_cache = glovar.members[gid].get(uid)
+        if the_cache:
+            result = the_cache
         else:
             result = get_chat_member(client, gid, uid)
+
+        if cache and result:
+            glovar.members[gid][uid] = result
     except Exception as e:
         logger.warning(f"Get member error: {e}", exc_info=True)
 
