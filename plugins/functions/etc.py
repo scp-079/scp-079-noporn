@@ -312,7 +312,7 @@ def get_links(message: Message) -> List[str]:
 def get_mentions(text: str) -> List[str]:
     result = []
     try:
-        result = re.findall(r"\B@([a-z][0-9a-z_]{4,31})", text)
+        result = re.findall(r"\B@([a-z][0-9a-z_]{4,31})", text, re.I | re.M | re.S)
         if not result:
             return []
 

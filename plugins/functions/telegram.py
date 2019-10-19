@@ -109,7 +109,7 @@ def get_chat(client: Client, cid: Union[int, str]) -> Optional[Union[Chat, ChatP
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Get chat error: {e}", exc_info=True)
+        logger.warning(f"Get chat {cid} error: {e}", exc_info=True)
 
     return result
 
@@ -129,7 +129,7 @@ def get_chat_member(client: Client, cid: int, uid: int) -> Optional[ChatMember]:
             except UserNotParticipant:
                 result = False
     except Exception as e:
-        logger.warning(f"Get chat member error: {e}", exc_info=True)
+        logger.warning(f"Get chat member {uid} in {cid} error: {e}", exc_info=True)
 
     return result
 
@@ -160,7 +160,7 @@ def get_group_info(client: Client, chat: Union[int, Chat]) -> (str, str):
         if chat.username:
             group_link = "https://t.me/" + chat.username
     except Exception as e:
-        logger.info(f"Get group info error: {e}", exc_info=True)
+        logger.info(f"Get group {chat} info error: {e}", exc_info=True)
 
     return group_name, group_link
 
@@ -178,7 +178,7 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[List
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Get messages error: {e}", exc_info=True)
+        logger.warning(f"Get messages {mids} in {cid} error: {e}", exc_info=True)
 
     return result
 
@@ -201,7 +201,7 @@ def get_sticker_title(client: Client, short_name: str, normal: bool = False) -> 
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Get sticker title error: {e}", exc_info=True)
+        logger.warning(f"Get sticker {short_name} title error: {e}", exc_info=True)
 
     return result
 
@@ -225,7 +225,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Get user bio error: {e}", exc_info=True)
+        logger.warning(f"Get user {uid} bio error: {e}", exc_info=True)
 
     return result
 
@@ -282,7 +282,7 @@ def resolve_peer(client: Client, pid: Union[int, str]) -> Optional[Union[bool, I
             except (PeerIdInvalid, UsernameInvalid, UsernameNotOccupied):
                 return False
     except Exception as e:
-        logger.warning(f"Resolve peer error: {e}", exc_info=True)
+        logger.warning(f"Resolve peer {pid} error: {e}", exc_info=True)
 
     return result
 
@@ -315,7 +315,7 @@ def resolve_username(client: Client, username: str, cache: bool = True) -> (str,
             "peer_id": peer_id
         }
     except Exception as e:
-        logger.warning(f"Resolve username error: {e}", exc_info=True)
+        logger.warning(f"Resolve username {username} error: {e}", exc_info=True)
 
     return peer_type, peer_id
 
@@ -339,7 +339,7 @@ def restrict_chat_member(client: Client, cid: int, uid: int, permissions: ChatPe
                 flood_wait = True
                 wait_flood(e)
     except Exception as e:
-        logger.warning(f"Restrict chat member error: {e}", exc_info=True)
+        logger.warning(f"Restrict chat member {uid} in {cid} error: {e}", exc_info=True)
 
     return result
 
@@ -368,7 +368,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return False
     except Exception as e:
-        logger.warning(f"Send document to {cid} error: {e}", exec_info=True)
+        logger.warning(f"Send document {document} to {cid} error: {e}", exec_info=True)
 
     return result
 
@@ -435,6 +435,6 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
         mids = [mid]
         delay(secs, delete_messages, [client, cid, mids])
     except Exception as e:
-        logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
+        logger.warning(f"Send report message to {cid} error: {e}", exc_info=True)
 
     return result
