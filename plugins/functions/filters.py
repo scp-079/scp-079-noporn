@@ -414,6 +414,10 @@ def is_friend_username(client: Client, gid: int, username: str, friend: bool) ->
             member = get_member(client, gid, peer_id)
             if member and member.status in {"creator", "administrator", "member"}:
                 return True
+
+            if glovar.configs[gid].get("friend") or friend:
+                if member and is_class_e_user(member.user):
+                    return True
     except Exception as e:
         logger.warning(f"Is friend username: {e}", exc_info=True)
 
