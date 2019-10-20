@@ -60,6 +60,7 @@ def backup_files(client: Client) -> bool:
 
 def interval_min_10() -> bool:
     # Execute every 10 minutes
+    glovar.locks["message"].acquire()
     try:
         # Clear recorded users
         for gid in list(glovar.recorded_ids):
@@ -68,6 +69,8 @@ def interval_min_10() -> bool:
         return True
     except Exception as e:
         logger.warning(f"Interval min 10 error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
 
     return False
 

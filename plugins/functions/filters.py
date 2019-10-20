@@ -674,7 +674,10 @@ def is_regex_text(word_type: str, text: str, again: bool = False) -> Optional[Ma
         else:
             return None
 
-        for word in list(eval(f"glovar.{word_type}_words")):
+        with glovar.locks["regex"]:
+            words = list(eval(f"glovar.{word_type}_words"))
+
+        for word in words:
             result = re.search(word, text, re.I | re.S | re.M)
             # Count and return
             if result:
