@@ -316,8 +316,7 @@ def get_mentions(text: str) -> List[str]:
         if not result:
             return []
 
-        invalid = {"admin", "admins"}
-        result = [r for r in result if r and r not in invalid]
+        result = [r.lower() for r in result if r and r.lower() not in glovar.invalid]
     except Exception as e:
         logger.warning(f"Get mentions error: {e}", exc_info=True)
 

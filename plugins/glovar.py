@@ -74,6 +74,7 @@ date_reset: str = ""
 default_group_link: str = ""
 image_size: int = 0
 limit_track: int = 0
+invalid: Union[str, Set[str]] = ""
 project_link: str = ""
 project_name: str = ""
 threshold_porn: float = 0
@@ -128,6 +129,9 @@ try:
     date_reset = config["custom"].get("date_reset", date_reset)
     default_group_link = config["custom"].get("default_group_link", default_group_link)
     image_size = int(config["custom"].get("image_size", image_size))
+    invalid = config["custom"].get("invalid", invalid)
+    invalid = set(invalid.split())
+    invalid = {i.lower() for i in invalid}
     limit_track = int(config["custom"].get("limit_track", limit_track))
     project_link = config["custom"].get("project_link", project_link)
     project_name = config["custom"].get("project_name", project_name)
@@ -178,6 +182,7 @@ if (bot_token in {"", "[DATA EXPUNGED]"}
         or date_reset in {"", "[DATA EXPUNGED]"}
         or default_group_link in {"", "[DATA EXPUNGED]"}
         or image_size == 0
+        or invalid in {"", "[DATA EXPUNGED]"} or invalid == set()
         or limit_track == 0
         or project_link in {"", "[DATA EXPUNGED]"}
         or project_name in {"", "[DATA EXPUNGED]"}

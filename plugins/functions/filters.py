@@ -622,22 +622,22 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
 
         # Bypass link
         gid = message.chat.id
-        description = get_description(client, gid)
+        description = get_description(client, gid).lower()
         pinned_message = get_pinned(client, gid)
-        pinned_text = get_text(pinned_message)
+        pinned_text = get_text(pinned_message).lower()
 
         # Check mentions
         usernames = get_mentions(sticker_title)
-        link_usernames = re.findall(r"t\.me/(.+?)/", sticker_title)
+        link_usernames = re.findall(r"t\.me/([a-z][0-9a-z_]{4,31})/", sticker_title)
         if link_usernames:
             usernames += link_usernames
 
         usernames = set(usernames)
-        usernames = [u for u in usernames if u and u != "joinchat"]
+        usernames = [u.lower() for u in usernames if u and u != "joinchat"]
 
         for username in usernames:
             try:
-                if message.chat.username and username == message.chat.username:
+                if message.chat.username and username == message.chat.username.lower():
                     continue
 
                 if username in description:
