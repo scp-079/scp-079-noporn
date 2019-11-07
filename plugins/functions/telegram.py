@@ -24,7 +24,7 @@ from pyrogram.api.functions.messages import GetStickerSet
 from pyrogram.api.functions.users import GetFullUser
 from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet, UserFull
 from pyrogram.api.types.messages import StickerSet as messages_StickerSet
-from pyrogram.errors import ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
+from pyrogram.errors import ButtonDataInvalid, ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
 from pyrogram.errors import UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
 from .. import glovar
@@ -248,14 +248,14 @@ def kick_chat_member(client: Client, cid: int, uid: Union[int, str]) -> Optional
     return result
 
 
-def leave_chat(client: Client, cid: int) -> bool:
+def leave_chat(client: Client, cid: int, delete: bool = False) -> bool:
     # Leave a channel
     try:
         flood_wait = True
         while flood_wait:
             flood_wait = False
             try:
-                client.leave_chat(chat_id=cid)
+                client.leave_chat(chat_id=cid, delete=delete)
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
@@ -367,6 +367,8 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
                 wait_flood(e)
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return False
+            except ButtonDataInvalid:
+                logger.warning(f"Send document {document} to {cid} - invalid markup: {markup}")
     except Exception as e:
         logger.warning(f"Send document {document} to {cid} error: {e}", exec_info=True)
 
@@ -398,6 +400,8 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
                 wait_flood(e)
             except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
                 return False
+            except ButtonDataInvalid:
+                logger.warning(f"Send message to {cid} - invalid markup: {markup}")
     except Exception as e:
         logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
 
@@ -427,6 +431,8 @@ def send_report_message(secs: int, client: Client, cid: int, text: str, mid: int
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
+            except ButtonDataInvalid:
+                logger.warning(f"Send report message to {cid} - invalid markup: {markup}")
 
         if not result:
             return None

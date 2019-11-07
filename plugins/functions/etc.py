@@ -97,6 +97,7 @@ def crypt_str(operation: str, text: str, key: str) -> str:
     try:
         f = Fernet(key)
         text = text.encode("utf-8")
+
         if operation == "decrypt":
             result = f.decrypt(text)
         else:
@@ -163,14 +164,18 @@ def get_command_context(message: Message) -> (str, str):
     try:
         text = get_text(message)
         command_list = text.split(" ")
-        if len(list(filter(None, command_list))) > 1:
-            i = 1
-            command_type = command_list[i]
-            while command_type == "" and i < len(command_list):
-                i += 1
-                command_type = command_list[i]
 
-            command_context = text[1 + len(command_list[0]) + i + len(command_type):].strip()
+        if len(list(filter(None, command_list))) <= 1:
+            return "", ""
+
+        i = 1
+        command_type = command_list[i]
+
+        while command_type == "" and i < len(command_list):
+            i += 1
+            command_type = command_list[i]
+
+        command_context = text[1 + len(command_list[0]) + i + len(command_type):].strip()
     except Exception as e:
         logger.warning(f"Get command context error: {e}", exc_info=True)
 
@@ -195,11 +200,14 @@ def get_entity_text(message: Message, entity: MessageEntity) -> str:
     result = ""
     try:
         text = get_text(message)
-        if text and entity:
-            offset = entity.offset
-            length = entity.length
-            text = text.encode("utf-16-le")
-            result = text[offset * 2:(offset + length) * 2].decode("utf-16-le")
+
+        if not text or not entity:
+            return ""
+
+        offset = entity.offset
+        length = entity.length
+        text = text.encode("utf-16-le")
+        result = text[offset * 2:(offset + length) * 2].decode("utf-16-le")
     except Exception as e:
         logger.warning(f"Get entity text error: {e}", exc_info=True)
 
@@ -250,12 +258,14 @@ def get_full_name(user: User, normal: bool = False) -> str:
     # Get user's full name
     text = ""
     try:
-        if user and not user.is_deleted:
-            text = user.first_name
-            if user.last_name:
-                text += f" {user.last_name}"
+        if not user or user.is_deleted:
+            return ""
 
-        if text:
+        text = user.first_name
+        if user.last_name:
+            text += f" {user.last_name}"
+
+        if text and normal:
             text = t2t(text, normal)
     except Exception as e:
         logger.warning(f"Get full name error: {e}", exc_info=True)
@@ -281,28 +291,38 @@ def get_links(message: Message) -> List[str]:
         entities = message.entities or message.caption_entities
         if entities:
             for en in entities:
-                link = ""
                 if en.type == "url":
                     link = get_entity_text(message, en)
                 elif en.url:
                     link = en.url
+                else:
+                    continue
 
                 link = get_stripped_link(link)
-                if link:
-                    result.append(link)
 
-        if message.reply_markup and isinstance(message.reply_markup, InlineKeyboardMarkup):
-            reply_markup = message.reply_markup
-            if reply_markup.inline_keyboard:
-                inline_keyboard = reply_markup.inline_keyboard
-                if inline_keyboard:
-                    for button_row in inline_keyboard:
-                        for button in button_row:
-                            if button:
-                                if button.url:
-                                    url = get_stripped_link(button.url)
-                                    if url:
-                                        result.append(get_stripped_link(url))
+                if not link:
+                    continue
+
+                result.append(link)
+
+        reply_markup = message.reply_markup
+        if (reply_markup
+                and isinstance(reply_markup, InlineKeyboardMarkup)
+                and reply_markup.inline_keyboard):
+            for button_row in reply_markup.inline_keyboard:
+                for button in button_row:
+                    if not button:
+                        continue
+
+                    if not button.url:
+                        continue
+
+                    url = get_stripped_link(button.url)
+
+                    if not url:
+                        continue
+
+                    result.append(url)
     except Exception as e:
         logger.warning(f"Get links error: {e}", exc_info=True)
 
@@ -313,6 +333,7 @@ def get_mentions(text: str) -> List[str]:
     result = []
     try:
         result = re.findall(r"\B@([a-z][0-9a-z_]{4,31})", text, re.I | re.M | re.S)
+
         if not result:
             return []
 
@@ -332,6 +353,7 @@ def get_md5sum(the_type: str, ctx: str) -> str:
 
         if the_type == "file":
             hash_md5 = md5()
+
             with open(ctx, "rb") as f:
                 for chunk in iter(lambda: f.read(4096), b""):
                     hash_md5.update(chunk)
@@ -374,7 +396,7 @@ def get_report_record(message: Message) -> Dict[str, str]:
         "bio": "",
         "name": "",
         "from": "",
-        "joined": "",
+        "contact": "",
         "more": "",
         "unknown": ""
     }
@@ -414,8 +436,8 @@ def get_report_record(message: Message) -> Dict[str, str]:
                 record_type = "name"
             elif re.search(f"^{lang('from_name')}{lang('colon')}", r):
                 record_type = "from"
-            elif re.search(f"^{lang('joined')}{lang('colon')}", r):
-                record_type = "joined"
+            elif re.search(f"^{lang('contact')}{lang('colon')}", r):
+                record_type = "contact"
             elif re.search(f"^{lang('more')}{lang('colon')}", r):
                 record_type = "more"
             else:
@@ -432,11 +454,14 @@ def get_stripped_link(link: str) -> str:
     # Get stripped link
     result = ""
     try:
-        if not link.strip():
+        link = link.strip()
+
+        if not link:
             return ""
 
         result = link.replace("http://", "")
         result = result.replace("https://", "")
+
         if result and result[-1] == "/":
             result = result[:-1]
     except Exception as e:
@@ -458,22 +483,25 @@ def get_text(message: Message, normal: bool = False, printable: bool = True) -> 
             entities = message.entities or message.caption_entities
             if entities:
                 for en in entities:
-                    if en.url:
-                        text += f"\n{en.url}"
+                    if not en.url:
+                        continue
 
-        if message.reply_markup and isinstance(message.reply_markup, InlineKeyboardMarkup):
-            reply_markup = message.reply_markup
-            if reply_markup.inline_keyboard:
-                inline_keyboard = reply_markup.inline_keyboard
-                if inline_keyboard:
-                    for button_row in inline_keyboard:
-                        for button in button_row:
-                            if button:
-                                if button.text:
-                                    text += f"\n{button.text}"
+                    text += f"\n{en.url}"
 
-                                if button.url:
-                                    text += f"\n{button.url}"
+        reply_markup = message.reply_markup
+        if (reply_markup
+                and isinstance(reply_markup, InlineKeyboardMarkup)
+                and reply_markup.inline_keyboard):
+            for button_row in reply_markup.inline_keyboard:
+                for button in button_row:
+                    if not button:
+                        continue
+
+                    if button.text:
+                        text += f"\n{button.text}"
+
+                    if button.url:
+                        text += f"\n{button.url}"
 
         if text:
             text = t2t(text, normal, printable)
@@ -490,6 +518,17 @@ def lang(text: str) -> str:
         result = glovar.lang.get(text, text)
     except Exception as e:
         logger.warning(f"Lang error: {e}", exc_info=True)
+
+    return result
+
+
+def mention_id(uid: int) -> str:
+    # Get a ID mention string
+    result = ""
+    try:
+        result = general_link(f"{uid}", f"tg://user?id={uid}")
+    except Exception as e:
+        logger.warning(f"Mention id error: {e}", exc_info=True)
 
     return result
 
@@ -552,17 +591,6 @@ def thread(target: Callable, args: tuple) -> bool:
         logger.warning(f"Thread error: {e}", exc_info=True)
 
     return False
-
-
-def user_mention(uid: int) -> str:
-    # Get a mention text
-    text = ""
-    try:
-        text = general_link(f"{uid}", f"tg://user?id={uid}")
-    except Exception as e:
-        logger.warning(f"User mention error: {e}", exc_info=True)
-
-    return text
 
 
 def wait_flood(e: FloodWait) -> bool:

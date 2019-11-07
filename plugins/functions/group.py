@@ -22,7 +22,7 @@ from typing import Optional
 from pyrogram import Chat, ChatMember, Client, Message
 
 from .. import glovar
-from .etc import code, lang, thread
+from .etc import code, lang, t2t, thread
 from .file import save
 from .ids import init_group_id
 from .telegram import delete_messages, get_chat, get_chat_member, get_messages, leave_chat
@@ -74,7 +74,7 @@ def get_description(client: Client, gid: int) -> str:
     try:
         group = get_group(client, gid)
         if group and group.description:
-            result = group.description
+            result = t2t(group.description, False)
     except Exception as e:
         logger.warning(f"Get description error: {e}", exc_info=True)
 
@@ -86,6 +86,7 @@ def get_group(client: Client, gid: int, cache: bool = True) -> Optional[Chat]:
     result = None
     try:
         the_cache = glovar.chats.get(gid)
+
         if the_cache:
             result = the_cache
         else:
@@ -120,6 +121,7 @@ def get_member(client: Client, gid: int, uid: int, cache: bool = True) -> Option
             return None
 
         the_cache = glovar.members[gid].get(uid)
+
         if the_cache:
             result = the_cache
         else:
@@ -164,6 +166,7 @@ def leave_group(client: Client, gid: int) -> bool:
     # Leave a group, clear it's data
     try:
         glovar.left_group_ids.add(gid)
+        save("left_group_ids")
         thread(leave_chat, (client, gid))
 
         glovar.admin_ids.pop(gid, None)

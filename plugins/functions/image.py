@@ -37,6 +37,7 @@ def get_color(path: str) -> bool:
         w, h = image.size
         data = image.getdata()
         cnt = 0
+
         for i, ycbcr in enumerate(data):
             y, cb, cr = ycbcr
             if 86 <= cb <= 117 and 140 <= cr <= 168:
