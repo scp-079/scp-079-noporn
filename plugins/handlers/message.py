@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 
 @Client.on_message(Filters.incoming & Filters.group & ~Filters.service
-                   & ~test_group
+                   & ~test_group & authorized_group
                    & from_user & ~class_c & ~class_d & ~class_e
                    & ~declared_message)
 def check(client: Client, message: Message) -> bool:
