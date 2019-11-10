@@ -183,10 +183,14 @@ def get_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[List
     return result
 
 
-def get_sticker_title(client: Client, short_name: str, normal: bool = False) -> Optional[str]:
+def get_sticker_title(client: Client, short_name: str, normal: bool = False, cache: bool = True) -> Optional[str]:
     # Get sticker set's title
     result = None
     try:
+        result = glovar.sticker_titles.get(short_name)
+        if result and cache:
+            return glovar.sticker_titles[short_name]
+
         sticker_set = InputStickerSetShortName(short_name=short_name)
         flood_wait = True
         while flood_wait:
@@ -200,6 +204,8 @@ def get_sticker_title(client: Client, short_name: str, normal: bool = False) -> 
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
+
+        glovar.sticker_titles[short_name] = result
     except Exception as e:
         logger.warning(f"Get sticker {short_name} title error: {e}", exc_info=True)
 

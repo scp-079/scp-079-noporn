@@ -368,6 +368,7 @@ emoji_set: Set[str] = set(UNICODE_EMOJI)
 locks: Dict[str, Lock] = {
     "admin": Lock(),
     "message": Lock(),
+    "receive": Lock(),
     "regex": Lock(),
     "test": Lock(),
     "text": Lock()
@@ -419,6 +420,11 @@ for c in ascii_lowercase:
 sender: str = "NOPORN"
 
 should_hide: bool = False
+
+sticker_titles: Dict[str, str] = {}
+# sticker_titles = {
+#     "short_name": "sticker_title"
+# }
 
 usernames: Dict[str, Dict[str, Union[int, str]]] = {}
 # usernames = {
