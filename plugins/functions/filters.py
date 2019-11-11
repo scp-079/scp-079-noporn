@@ -463,7 +463,7 @@ def is_emoji(the_type: str, text: str, message: Message = None) -> bool:
     return False
 
 
-def is_friend_username(client: Client, gid: int, username: str, friend: bool) -> bool:
+def is_friend_username(client: Client, gid: int, username: str, friend: bool, friend_user: bool = False) -> bool:
     # Check if it is a friend username
     try:
         username = username.strip()
@@ -483,11 +483,14 @@ def is_friend_username(client: Client, gid: int, username: str, friend: bool) ->
                     return True
 
         if peer_type == "user":
+            if friend and friend_user:
+                return True
+
             member = get_member(client, gid, peer_id)
             if member and member.status in {"creator", "administrator", "member"}:
                 return True
 
-            if glovar.configs[gid].get("friend") or friend:
+            if friend or glovar.configs[gid].get("friend"):
                 if member and is_class_e_user(member.user):
                     return True
     except Exception as e:
@@ -738,7 +741,7 @@ def is_promote_sticker(client: Client, message: Message, sticker_title: str = ""
                 if username in pinned_text:
                     continue
 
-                if not is_friend_username(client, gid, username, True):
+                if not is_friend_username(client, gid, username, True, True):
                     return True
             finally:
                 sticker_title = sticker_title.replace(f"/{username}", "")
