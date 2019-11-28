@@ -339,6 +339,9 @@ def is_class_e_user(user: Union[int, User]) -> bool:
         else:
             uid = user.id
 
+        if uid in glovar.bot_ids:
+            return True
+
         group_list = list(glovar.admin_ids)
         for gid in group_list:
             if uid in glovar.admin_ids.get(gid, set()):
@@ -489,13 +492,13 @@ def is_friend_username(client: Client, gid: int, username: str, friend: bool, fr
             if friend and friend_user:
                 return True
 
+            if friend or glovar.configs[gid].get("friend"):
+                if is_class_e_user(peer_id):
+                    return True
+
             member = get_member(client, gid, peer_id)
             if member and member.status in {"creator", "administrator", "member"}:
                 return True
-
-            if friend or glovar.configs[gid].get("friend"):
-                if member and is_class_e_user(member.user):
-                    return True
     except Exception as e:
         logger.warning(f"Is friend username: {e}", exc_info=True)
 
