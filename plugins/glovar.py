@@ -382,9 +382,9 @@ members: Dict[int, Dict[int, ChatMember]] = {}
 # }
 
 receivers: Dict[str, List[str]] = {
-    "bad": ["ANALYZE", "APPLY", "APPEAL", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
-            "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WATCH"],
-    "declare": ["ANALYZE", "AVATAR", "CLEAN", "LANG", "LONG",
+    "bad": ["ANALYZE", "APPLY", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG", "MANAGE",
+            "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TICKET", "TIP", "USER", "WATCH"],
+    "declare": ["ANALYZE", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
                 "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "USER", "WATCH"],
     "score": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG",
               "MANAGE", "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK"],
