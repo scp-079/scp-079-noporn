@@ -387,9 +387,9 @@ receivers: Dict[str, List[str]] = {
     "declare": ["ANALYZE", "AVATAR", "CAPTCHA", "CLEAN", "LANG", "LONG",
                 "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WARN", "WATCH"],
     "score": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG", "MANAGE",
-              "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "WARN", "WATCH"],
+              "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WARN", "WATCH"],
     "watch": ["ANALYZE", "CAPTCHA", "CLEAN", "LANG", "LONG", "MANAGE",
-              "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "WARN", "WATCH"]
+              "NOFLOOD", "NOPORN", "NOSPAM", "RECHECK", "TIP", "USER", "WARN", "WATCH"]
 }
 
 recorded_ids: Dict[int, Set[int]] = {}
