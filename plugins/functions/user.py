@@ -28,7 +28,7 @@ from .channel import share_watch_user, update_score
 from .file import save
 from .group import delete_message
 from .filters import is_class_d, is_declared_message, is_detected_user, is_high_score_user, is_limited_user
-from .filters import is_new_user, is_promote_sticker, is_regex_text, is_watch_user
+from .filters import is_new_user, is_promote_sticker, is_watch_user, is_wb_text
 from .ids import init_user_id
 from .telegram import kick_chat_member, restrict_chat_member
 
@@ -118,7 +118,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
         full_name = get_full_name(message.from_user, True)
         forward_name = get_forward_name(message, True)
 
-        if ((is_regex_text("wb", full_name) or is_regex_text("wb", forward_name))
+        if ((is_wb_text(full_name, False) or is_wb_text(forward_name, False))
                 and (full_name not in glovar.except_ids["long"] and forward_name not in glovar.except_ids["long"])):
             result = forward_evidence(
                 client=client,
