@@ -24,8 +24,8 @@ from pyrogram.api.functions.messages import GetStickerSet
 from pyrogram.api.functions.users import GetFullUser
 from pyrogram.api.types import InputPeerUser, InputPeerChannel, InputStickerSetShortName, StickerSet, UserFull
 from pyrogram.api.types.messages import StickerSet as messages_StickerSet
-from pyrogram.errors import ButtonDataInvalid, ChannelInvalid, ChannelPrivate, FloodWait, PeerIdInvalid
-from pyrogram.errors import UsernameInvalid, UsernameNotOccupied, UserNotParticipant
+from pyrogram.errors import ChatAdminRequired, ButtonDataInvalid, ChannelInvalid, ChannelPrivate, FloodWait
+from pyrogram.errors import PeerIdInvalid, UsernameInvalid, UsernameNotOccupied, UserNotParticipant
 
 from .. import glovar
 from .etc import delay, get_int, t2t, wait_flood
@@ -58,7 +58,7 @@ def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[b
     return result
 
 
-def download_media(client: Client, file_id: str, file_ref: str, file_path: str):
+def download_media(client: Client, file_id: str, file_ref: str, file_path: str) -> Optional[str]:
     # Download a media file
     result = None
     try:
@@ -76,7 +76,7 @@ def download_media(client: Client, file_id: str, file_ref: str, file_path: str):
     return result
 
 
-def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember]]]:
+def get_admins(client: Client, cid: int) -> Union[bool, List[ChatMember], None]:
     # Get a group's admins
     result = None
     try:
@@ -96,7 +96,7 @@ def get_admins(client: Client, cid: int) -> Optional[Union[bool, List[ChatMember
     return result
 
 
-def get_chat(client: Client, cid: Union[int, str]) -> Optional[Union[Chat, ChatPreview]]:
+def get_chat(client: Client, cid: Union[int, str]) -> Union[Chat, ChatPreview, None]:
     # Get a chat
     result = None
     try:
@@ -114,7 +114,7 @@ def get_chat(client: Client, cid: Union[int, str]) -> Optional[Union[Chat, ChatP
     return result
 
 
-def get_chat_member(client: Client, cid: int, uid: int) -> Optional[ChatMember]:
+def get_chat_member(client: Client, cid: int, uid: int) -> Union[bool, ChatMember, None]:
     # Get information about one member of a chat
     result = None
     try:
@@ -236,7 +236,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False) -> Optional[str
     return result
 
 
-def kick_chat_member(client: Client, cid: int, uid: Union[int, str]) -> Optional[Union[bool, Message]]:
+def kick_chat_member(client: Client, cid: int, uid: Union[int, str]) -> Union[bool, Message, None]:
     # Kick a chat member in a group
     result = None
     try:
@@ -273,7 +273,7 @@ def leave_chat(client: Client, cid: int, delete: bool = False) -> bool:
     return False
 
 
-def resolve_peer(client: Client, pid: Union[int, str]) -> Optional[Union[bool, InputPeerChannel, InputPeerUser]]:
+def resolve_peer(client: Client, pid: Union[int, str]) -> Union[bool, InputPeerChannel, InputPeerUser, None]:
     # Get an input peer by id
     result = None
     try:
@@ -351,7 +351,7 @@ def restrict_chat_member(client: Client, cid: int, uid: int, permissions: ChatPe
 
 
 def send_document(client: Client, cid: int, document: str, file_ref: str = None, caption: str = "", mid: int = None,
-                  markup: InlineKeyboardMarkup = None) -> Optional[Union[bool, Message]]:
+                  markup: InlineKeyboardMarkup = None) -> Union[bool, Message, None]:
     # Send a document to a chat
     result = None
     try:
@@ -371,10 +371,10 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
-            except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
-                return False
             except ButtonDataInvalid:
                 logger.warning(f"Send document {document} to {cid} - invalid markup: {markup}")
+            except (ChatAdminRequired, PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+                return False
     except Exception as e:
         logger.warning(f"Send document {document} to {cid} error: {e}", exec_info=True)
 
@@ -382,7 +382,7 @@ def send_document(client: Client, cid: int, document: str, file_ref: str = None,
 
 
 def send_message(client: Client, cid: int, text: str, mid: int = None,
-                 markup: InlineKeyboardMarkup = None) -> Optional[Union[bool, Message]]:
+                 markup: InlineKeyboardMarkup = None) -> Union[bool, Message, None]:
     # Send a message to a chat
     result = None
     try:
@@ -404,10 +404,10 @@ def send_message(client: Client, cid: int, text: str, mid: int = None,
             except FloodWait as e:
                 flood_wait = True
                 wait_flood(e)
-            except (PeerIdInvalid, ChannelInvalid, ChannelPrivate):
-                return False
             except ButtonDataInvalid:
                 logger.warning(f"Send message to {cid} - invalid markup: {markup}")
+            except (ChatAdminRequired, PeerIdInvalid, ChannelInvalid, ChannelPrivate):
+                return False
     except Exception as e:
         logger.warning(f"Send message to {cid} error: {e}", exc_info=True)
 
