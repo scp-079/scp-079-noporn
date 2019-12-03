@@ -88,7 +88,7 @@ def porn_test(client: Client, message: Message) -> bool:
             thread(send_message, (client, glovar.test_group_id, text, message.message_id))
 
         # Delete the image file
-        image_path and delete_file(image_path)
+        image_path and thread(delete_file, (image_path,))
 
         return True
     except Exception as e:

@@ -26,7 +26,7 @@ from pyrogram import CallbackQuery, Client, Filters, Message, User
 
 from .. import glovar
 from .channel import get_content
-from .etc import get_now, get_links, get_mentions, get_md5sum, get_text
+from .etc import get_now, get_links, get_mentions, get_md5sum, get_text, thread
 from .file import delete_file, get_downloaded_path, save
 from .group import get_description, get_group_sticker, get_member, get_pinned
 from .ids import init_group_id
@@ -706,7 +706,7 @@ def is_not_allowed(client: Client, message: Message, image_path: str = None) -> 
         logger.warning(f"Is NSFW media error: {e}", exc_info=True)
     finally:
         for file in need_delete:
-            delete_file(file)
+            thread(delete_file, (file,))
 
     return ""
 
