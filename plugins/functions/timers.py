@@ -78,10 +78,7 @@ def interval_min_10() -> bool:
 def reset_data(client: Client) -> bool:
     # Reset user data every month
     try:
-        glovar.bad_ids = {
-            "channels": set(),
-            "users": set()
-        }
+        glovar.bad_ids["users"] = set()
         save("bad_ids")
 
         glovar.except_ids["temp"] = set()

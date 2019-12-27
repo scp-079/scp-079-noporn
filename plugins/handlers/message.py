@@ -23,7 +23,7 @@ from pyrogram import Client, Filters, Message
 from .. import glovar
 from ..functions.channel import get_content, get_debug_text
 from ..functions.etc import code, delay, general_link, get_filename, get_forward_name, get_full_name, get_now, get_text
-from ..functions.etc import lang, thread, mention_id
+from ..functions.etc import lang, t2t, thread, mention_id
 from ..functions.file import save
 from ..functions.filters import authorized_group, class_c, class_d, class_e, declared_message, exchange_channel
 from ..functions.filters import from_user, hide_channel, is_ban_text, is_bio_text, is_declared_message, is_detected_url
@@ -65,19 +65,19 @@ def check(client: Client, message: Message) -> bool:
         # Work with NOSPAM
         if glovar.nospam_id in glovar.admin_ids[gid]:
             # Check the forward from name
-            forward_name = get_forward_name(message, True)
+            forward_name = get_forward_name(message)
             if forward_name and forward_name not in glovar.except_ids["long"]:
-                if is_nm_text(forward_name):
+                if is_nm_text(t2t(forward_name, True, True)):
                     return False
 
             # Check the user's name
-            name = get_full_name(message.from_user, True)
+            name = get_full_name(message.from_user)
             if name and name not in glovar.except_ids["long"]:
-                if is_nm_text(name):
+                if is_nm_text(t2t(name, True, True)):
                     return False
 
             # Check the text
-            message_text = get_text(message, True)
+            message_text = get_text(message, True, True)
             if is_ban_text(message_text, False):
                 return False
 
@@ -155,12 +155,12 @@ def check_join(client: Client, message: Message) -> bool:
                     return True
 
                 # Check name
-                name = get_full_name(new, True)
+                name = get_full_name(new, True, True)
                 if name and is_nm_text(name):
                     return True
 
                 # Check bio
-                bio = get_user_bio(client, uid, True)
+                bio = get_user_bio(client, uid, True, True)
                 if bio and is_bio_text(bio):
                     return True
 

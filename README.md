@@ -4,7 +4,9 @@ This bot is used to auto delete NSFW media messages.
 
 ## How to use
 
-See [this article](https://scp-079.org/noporn/).
+- See the [manual](https://telegra.ph/SCP-079-NOPORN-12-04)
+- See [this article](https://scp-079.org/noporn/) to build a bot by yourself
+- Discuss [group](https://t.me/SCP_079_CHAT)
 
 ## To Do List
 

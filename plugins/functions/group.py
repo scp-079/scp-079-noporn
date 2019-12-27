@@ -74,7 +74,7 @@ def get_description(client: Client, gid: int) -> str:
     try:
         group = get_group(client, gid)
         if group and group.description:
-            result = t2t(group.description, False)
+            result = t2t(group.description, False, False)
     except Exception as e:
         logger.warning(f"Get description error: {e}", exc_info=True)
 
