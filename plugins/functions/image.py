@@ -1,5 +1,5 @@
 # SCP-079-NOPORN - Auto delete NSFW media messages
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOPORN.
 #
@@ -40,6 +40,7 @@ def get_color(path: str) -> bool:
 
         for i, ycbcr in enumerate(data):
             y, cb, cr = ycbcr
+
             if 86 <= cb <= 117 and 140 <= cr <= 168:
                 cnt += 1
 
@@ -112,10 +113,12 @@ def get_image_hash(client: Client, message: Message) -> str:
     result = ""
     try:
         file_id, file_ref, big = get_file_id(message)
+
         if not file_id:
             return ""
 
         image_path = get_downloaded_path(client, file_id, file_ref)
+
         if not image_path:
             return ""
 

@@ -1,5 +1,5 @@
 # SCP-079-NOPORN - Auto delete NSFW media messages
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOPORN.
 #
@@ -41,6 +41,7 @@ def crypt_file(operation: str, file_in: str, file_out: str) -> bool:
             return True
 
         buffer = 64 * 1024
+
         if operation == "decrypt":
             decryptFile(file_in, file_out, glovar.password, buffer)
         else:

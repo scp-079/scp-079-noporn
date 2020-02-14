@@ -1,5 +1,5 @@
 # SCP-079-NOPORN - Auto delete NSFW media messages
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOPORN.
 #
@@ -41,6 +41,7 @@ def delete_messages(client: Client, cid: int, mids: Iterable[int]) -> Optional[b
     try:
         mids = list(mids)
         mids_list = [mids[i:i + 100] for i in range(0, len(mids), 100)]
+
         for mids in mids_list:
             try:
                 flood_wait = True
@@ -146,6 +147,7 @@ def get_group_info(client: Client, chat: Union[int, Chat], cache: bool = True) -
     try:
         if isinstance(chat, int):
             the_cache = glovar.chats.get(chat)
+
             if the_cache:
                 chat = the_cache
             else:
@@ -194,17 +196,21 @@ def get_sticker_title(client: Client, short_name: str, normal: bool = False, pri
     result = None
     try:
         result = glovar.sticker_titles.get(short_name)
+
         if result and cache:
             return glovar.sticker_titles[short_name]
 
         sticker_set = InputStickerSetShortName(short_name=short_name)
+
         flood_wait = True
         while flood_wait:
             flood_wait = False
             try:
                 the_set = client.send(GetStickerSet(stickerset=sticker_set))
+
                 if isinstance(the_set, messages_StickerSet):
                     inner_set = the_set.set
+
                     if isinstance(inner_set, StickerSet):
                         result = t2t(inner_set.title, normal, printable)
             except FloodWait as e:
@@ -223,6 +229,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool
     result = None
     try:
         user_id = resolve_peer(client, uid)
+
         if not user_id:
             return None
 
@@ -231,6 +238,7 @@ def get_user_bio(client: Client, uid: int, normal: bool = False, printable: bool
             flood_wait = False
             try:
                 user: UserFull = client.send(GetFullUser(id=user_id))
+
                 if user and user.about:
                     result = t2t(user.about, normal, printable)
             except FloodWait as e:
@@ -307,14 +315,17 @@ def resolve_username(client: Client, username: str, cache: bool = True) -> (str,
     peer_id = 0
     try:
         username = username.strip("@")
+
         if not username:
             return "", 0
 
         result = glovar.usernames.get(username)
+
         if result and cache:
             return result["peer_type"], result["peer_id"]
 
         result = resolve_peer(client, username)
+
         if result:
             if isinstance(result, InputPeerChannel):
                 peer_type = "channel"

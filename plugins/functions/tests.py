@@ -1,5 +1,5 @@
 # SCP-079-NOPORN - Auto delete NSFW media messages
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOPORN.
 #
@@ -37,6 +37,7 @@ def porn_test(client: Client, message: Message) -> bool:
     # Test image porn score in the test group
     try:
         origin_text = get_text(message)
+
         if re.search(f"^{lang('admin')}{lang('colon')}[0-9]", origin_text):
             aid = get_int(origin_text.split("\n\n")[0].split(lang('colon'))[1])
         else:
@@ -47,11 +48,13 @@ def porn_test(client: Client, message: Message) -> bool:
         # Detected record
         content = get_content(message)
         detection = glovar.contents.get(content, "")
+
         if detection == "nsfw":
             text += f"{lang('record_content')}{lang('colon')}{code('True')}\n"
 
         # Detected url
         detection = is_detected_url(message, True)
+
         if detection:
             text += f"{lang('record_link')}{lang('colon')}{code(code('True'))}\n"
 
@@ -66,16 +69,19 @@ def porn_test(client: Client, message: Message) -> bool:
 
         # Get porn score
         porn = (image_path and get_porn(image_path))
+
         if porn:
             text += f"{lang('porn_score')}{lang('colon')}{code(f'{porn:.8f}')}\n"
 
         # Get color
         color = image_path and get_color(image_path)
+
         if color:
             text += f"{lang('color')}{lang('colon')}{code(color)}\n"
 
         # Get promote sticker
         sticker = is_promote_sticker(client, message)
+
         if sticker:
             text += f"{lang('promote_sticker')}{lang('colon')}{code('True')}\n"
 

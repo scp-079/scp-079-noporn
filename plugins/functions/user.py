@@ -1,5 +1,5 @@
 # SCP-079-NOPORN - Auto delete NSFW media messages
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOPORN.
 #
@@ -126,6 +126,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 level=lang("auto_ban"),
                 rule=lang("name_examine")
             )
+
             if result:
                 add_bad_user(client, uid)
                 ban_user(client, gid, uid)
@@ -147,6 +148,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 level=lang("auto_ban"),
                 rule=lang("watch_user")
             )
+
             if result:
                 add_bad_user(client, uid)
                 ban_user(client, gid, uid)
@@ -170,6 +172,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 rule=lang("score_user"),
                 score=score
             )
+
             if result:
                 add_bad_user(client, uid)
                 ban_user(client, gid, uid)
@@ -191,6 +194,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 level=lang("global_delete"),
                 rule=lang("watch_user")
             )
+
             if result:
                 add_watch_user(client, "ban", uid, now)
                 delete_message(client, gid, mid)
@@ -215,6 +219,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 level=lang("global_delete"),
                 rule=lang("op_upgrade")
             )
+
             if result:
                 add_watch_user(client, "ban", uid, now)
                 delete_message(client, gid, mid)
@@ -246,6 +251,7 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 level=lang("auto_delete"),
                 rule=rule
             )
+
             if result:
                 glovar.recorded_ids[gid].add(uid)
                 delete_message(client, gid, mid)

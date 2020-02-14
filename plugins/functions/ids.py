@@ -1,5 +1,5 @@
 # SCP-079-NOPORN - Auto delete NSFW media messages
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOPORN.
 #
@@ -38,6 +38,10 @@ def init_group_id(gid: int) -> bool:
         if glovar.admin_ids.get(gid) is None:
             glovar.admin_ids[gid] = set()
             save("admin_ids")
+
+        if glovar.trust_ids.get(gid) is None:
+            glovar.trust_ids[gid] = set()
+            save("trust_ids")
 
         if glovar.configs.get(gid) is None:
             glovar.configs[gid] = deepcopy(glovar.default_config)

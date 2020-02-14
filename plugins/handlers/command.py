@@ -1,5 +1,5 @@
 # SCP-079-NOPORN - Auto delete NSFW media messages
-# Copyright (C) 2019 SCP-079 <https://scp-079.org>
+# Copyright (C) 2019-2020 SCP-079 <https://scp-079.org>
 #
 # This file is part of SCP-079-NOPORN.
 #
@@ -55,6 +55,7 @@ def config(client: Client, message: Message) -> bool:
 
         # Check command format
         command_type = get_command_type(message)
+
         if not command_type or not re.search(f"^{glovar.sender}$", command_type, re.I):
             return True
 
@@ -132,6 +133,7 @@ def config_directly(client: Client, message: Message) -> bool:
 
         # Check command format
         command_type, command_context = get_command_context(message)
+
         if command_type:
             if command_type == "show":
                 text += f"{lang('action')}{lang('colon')}{code(lang('config_show'))}\n"
