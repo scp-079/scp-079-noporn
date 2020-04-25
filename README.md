@@ -21,7 +21,7 @@ This bot is used to auto delete NSFW media messages.
 - Python 3.6 or higher
 - Debian 10: `sudo apt update && sudo apt install caffe-cpu opencc -y`
 - Follow the file `fix.py` to fix an error
-- venv: `python3 -m venv --system-site-packages ~/scp-079/venv`
+- venv: `python3 -m venv --system-site-packages ~/scp-079/noporn/venv`
 - pip: `pip install -r requirements.txt` or `pip install -U APScheduler emoji OpenCC Pillow pyAesCrypt pyrogram[fast] nsfw numpy scikit-image`
 
 ## Files
