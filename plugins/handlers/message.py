@@ -30,11 +30,13 @@ from ..functions.filters import from_user, hide_channel, is_ban_text, is_bio_tex
 from ..functions.filters import is_nm_text, is_not_allowed, is_regex_text, new_group, test_group
 from ..functions.group import leave_group
 from ..functions.ids import init_group_id, init_user_id
-from ..functions.receive import receive_add_bad, receive_add_except, receive_clear_data, receive_config_commit
-from ..functions.receive import receive_config_reply, receive_config_show, receive_declared_message, receive_preview
-from ..functions.receive import receive_leave_approve, receive_refresh, receive_regex, receive_remove_bad
-from ..functions.receive import receive_remove_except, receive_remove_score, receive_remove_watch, receive_rollback
-from ..functions.receive import receive_text_data, receive_user_score, receive_watch_user
+from ..functions.receive import receive_add_bad, receive_add_except, receive_captcha_flood, receive_captcha_kicked_user
+from ..functions.receive import receive_captcha_kicked_users, receive_clear_data, receive_config_commit
+from ..functions.receive import receive_config_reply, receive_config_show, receive_declared_message
+from ..functions.receive import receive_flood_score, receive_preview, receive_leave_approve, receive_refresh
+from ..functions.receive import receive_regex, receive_remove_bad, receive_remove_except, receive_remove_score
+from ..functions.receive import receive_remove_watch, receive_rollback, receive_text_data, receive_user_score
+from ..functions.receive import receive_watch_user
 from ..functions.telegram import get_admins, get_user_bio, send_message
 from ..functions.tests import porn_test
 from ..functions.timers import backup_files, send_count
@@ -153,6 +155,10 @@ def check_join(client: Client, message: Message) -> bool:
         now = message.date or get_now()
 
         for new in message.new_chat_members:
+            # Check the group status
+            if gid in glovar.flooded_ids:
+                continue
+
             # Basic data
             uid = new.id
 
@@ -340,8 +346,16 @@ def process_data(client: Client, message: Message) -> bool:
 
             if sender == "CAPTCHA":
 
-                if action == "update":
+                if action == "flood":
                     if action_type == "score":
+                        receive_flood_score(client, message)
+                    elif action_type == "status":
+                        receive_captcha_flood(data)
+
+                if action == "update":
+                    if action_type == "declare":
+                        receive_declared_message(data)
+                    elif action_type == "score":
                         receive_user_score(sender, data)
 
             elif sender == "CLEAN":
@@ -505,6 +519,18 @@ def process_data(client: Client, message: Message) -> bool:
                 if action == "add":
                     if action_type == "watch":
                         receive_watch_user(data)
+
+        elif "USER" in receivers:
+
+            if sender == "CAPTCHA":
+
+                if action == "flood":
+                    if action_type == "delete":
+                        receive_captcha_kicked_users(client, message, data)
+
+                elif action == "help":
+                    if action_type == "delete":
+                        receive_captcha_kicked_user(data)
 
         return True
     except Exception as e:

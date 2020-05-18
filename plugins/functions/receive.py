@@ -120,6 +120,93 @@ def receive_add_except(client: Client, data: dict) -> bool:
     return False
 
 
+def receive_captcha_flood(data: dict) -> bool:
+    # Receive captcha flood status
+    result = False
+
+    try:
+        # Basic data
+        gid = data["group_id"]
+        status = data["status"]
+
+        # Check the status
+        if status == "begin":
+            glovar.flooded_ids.add(gid)
+        elif status == "end":
+            glovar.flooded_ids.discard(gid)
+
+        save("flooded_ids")
+
+        result = True
+    except Exception as e:
+        logger.warning(f"Receive captcha flood error: {e}", exc_info=True)
+
+    return result
+
+
+def receive_captcha_kicked_user(data: dict) -> bool:
+    # Receive CAPTCHA kicked user
+    result = False
+
+    glovar.locks["message"].acquire()
+
+    try:
+        # Basic data
+        gid = data["group_id"]
+        uid = data["user_id"]
+
+        # Check the group
+        if not glovar.admin_ids.get(gid) is None:
+            return False
+
+        # Check user status
+        if not glovar.user_ids.get(uid, {}):
+            return True
+
+        glovar.user_ids[uid]["join"].pop(gid, 0)
+        save("user_ids")
+
+        result = True
+    except Exception as e:
+        logger.warning(f"Receive captcha kicked user error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
+
+    return result
+
+
+def receive_captcha_kicked_users(client: Client, message: Message, data: int) -> bool:
+    # Receive CAPTCHA kicked users
+    result = False
+
+    glovar.locks["message"].acquire()
+
+    try:
+        # Basic data
+        gid = data
+
+        # Check the group
+        if not glovar.admin_ids.get(gid) is None:
+            return False
+
+        # Get user list
+        uids = receive_file_data(client, message)
+
+        # Remove group status
+        for uid in uids:
+            glovar.user_ids.get(uid, {}) and glovar.user_ids[uid]["join"].pop(gid, 0)
+
+        save("user_ids")
+
+        result = True
+    except Exception as e:
+        logger.warning(f"Receive captcha kicked users error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
+
+    return result
+
+
 def receive_clear_data(client: Client, data_type: str, data: dict) -> bool:
     # Receive clear data command
     glovar.locks["message"].acquire()
@@ -327,6 +414,32 @@ def receive_file_data(client: Client, message: Message, decrypt: bool = True) ->
         logger.warning(f"Receive file error: {e}", exc_info=True)
 
     return data
+
+
+def receive_flood_score(client: Client, message: Message) -> bool:
+    # Receive flood users' score
+    result = False
+
+    glovar.locks["message"].acquire()
+
+    try:
+        users = receive_file_data(client, message)
+
+        if users is None:
+            return False
+
+        user_list = [uid for uid in list(users) if init_user_id(uid)]
+
+        for uid in user_list:
+            glovar.user_ids[uid]["score"]["captcha"] = users[uid]
+
+        save("user_ids")
+    except Exception as e:
+        logger.warning(f"Receive flood score error: {e}", exc_info=True)
+    finally:
+        glovar.locks["message"].release()
+
+    return result
 
 
 def receive_leave_approve(client: Client, data: dict) -> bool:
