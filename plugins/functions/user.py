@@ -249,7 +249,8 @@ def terminate_user(client: Client, message: Message, the_type: str) -> bool:
                 client=client,
                 message=message,
                 level=lang("auto_delete"),
-                rule=rule
+                rule=rule,
+                general=the_type != "channel"
             )
 
             if result:

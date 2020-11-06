@@ -66,6 +66,7 @@ debug_channel_id: int = 0
 exchange_channel_id: int = 0
 hide_channel_id: int = 0
 logging_channel_id: int = 0
+noporn_channel_id: int = 0
 test_group_id: int = 0
 
 # [custom]
@@ -90,7 +91,7 @@ zh_cn: Union[bool, str] = ""
 emoji_ad_single: int = 0
 emoji_ad_total: int = 0
 emoji_many: int = 0
-emoji_protect: str = ""
+emoji_protect: [bytes, str] = "\\U0001F642"
 emoji_wb_single: int = 0
 emoji_wb_total: int = 0
 
@@ -126,6 +127,7 @@ try:
     exchange_channel_id = int(config["channels"].get("exchange_channel_id", str(exchange_channel_id)))
     hide_channel_id = int(config["channels"].get("hide_channel_id", str(hide_channel_id)))
     logging_channel_id = int(config["channels"].get("logging_channel_id", str(logging_channel_id)))
+    noporn_channel_id = int(config["channels"].get("noporn_channel_id", str(noporn_channel_id)))
     test_group_id = int(config["channels"].get("test_group_id", str(test_group_id)))
 
     # [custom]
@@ -155,7 +157,8 @@ try:
     emoji_ad_single = int(config["emoji"].get("emoji_ad_single", str(emoji_ad_single)))
     emoji_ad_total = int(config["emoji"].get("emoji_ad_total", str(emoji_ad_total)))
     emoji_many = int(config["emoji"].get("emoji_many", str(emoji_many)))
-    emoji_protect = getdecoder("unicode_escape")(config["emoji"].get("emoji_protect", emoji_protect))[0]
+    emoji_protect = config.get("emoji", "emoji_protect", fallback=emoji_protect).encode()
+    emoji_protect = getdecoder("unicode_escape")(emoji_protect)[0]
     emoji_wb_single = int(config["emoji"].get("emoji_wb_single", str(emoji_wb_single)))
     emoji_wb_total = int(config["emoji"].get("emoji_wb_total", str(emoji_wb_total)))
 
