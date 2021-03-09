@@ -1,6 +1,6 @@
 APScheduler==3.6.3
 cffi==1.14.0
-cryptography==3.2
+cryptography==3.3.2
 cycler==0.10.0
 decorator==4.4.1
 emoji==0.5.4
