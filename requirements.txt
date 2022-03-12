@@ -11,7 +11,7 @@ networkx==2.4
 nsfw==0.3.2
 numpy==1.18.1
 OpenCC==0.2
-Pillow==8.1.1
+Pillow==9.0.1
 pyaes==1.6.1
 pyAesCrypt==0.4.3
 pycparser==2.19
